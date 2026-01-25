@@ -31,28 +31,21 @@ namespace ServerCommonModule.Repository
 
             Info = property;
 
-            FieldTypeAttribute fieldTypeAttribute = (FieldTypeAttribute)property.GetCustomAttribute(typeof(FieldTypeAttribute));
-            if (fieldTypeAttribute != null)
+            if (property.GetCustomAttribute<FieldTypeAttribute>() is FieldTypeAttribute fieldTypeAttribute)
                 FieldType = fieldTypeAttribute.FieldType;
             else
                 FieldType = SqlDbType.NVarChar;
 
-            FieldIsNullableAttribute isNullableAttribute = (FieldIsNullableAttribute)property.GetCustomAttribute(typeof(FieldIsNullableAttribute));
-            if (isNullableAttribute != null)
+            if (property.GetCustomAttribute<FieldIsNullableAttribute>() is FieldIsNullableAttribute isNullableAttribute)
                 IsNullable = isNullableAttribute.IsNullable;
 
-            FieldIsPrimaryKeyAttribute isPrimaryKeyAttribute = (FieldIsPrimaryKeyAttribute)property.GetCustomAttribute(typeof(FieldIsPrimaryKeyAttribute));
-            if (isPrimaryKeyAttribute != null)
+            if (property.GetCustomAttribute<FieldIsPrimaryKeyAttribute>() is FieldIsPrimaryKeyAttribute isPrimaryKeyAttribute)
                 IsPrimaryKey = isPrimaryKeyAttribute.IsPrimaryKey;
 
-
-
-            FieldIdentityAttribute identityAttribute = (FieldIdentityAttribute)property.GetCustomAttribute(typeof(FieldIdentityAttribute));
-            if (identityAttribute != null)
+            if (property.GetCustomAttribute<FieldIdentityAttribute>() is FieldIdentityAttribute identityAttribute)
                 Identity = identityAttribute.IsIdentity;
 
-            DisplayNameAttribute displayNameAttribute = (DisplayNameAttribute)property.GetCustomAttribute(typeof(DisplayNameAttribute));
-            if (displayNameAttribute != null)
+            if (property.GetCustomAttribute<DisplayNameAttribute>() is DisplayNameAttribute displayNameAttribute)
                 DisplayName = displayNameAttribute.DisplayName;
             else
                 DisplayName = property.Name;

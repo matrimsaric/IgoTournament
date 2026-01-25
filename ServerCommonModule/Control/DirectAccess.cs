@@ -17,7 +17,7 @@ namespace ServerCommonModule.Control
 {
     public class DirectAccess
     {
-        private readonly IEnvironmentalParameters _environmentParameters = null;
+        private readonly IEnvironmentalParameters _environmentParameters;
         private readonly IDbUtility _dbUtility;
         private readonly PermittedProcedures permittedProcedures = new PermittedProcedures();
 
@@ -28,7 +28,7 @@ namespace ServerCommonModule.Control
 
         }
 
-        public async Task ExecuteNonQueryStandAloneProcedure(PROCEDURES procedureRequested, IDbTransaction transaction, bool forceParams, List<Tuple<string, string, SqlDbType>> partialQueryParameters = null)
+        public async Task ExecuteNonQueryStandAloneProcedure(PROCEDURES procedureRequested, IDbTransaction transaction, bool forceParams, List<Tuple<string, string, SqlDbType>> partialQueryParameters)
         {
             string procedureToRun = permittedProcedures.GetProcedureName(procedureRequested);
 
@@ -49,11 +49,11 @@ namespace ServerCommonModule.Control
                     {
                         if (!String.IsNullOrEmpty(paramList))
                         {
-                            paramList = $"'{paramList}','{paramer.Value.ToString()}'";
+                            paramList = $"'{paramList}','{paramer.Value!.ToString()}'";
                         }
                         else
                         {
-                            paramList = $"'{paramer.Value.ToString()}'";
+                            paramList = $"'{paramer.Value!.ToString()}'";
                         }
 
                     }

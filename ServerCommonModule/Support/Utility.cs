@@ -15,7 +15,11 @@ namespace ServerCommonModule.Support
                 return SqlDbType.NVarChar;
 
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
-                type = Nullable.GetUnderlyingType(type);
+            {
+                var underlyingType = Nullable.GetUnderlyingType(type);
+                if (underlyingType != null)
+                    type = underlyingType;
+            }
 
             return SqlDbType.NVarChar;
         }

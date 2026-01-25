@@ -17,9 +17,9 @@ namespace ServerCommonModule.Repository
 {
     public partial class RepositoryManager<T> : IRepositoryManager<T>
     {
-        protected DataCollection<T> _collection = null;
+        protected DataCollection<T>? _collection = null;
         private bool _hasModifiedDate = true;
-        private readonly Dictionary<string, CollectionProperty> _collectionProperties = new Dictionary<string, CollectionProperty>();
+        private readonly Dictionary<string, CollectionProperty> _collectionProperties = [];
         private const string MODIFIED_FIELD = "modified_date";
 
         private readonly IDbUtility _dbUtility;
@@ -63,10 +63,10 @@ namespace ServerCommonModule.Repository
                 query += "\nWHERE\n\t" + string.Join("\tAND ", whereConditions);
 
                 if (transaction != null)
-                    using (IDataReader dataReader = await _dbUtility.ExecuteReader(transaction, query, whereParameters.ToArray()))
+                    using (IDataReader dataReader = await _dbUtility.ExecuteReader(transaction, query, [.. whereParameters]))
                         GetItems(dataReader);
                 else
-                    using (IDataReader dataReader = await _dbUtility.ExecuteReader(connection, query, whereParameters.ToArray()))
+                    using (IDataReader dataReader = await _dbUtility.ExecuteReader(connection, query, [.. whereParameters]))
                         GetItems(dataReader);
             }
             else
@@ -89,27 +89,29 @@ namespace ServerCommonModule.Repository
         /// </summary>
         private void GetAdditionalWhereCondition(List<string> whereConditions, List<IDataParameter> whereParameters, string tablePrefix = "")
         {
+            if (_collection == null)
+                throw new InvalidOperationException("_collection is not set.");
 
             IEnumerable<KeyValuePair<string, CollectionProperty>> fields = _collectionProperties.Where(x => x.Value.IsPrimaryKey);
-            List<string> keysWhereCondition = new List<string>();
+            List<string> keysWhereCondition = [];
 
-            int parameterIndex = 1;
+            //int parameterIndex = 1;
             T defaultItem = _collection.CreateItem();
             bool whereExists = false;
 
-            StringBuilder builder = new StringBuilder();
+            StringBuilder builder = new();
             for (int i = 0; i < keysWhereCondition.Count; i++)
             {
                 whereExists = true;
                 if (i == 0 && keysWhereCondition.Count > 1)
-                    builder.Append("(");
+                    builder.Append('(');
 
                 builder.Append(keysWhereCondition[i]);
 
                 if (i < keysWhereCondition.Count - 1)
                     builder.Append(" OR ");
                 else if (i == keysWhereCondition.Count - 1 && keysWhereCondition.Count > 1)
-                    builder.Append(")");
+                    builder.Append(')');
             }
             if (whereExists == true) whereConditions.Add(builder.ToString());
         }
@@ -122,7 +124,7 @@ namespace ServerCommonModule.Repository
         {
             if (dbType == SqlDbType.UniqueIdentifier)
             {
-                Guid guidValue = value is Guid ? (Guid)value : Guid.Parse((string)value);
+                Guid guidValue = value is Guid guid ? guid : Guid.Parse((string)value);
                 return _dbUtility.CreateSqlParameter(parameterName, dbType, guidValue);
             }
             else
@@ -133,6 +135,9 @@ namespace ServerCommonModule.Repository
 
         private void GetItems(IDataReader dataReader)
         {
+            if (_collection == null)
+                throw new InvalidOperationException("_collection is not set.");
+
             while (dataReader.Read())
             {
                 T genericTObj = _collection.CreateItem();
@@ -152,8 +157,8 @@ namespace ServerCommonModule.Repository
 
                     if (propertyInfo.PropertyType == typeof(Version))
                     {
-                        Version version;
-                        if (Version.TryParse(dataReader.GetString(i), out version))
+                        string? versionString = dataReader.GetString(i);
+                        if (!string.IsNullOrEmpty(versionString) && Version.TryParse(versionString, out Version? version))
                             propertyInfo.SetValue(genericTObj, version);
                     }
                     else if (propertyInfo.PropertyType.IsEnum)
@@ -161,7 +166,9 @@ namespace ServerCommonModule.Repository
                         Type fieldType = dataReader.GetFieldType(i);
                         if (fieldType == typeof(string))
                         {
-                            propertyInfo.SetValue(genericTObj, Enum.ToObject(propertyInfo.PropertyType, Enum.Parse(propertyInfo.PropertyType, dataReader.GetString(i), true)), null);
+                            string? enumString = dataReader.GetString(i);
+                            if (enumString != null)
+                                propertyInfo.SetValue(genericTObj, Enum.ToObject(propertyInfo.PropertyType, Enum.Parse(propertyInfo.PropertyType, enumString, true)), null);
                         }
                         else if (fieldType == typeof(int))
                             propertyInfo.SetValue(genericTObj, Enum.ToObject(propertyInfo.PropertyType, dataReader.GetInt32(i)), null);
@@ -234,8 +241,8 @@ namespace ServerCommonModule.Repository
 
             if (hasFilterParameters)
             {
-                List<String> whereConditions = new List<string>();
-                List<IDataParameter> whereParameters = new List<IDataParameter>();
+                List<String> whereConditions = [];
+                List<IDataParameter> whereParameters = [];
                 GetAdditionalWhereCondition(whereConditions, whereParameters);
                 mergeParameters.AddRange(whereParameters);
                 query += string.Join(" AND ", whereConditions);
@@ -250,8 +257,8 @@ namespace ServerCommonModule.Repository
 
             if (hasFilterParameters)
             {
-                List<string> whereConditions = new List<string>();
-                List<IDataParameter> whereParameters = new List<IDataParameter>();
+                List<string> whereConditions = [];
+                List<IDataParameter> whereParameters = [];
                 GetAdditionalWhereCondition(whereConditions, whereParameters, "target.");
                 mergeParameters.AddRange(whereParameters);
                 query += " AND " + string.Join(" AND ", whereConditions);
@@ -260,11 +267,15 @@ namespace ServerCommonModule.Repository
             return query;
         }
 
-        private async Task Save(IDbConnection connection, IDbTransaction transaction, string partialQuery = "", List<IDataParameter> partialQueryParameters = null)
+        private async Task Save(IDbConnection connection, IDbTransaction? transaction, string partialQuery = "", List<IDataParameter>? partialQueryParameters = null)
         {
+            if (_collection == null)
+                throw new InvalidOperationException("_collection is not set.");
 
+            // Fix CS8604: Ensure partialQueryParameters is not null
+            List<IDataParameter> safePartialQueryParameters = partialQueryParameters ?? [];
 
-            GetStatements(partialQuery, partialQueryParameters, out string tempTablePrefix, out List<IDataParameter> mergeParameters, out DataTable tableToSave, out List<string> allFieldList, out string temporaryTableCreationQuery, out string preMergeDelete, out StringBuilder mergeStatement);
+            GetStatements(partialQuery, safePartialQueryParameters, out string tempTablePrefix, out List<IDataParameter> mergeParameters, out DataTable tableToSave, out List<string> allFieldList, out string temporaryTableCreationQuery, out string preMergeDelete, out StringBuilder mergeStatement);
             string destinationTable = tempTablePrefix + _collection.TableName;
 
             if (transaction != null)
@@ -272,26 +283,30 @@ namespace ServerCommonModule.Repository
                 await _dbUtility.ExecuteNonQuery(transaction, temporaryTableCreationQuery);
 
                 if (string.IsNullOrEmpty(preMergeDelete) == false)
-                    await _dbUtility.ExecuteNonQuery(transaction, preMergeDelete, mergeParameters.ToArray());
+                    await _dbUtility.ExecuteNonQuery(transaction, preMergeDelete, [.. mergeParameters]);
 
-                await _dbUtility.ExecuteNonQuery(transaction, mergeStatement.ToString(), mergeParameters.ToArray());
+                await _dbUtility.ExecuteNonQuery(transaction, mergeStatement.ToString(), [.. mergeParameters]);
             }
             else
             {
                 await _dbUtility.ExecuteNonQuery(connection, temporaryTableCreationQuery);
 
-                allFieldList = GetFields(FieldsGetter.All, false);
+                // Remove unnecessary assignments (IDE0059)
+                // allFieldList = GetFields(FieldsGetter.All, false);
 
                 if (string.IsNullOrEmpty(preMergeDelete) == false)
-                    await _dbUtility.ExecuteNonQuery(connection, preMergeDelete, mergeParameters.ToArray());
+                    await _dbUtility.ExecuteNonQuery(connection, preMergeDelete, [.. mergeParameters]);
 
-                await _dbUtility.ExecuteNonQuery(connection, mergeStatement.ToString(), mergeParameters.ToArray());
+                await _dbUtility.ExecuteNonQuery(connection, mergeStatement.ToString(), [.. mergeParameters]);
             }
         }
 
         private void GetStatements(string partialQuery, List<IDataParameter> partialQueryParameters, out string tempTablePrefix, out List<IDataParameter> mergeParameters, out DataTable tableToSave, out List<string> allFieldList, out string temporaryTableCreationQuery, out string preMergeDelete, out StringBuilder mergeStatement)
         {
-            mergeParameters = new List<IDataParameter>();
+            if (_collection == null)
+                throw new InvalidOperationException("_collection is not set.");
+
+            mergeParameters = [];
             tableToSave = GetCollectionDataTable();
             allFieldList = GetFields(FieldsGetter.AllInsertable, true);
             List<string> primaryKeyList = GetFields(FieldsGetter.PrimaryKeys, true);
@@ -322,7 +337,7 @@ SELECT {string.Join(", ", temporaryTableFieldList)} FROM  {_collection.TableName
                         if (string.IsNullOrEmpty(getNotMatchedSearchCondition) == false)
                         {
                             bool startsWithAnd = getNotMatchedSearchCondition.TrimStart().StartsWith("AND");
-                            if (startsWithAnd == true) getNotMatchedSearchCondition = getNotMatchedSearchCondition + Environment.NewLine;
+                            if (startsWithAnd == true) getNotMatchedSearchCondition += Environment.NewLine;
                             else getNotMatchedSearchCondition = " AND " + getNotMatchedSearchCondition + Environment.NewLine;
                         }
 
@@ -392,26 +407,30 @@ SELECT {string.Join(", ", temporaryTableFieldList)} FROM  {_collection.TableName
                 mergeParameters.AddRange(partialQueryParameters);
         }
 
-        private async Task ExecuteSingleItemAction(IDbConnection connection, IDbTransaction transaction, T item, bool insert, bool update, bool delete, string partialQuery = "", List<IDataParameter> partialQueryParameters = null)
+        private async Task ExecuteSingleItemAction(IDbConnection connection, IDbTransaction transaction, T item, bool insert, bool update, bool delete, string partialQuery = "", List<IDataParameter>? partialQueryParameters = null)
         {
 
             Dictionary<string, IDataParameter> itemParameters = GetSingleItemAsParameters(item);
-            List<IDataParameter> allParameters = new List<IDataParameter>();
+            List<IDataParameter> allParameters = [];
 
-            string statement = ExecuteSingleActionPrepareQueries(insert, update, delete, partialQuery, partialQueryParameters, itemParameters, allParameters);
+            // Fix CS8604: Ensure partialQueryParameters is not null
+            string statement = ExecuteSingleActionPrepareQueries(insert, update, delete, partialQuery, partialQueryParameters ?? [], itemParameters, allParameters);
 
             if (transaction != null)
             {
-                await _dbUtility.ExecuteNonQuery(transaction, statement, allParameters.ToArray());
+                await _dbUtility.ExecuteNonQuery(transaction, statement, [.. allParameters]);
             }
             else
             {
-                await _dbUtility.ExecuteNonQuery(connection, statement, allParameters.ToArray());
+                await _dbUtility.ExecuteNonQuery(connection, statement, [.. allParameters]);
             }
         }
 
         private string ExecuteSingleActionPrepareQueries(bool insert, bool update, bool delete, string partialQuery, List<IDataParameter> partialQueryParameters, Dictionary<string, IDataParameter> itemParameters, List<IDataParameter> allParameters)
         {
+            if (_collection == null)
+                throw new InvalidOperationException("_collection is not set.");
+
             List<string> allFieldList = GetFields(FieldsGetter.AllInsertable, true);
             List<string> primaryKeyList = GetFields(FieldsGetter.PrimaryKeys, true);
             List<string> updateFieldList = GetFields(FieldsGetter.NotPrimaryKeysUpdeatable, true);
@@ -465,9 +484,9 @@ SELECT {string.Join(", ", temporaryTableFieldList)} FROM  {_collection.TableName
         {
             if (additionalParameters != null)
             {
-                foreach (DbParameter param in additionalParameters)
+                foreach (DbParameter param in additionalParameters.Cast<DbParameter>())
                 {
-                    IDataParameter duplicateParameter = masterParameters.FirstOrDefault(x => string.Equals(param.ParameterName, x.ParameterName, StringComparison.InvariantCultureIgnoreCase));
+                    IDataParameter? duplicateParameter = masterParameters.FirstOrDefault(x => string.Equals(param.ParameterName, x.ParameterName, StringComparison.InvariantCultureIgnoreCase));
                     if (duplicateParameter != null)
                         masterParameters.Remove(duplicateParameter);
                     masterParameters.Add(param);
@@ -477,13 +496,13 @@ SELECT {string.Join(", ", temporaryTableFieldList)} FROM  {_collection.TableName
 
         private void GetTableProperties()
         {
+            if (_collection == null)
+                throw new InvalidOperationException("_collection is not set.");
+
             foreach (var custAtt in typeof(T).GetCustomAttributes())
             {
-                if (custAtt is TableAttribute)
+                if (custAtt is TableAttribute nameFld && nameFld != null && !string.IsNullOrEmpty(nameFld.Name))
                 {
-                    TableAttribute nameFld = custAtt as TableAttribute;
-
-
                     _collection.TableName = nameFld.Name;
                 }
             }
@@ -493,31 +512,30 @@ SELECT {string.Join(", ", temporaryTableFieldList)} FROM  {_collection.TableName
 
         private void GetCollectionProperties()
         {
-            HasModifiedDateAttribute hasModifiedDateAttribute = (HasModifiedDateAttribute)typeof(T).GetCustomAttribute(typeof(HasModifiedDateAttribute));
+            HasModifiedDateAttribute? hasModifiedDateAttribute = typeof(T).GetCustomAttribute<HasModifiedDateAttribute>();
             if (hasModifiedDateAttribute != null)
                 _hasModifiedDate = hasModifiedDateAttribute.HasModifiedDate;
 
             foreach (PropertyInfo property in typeof(T).GetProperties(DataCollection<T>.BINDING_FLAGS))
             {
-                if (property.GetCustomAttributes().Count() > 0)
+                if (property.GetCustomAttributes().Any())
                 {
-                    FieldNameAttribute fieldNameAttribute = (FieldNameAttribute)property.GetCustomAttribute(typeof(FieldNameAttribute));
+                    FieldNameAttribute? fieldNameAttribute = property.GetCustomAttribute<FieldNameAttribute>();
                     string fieldName = string.Empty;
                     if (fieldNameAttribute != null)
                         fieldName = fieldNameAttribute.FieldName;
-
-
 
                     if (string.IsNullOrEmpty(fieldName) == false)
                         _collectionProperties.Add(fieldName, new CollectionProperty(property, fieldName));
                 }
             }
-
-
         }
 
         private string GenerateSelectQuery(bool useReadUncommitted)
         {
+            if (_collection == null)
+                throw new InvalidOperationException("_collection is not set.");
+
             string sql = $"SELECT \n\t{string.Join(",\n\t", GetFields(FieldsGetter.All, true, false))} \nFROM \n\t{_collection.TableNameWithSchema}";
             sql += useReadUncommitted ? " WITH (READUNCOMMITTED)" : string.Empty;
 
@@ -526,44 +544,29 @@ SELECT {string.Join(", ", temporaryTableFieldList)} FROM  {_collection.TableName
 
         private List<string> GetFields(FieldsGetter fieldsGetter, bool addBrackets, bool forInsert = true)
         {
-            List<string> fields = null;
+            List<string> fields = [];
 
-            switch (fieldsGetter)
+            fields = fieldsGetter switch
             {
-                case FieldsGetter.PrimaryKeys:
-                    fields = _collectionProperties.Where(x => x.Value.IsPrimaryKey).Select(x => x.Key).ToList();
-                    break;
-
-                case FieldsGetter.NotPrimaryKeys:
-                    fields = _collectionProperties.Where(x => x.Value.IsPrimaryKey == false).Select(y => y.Key).ToList();
-                    break;
-
-                case FieldsGetter.NotPrimaryKeysUpdeatable:
-                    fields = _collectionProperties.Where(x => x.Value.IsPrimaryKey == false).Select(y => y.Key).ToList();
-                    break;
-
-                case FieldsGetter.All:
-                    fields = _collectionProperties.Where(x => x.Value.IsPrimaryKey == false || x.Value.IsPrimaryKey == true).Select(y => y.Key).ToList();
-                    break;
-
-                case FieldsGetter.AllInsertable:
-                    fields = _collectionProperties.Where(x => x.Value.Identity == false).Select(y => y.Key).ToList();
-                    break;
-
-                default:
-                    break;
-            }
-
+                FieldsGetter.PrimaryKeys => [.. _collectionProperties.Where(x => x.Value.IsPrimaryKey).Select(x => x.Key)],
+                FieldsGetter.NotPrimaryKeys => [.. _collectionProperties.Where(x => x.Value.IsPrimaryKey == false).Select(y => y.Key)],
+                FieldsGetter.NotPrimaryKeysUpdeatable => [.. _collectionProperties.Where(x => x.Value.IsPrimaryKey == false).Select(y => y.Key)],
+                FieldsGetter.All => [.. _collectionProperties.Where(x => x.Value.IsPrimaryKey == false || x.Value.IsPrimaryKey == true).Select(y => y.Key)],
+                FieldsGetter.AllInsertable => [.. _collectionProperties.Where(x => x.Value.Identity == false).Select(y => y.Key)],
+                _ => [],
+            };
             if (fieldsGetter != FieldsGetter.PrimaryKeys && _hasModifiedDate)
-                fields.Add(MODIFIED_FIELD);
+                fields?.Add(MODIFIED_FIELD);
 
-
-            return fields;
+            return fields ?? [];
         }
 
         private DataTable GetCollectionDataTable()
         {
-            DataTable collectionDataTable = new DataTable(_collection.TableName);
+            if (_collection == null)
+                throw new InvalidOperationException("_collection is not set.");
+
+            DataTable collectionDataTable = new(_collection.TableName);
 
 
 
@@ -587,15 +590,21 @@ SELECT {string.Join(", ", temporaryTableFieldList)} FROM  {_collection.TableName
                     bool uppercase = field.Value.Uppercase;
 
 
-                    if (propertyInfo.GetValue(item) == null)
+                    object? value = propertyInfo.GetValue(item);
+
+                    if (value == null)
                         row[field.Key] = DBNull.Value;
                     else
                     {
-
                         if (uppercase)
-                            row[field.Key] = (propertyInfo.GetValue(item) as string).ToUpper();
+                        {
+                            // Ensure value is string before calling ToUpper()
+                            row[field.Key] = value is string strValue ? strValue.ToUpper() : DBNull.Value;
+                        }
                         else
-                            row[field.Key] = propertyInfo.GetValue(item);
+                        {
+                            row[field.Key] = value;
+                        }
                     }
 
 
@@ -611,7 +620,10 @@ SELECT {string.Join(", ", temporaryTableFieldList)} FROM  {_collection.TableName
 
         private Dictionary<string, IDataParameter> GetSingleItemAsParameters(T item)
         {
-            Dictionary<string, IDataParameter> parameters = new Dictionary<string, IDataParameter>();
+            if (_collection == null)
+                throw new InvalidOperationException("_collection is not set.");
+
+            Dictionary<string, IDataParameter> parameters = [];
 
 
 
@@ -639,22 +651,32 @@ SELECT {string.Join(", ", temporaryTableFieldList)} FROM  {_collection.TableName
                 {
                     if (fieldName.Equals("IsArchiveRecord"))
                     {
-                        bool isArchiveRecord = bool.Parse(propertyInfo.GetValue(item).ToString());
-
-                        if (isArchiveRecord == true)
+                        var value = propertyInfo.GetValue(item);
+                        if (value is bool isArchiveRecord && isArchiveRecord)
                         {
                             _collection.TableName = _collection.ArchiveTableName;
                         }
                     }
 
                     if (uppercase)
-                        parameter = _dbUtility.CreateSqlParameter(paramName, dbType, (propertyInfo.GetValue(item) as string).ToUpper());
+                    {
+                        parameter = _dbUtility.CreateSqlParameter(paramName, dbType, propertyInfo.GetValue(item) is string value ? value.ToUpper() : DBNull.Value);
+                    }
                     else if (dbType == SqlDbType.Int)
                     {
-                        parameter = _dbUtility.CreateSqlParameter(paramName, dbType, (int)propertyInfo.GetValue(item));
+                        var value = propertyInfo.GetValue(item);
+                        parameter = _dbUtility.CreateSqlParameter(paramName, dbType, value is int intValue ? intValue : DBNull.Value);
                     }
                     else
-                        parameter = _dbUtility.CreateSqlParameter(paramName, dbType, propertyInfo.GetValue(item));
+                    {
+                        parameter = _dbUtility.CreateSqlParameter(paramName, dbType, propertyInfo.GetValue(item) ?? DBNull.Value);
+                    }                    {
+                        parameter = _dbUtility.CreateSqlParameter(paramName, dbType, propertyInfo.GetValue(item) ?? DBNull.Value);
+                    }                    {
+                        parameter = _dbUtility.CreateSqlParameter(paramName, dbType, propertyInfo.GetValue(item) ?? DBNull.Value);
+                    }                    {
+                        parameter = _dbUtility.CreateSqlParameter(paramName, dbType, propertyInfo.GetValue(item) ?? DBNull.Value);
+                    }
                 }
 
 
@@ -665,15 +687,15 @@ SELECT {string.Join(", ", temporaryTableFieldList)} FROM  {_collection.TableName
             return parameters;
         }
 
-        private async Task InsertSingleItem(IDbConnection connection, IDbTransaction transaction, T item, string partialQuery = "", List<IDataParameter> partialQueryParameters = null)
+        private async Task InsertSingleItem(IDbConnection connection, IDbTransaction transaction, T item, string partialQuery = "", List<IDataParameter>? partialQueryParameters = null)
         {
             await ExecuteSingleItemAction(connection, transaction, item, true, false, false, partialQuery, partialQueryParameters);
         }
-        private async Task UpdateSingleItem(IDbConnection connection, IDbTransaction transaction, T item, string partialQuery = "", List<IDataParameter> partialQueryParameters = null)
+        private async Task UpdateSingleItem(IDbConnection connection, IDbTransaction transaction, T item, string partialQuery = "", List<IDataParameter>? partialQueryParameters = null)
         {
             await ExecuteSingleItemAction(connection, transaction, item, false, true, false, partialQuery, partialQueryParameters);
         }
-        private async Task DeleteSingleItem(IDbConnection connection, IDbTransaction transaction, T item, string partialQuery = "", List<IDataParameter> partialQueryParameters = null)
+        private async Task DeleteSingleItem(IDbConnection connection, IDbTransaction transaction, T item, string partialQuery = "", List<IDataParameter>? partialQueryParameters = null)
         {
             await ExecuteSingleItemAction(connection, transaction, item, false, false, true, partialQuery, partialQueryParameters);
         }
@@ -686,16 +708,16 @@ SELECT {string.Join(", ", temporaryTableFieldList)} FROM  {_collection.TableName
         {
             Debug.Assert(_collection != null);
 
-            using (IDbConnection dbConnection = await _dbUtility.GetConnection())
-                await LoadCollection(dbConnection, null);
+            using IDbConnection dbConnection = await _dbUtility.GetConnection();
+            await LoadCollection(dbConnection, null!);
         }
 
         public async Task LoadCollection(IDbConnection connection, IDbTransaction transaction, bool useReadUncommitted = false)
         {
             string query = GenerateSelectQuery(useReadUncommitted);
 
-            List<String> whereConditions = new List<string>();
-            List<IDataParameter> whereParameters = new List<IDataParameter>();
+            List<String> whereConditions = [];
+            List<IDataParameter> whereParameters = [];
             GetAdditionalWhereCondition(whereConditions, whereParameters);
 
             await Load(connection, transaction, query, whereConditions, whereParameters);
@@ -705,8 +727,8 @@ SELECT {string.Join(", ", temporaryTableFieldList)} FROM  {_collection.TableName
         {
             Debug.Assert(_collection != null);
 
-            using (IDbConnection dbConnection = await _dbUtility.GetConnection())
-                await Save(dbConnection, null);
+            using IDbConnection dbConnection = await _dbUtility.GetConnection();
+            await Save(dbConnection, null);
         }
 
         public async Task SaveCollection(IDbConnection dbConnection, DbTransaction sqlTransaction)
@@ -721,28 +743,32 @@ SELECT {string.Join(", ", temporaryTableFieldList)} FROM  {_collection.TableName
         {
             Debug.Assert(_collection != null);
 
-            using (IDbConnection dbConnection = await _dbUtility.GetConnection())
-                await InsertSingleItem(dbConnection, null, item);
+            using IDbConnection dbConnection = await _dbUtility.GetConnection();
+            await InsertSingleItem(dbConnection, null, item);
         }
 
-        public async Task InsertSingleItem(IDbConnection dbConnection, IDbTransaction transaction, T item)
+        public async Task InsertSingleItem(IDbConnection dbConnection, IDbTransaction? transaction, T item)
         {
             Debug.Assert(_collection != null);
 
-            await InsertSingleItem(dbConnection, transaction, item, string.Empty, null);
+            // Pass 'transaction ?? null' to satisfy the non-nullable parameter requirement
+            await InsertSingleItem(dbConnection, transaction ?? null!, item, string.Empty, null);
         }
 
         public async Task UpdateSingleItem(T item)
         {
             Debug.Assert(_collection != null);
 
-            using (IDbConnection dbConnection = await _dbUtility.GetConnection())
-                await UpdateSingleItem(dbConnection, null, item);
+            using IDbConnection dbConnection = await _dbUtility.GetConnection();
+            await UpdateSingleItem(dbConnection, null, item);
         }
 
-        public async Task UpdateSingleItem(IDbConnection dbConnection, IDbTransaction transaction, T item)
+        public async Task UpdateSingleItem(IDbConnection dbConnection, IDbTransaction? transaction, T item)
         {
             Debug.Assert(_collection != null);
+
+            if (transaction == null)
+                throw new InvalidOperationException("transaction is not set.");
 
             await UpdateSingleItem(dbConnection, transaction, item, string.Empty, null);
         }
@@ -751,8 +777,8 @@ SELECT {string.Join(", ", temporaryTableFieldList)} FROM  {_collection.TableName
         {
             Debug.Assert(_collection != null);
 
-            using (IDbConnection dbConnection = await _dbUtility.GetConnection())
-                await DeleteSingleItem(dbConnection, null, item);
+            using IDbConnection dbConnection = await _dbUtility.GetConnection();
+            await DeleteSingleItem(dbConnection, null!, item);
         }
 
         public async Task DeleteSingleItem(IDbConnection dbConnection, IDbTransaction transaction, T item)
@@ -764,12 +790,18 @@ SELECT {string.Join(", ", temporaryTableFieldList)} FROM  {_collection.TableName
 
         public void Clear()
         {
+            if (_collection == null)
+                throw new InvalidOperationException("_collection is not set.");
+
             _collectionProperties.Clear();
             _collection.Clear();
         }
 
         public DataCollection<T> GetCollection()
         {
+            if (_collection == null)
+                throw new InvalidOperationException("_collection is not set.");
+
             return this._collection;
         }
 

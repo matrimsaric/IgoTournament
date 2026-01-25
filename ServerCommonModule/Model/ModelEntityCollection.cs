@@ -10,8 +10,8 @@ namespace ServerCommonModule.Model
 {
     public class ModelEntryCollection<T> : DataCollection<T> where T : IModelEntry, new()
     {
-        public ModelEntryCollection(bool sorted)
-            : base(sorted)
+        public ModelEntryCollection(bool sorted, IComparer<T>? comparer)
+            : base(sorted, comparer)
         {
         }
 
@@ -45,9 +45,9 @@ namespace ServerCommonModule.Model
             return string.Empty;
         }
 
-        public T FindById(Guid id)
+        public T? FindById(Guid id)
         {
-            return this.FirstOrDefault(x => x.Id.Equals(id));
+            return  this.FirstOrDefault(x => x.Id.Equals(id));
         }
 
 

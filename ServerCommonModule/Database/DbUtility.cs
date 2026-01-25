@@ -20,7 +20,7 @@ namespace ServerCommonModule.Database
         protected string _server = String.Empty;
         protected string _database = String.Empty;
         protected string _commandText = String.Empty;
-        protected IEnumerable<ParameterInfo> _parameterValues;
+        protected IEnumerable<ParameterInfo>? _parameterValues;
 
         public int DatabaseCommandTimeoutInSeconds { get { return _dbUtilityParameter.DatabaseCommandTimeoutInSeconds; } }
         public int DatabaseErrorsMaskManagerMaxRetries { get { return _dbUtilityParameter.DatabaseErrorsMaskManagerMaxRetryNumber; } }
@@ -95,8 +95,8 @@ namespace ServerCommonModule.Database
         {
             bool result = true;
             int rowsAffected = 0;
-            object singleResult = null;
-            DbDataReader dataReader = null;
+            object? singleResult = null;
+            DbDataReader? dataReader = null;
             try
             {
                 switch (executeMode)
@@ -111,14 +111,14 @@ namespace ServerCommonModule.Database
                         dataReader = dbCommand.ExecuteReader();
                         break;
                 }
-                return (result, rowsAffected, singleResult, dataReader);
+                return (result, rowsAffected, singleResult!, dataReader!);
             }
             catch (DbException dbException)
             {
                 if (IsExceptionMasked(tryAgain, dbException))
                 {
                     result = false;
-                    return (result, rowsAffected, singleResult, dataReader);
+                    return (result, rowsAffected, singleResult!, dataReader!);
                 }
 
 
@@ -146,10 +146,15 @@ namespace ServerCommonModule.Database
 
         public async Task<int> ExecuteNonQuery(IDbTransaction transaction, string commandText, params IDataParameter[] parameters)
         {
-            return await ExecuteNonQuery(transaction.Connection, transaction, commandText, parameters);
+            if(transaction?.Connection != null)
+            {
+                return await ExecuteNonQuery(transaction.Connection, transaction, commandText, parameters);
+            }
+            return -1;
+           
         }
 
-        private async Task<int> ExecuteNonQuery(IDbConnection connection, IDbTransaction transaction, string commandText, params IDataParameter[] parameters)
+        private async Task<int> ExecuteNonQuery(IDbConnection connection, IDbTransaction? transaction, string commandText, params IDataParameter[] parameters)
         {
             int rowsAffected = 0;
 
@@ -159,7 +164,7 @@ namespace ServerCommonModule.Database
                 {
                     if (transaction != null)
                     {
-                        DbTransaction dbTransaction = transaction as DbTransaction;
+                        DbTransaction? dbTransaction = transaction as DbTransaction;
                         dbCommand.Transaction = dbTransaction;
                     }
 
@@ -177,19 +182,23 @@ namespace ServerCommonModule.Database
             return await ExecuteReader(connection, null, commandText, parameters);
         }
 
-        public async Task<IDataReader> ExecuteReader(IDbTransaction transaction, string commandText, IDataParameter[] parameters)
+        public async Task<IDataReader> ExecuteReader(IDbTransaction? transaction, string commandText, IDataParameter[] parameters)
         {
+            if (transaction?.Connection == null)
+            {
+                throw new ArgumentNullException(nameof(transaction.Connection), "Transaction's connection cannot be null.");
+            }
             return await ExecuteReader(transaction.Connection, transaction, commandText, parameters);
         }
 
-        public async Task<IDataReader> ExecuteReader(IDbConnection connection, IDbTransaction transaction, string commandText, params IDataParameter[] parameters)
+        public async Task<IDataReader> ExecuteReader(IDbConnection connection, IDbTransaction? transaction, string commandText, params IDataParameter[] parameters)
         {
             try
             {
                 using DbCommand dbCommand = DbCommand(connection, commandText, parameters);
                 if (transaction != null)
                 {
-                    DbTransaction dbTransaction = transaction as DbTransaction;
+                    DbTransaction? dbTransaction = transaction as DbTransaction;
                     dbCommand.Transaction = dbTransaction;
                 }
 
@@ -203,19 +212,21 @@ namespace ServerCommonModule.Database
 
         private async Task<IDataReader> ExecuteReader(DbCommand dbCommand, params IDataParameter[] parameters)
         {
-            DbDataReader dataReader = null;
-
+            DbDataReader? dataReader = null;
 
             for (int i = 1; i < DatabaseErrorsMaskManagerMaxRetries; i++)
             {
                 (bool result, int rowsAffected, object singleResult, DbDataReader dataReader) act = await TryExecuteAsync(dbCommand, ExecuteMode.ExecuteReader, i < DatabaseErrorsMaskManagerMaxRetries);
                 dataReader = act.dataReader;
 
-                if (act.result)
+                if (act.result && dataReader != null)
                     break;
 
                 await Task.Delay(DatabaseErrorsMaskManagerQueryInterval);
             }
+
+            if (dataReader == null)
+                throw new InvalidOperationException("Failed to obtain a valid data reader after retries.");
 
             return dataReader;
         }
@@ -227,17 +238,21 @@ namespace ServerCommonModule.Database
 
         public async Task<T> ExecuteScalar<T>(IDbTransaction transaction, string commandText, params IDataParameter[] parameters)
         {
+            if (transaction?.Connection == null)
+            {
+                throw new ArgumentNullException(nameof(transaction.Connection), "Transaction's connection cannot be null.");
+            }
             return await ExecuteScalar<T>(transaction.Connection, transaction, commandText, parameters);
         }
 
-        private async Task<T> ExecuteScalar<T>(IDbConnection connection, IDbTransaction transaction, string commandText, params IDataParameter[] parameters)
+        private async Task<T> ExecuteScalar<T>(IDbConnection connection, IDbTransaction? transaction, string commandText, params IDataParameter[] parameters)
         {
             try
             {
                 using DbCommand dbCommand = DbCommand(connection, commandText, parameters);
                 if (transaction != null)
                 {
-                    DbTransaction dbTransaction = transaction as DbTransaction;
+                    DbTransaction? dbTransaction = transaction as DbTransaction;
                     dbCommand.Transaction = dbTransaction;
                 }
 
@@ -251,7 +266,7 @@ namespace ServerCommonModule.Database
 
         private async Task<T> ExecuteScalar<T>(DbCommand dbCommand)
         {
-            object res = null;
+            object? res = null;
 
             for (int i = 1; i < DatabaseErrorsMaskManagerMaxRetries; i++)
             {
@@ -264,7 +279,10 @@ namespace ServerCommonModule.Database
                 await Task.Delay(DatabaseErrorsMaskManagerQueryInterval);
             }
 
-            return (T)res;
+            if (res is null || res is DBNull)
+                throw new InvalidOperationException("ExecuteScalar returned null or DBNull, cannot cast to non-nullable type.");
+
+            return (T)Convert.ChangeType(res, typeof(T));
         }
 
 

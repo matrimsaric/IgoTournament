@@ -105,7 +105,10 @@ namespace ServerCommonModule.Database
 
         protected override DbCommand DbCommand(IDbConnection connection, string commandText, params IDataParameter[] parameters)
         {
-            DbCommand dbCommand = connection.CreateCommand() as DbCommand;
+            DbCommand? dbCommand = connection.CreateCommand() as DbCommand;
+            if (dbCommand == null)
+                throw new InvalidOperationException("Failed to create a DbCommand from the provided connection.");
+
             dbCommand.CommandText = commandText;
             dbCommand.CommandType = CommandType.Text;
             dbCommand.CommandTimeout = DatabaseCommandTimeoutInSeconds;

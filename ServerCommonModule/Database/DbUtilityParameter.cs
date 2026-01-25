@@ -9,7 +9,7 @@ namespace ServerCommonModule.Database
 {
     public class DbUtilityParameter : IDbUtilityParameter
     {
-        public string ConnectionString { get; set; }
+        public string ConnectionString { get; set; } = string.Empty; // Initialize to avoid CS8618
 
         public int DatabaseCommandTimeoutInSeconds { get; private set; } = 0;
 

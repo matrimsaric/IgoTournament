@@ -14,13 +14,13 @@ namespace ServerCommonModule.Database
     {
 
 
-        public string ConnectionString { get; set; }
+        public string ConnectionString { get; set; } = "Host=localhost;Port=5434;Username=postgres;Password=modena;Database=IgoTournament";
 
         public int ServerSessionTimeoutInSeconds { get; set; }
 
         public bool ShowVerboseErrors { get; set; }
 
-        public string DatabaseType { get; set; }
+        public string DatabaseType { get; set; } = string.Empty;
 
         public ConnectionType Database
         {

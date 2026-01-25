@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PlayerDomain\PlayerDomain.csproj" />
+    <ProjectReference Include="..\ServerCommonModule\ServerCommonModule.csproj" />
+  </ItemGroup>
+
 </Project>

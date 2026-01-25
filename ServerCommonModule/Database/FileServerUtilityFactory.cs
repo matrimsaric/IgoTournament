@@ -47,13 +47,11 @@ namespace ServerCommonModule.Database
                     IDbUtilityParameter dbUtilityParameter = new DbUtilityParameter();
                     dbUtilityParameter.ConnectionString = _environmentParameters.ConnectionString;
 
-
                     IDbUtility dbUtility = new PgUtility(dbUtilityParameter, _environmentParameters);
                     return dbUtility;
                 }
             }
-            return null;
-
+            throw new InvalidOperationException("Unable to create a valid IDbUtility instance.");
         }
     }
 }

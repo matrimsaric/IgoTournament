@@ -26,7 +26,7 @@ namespace ServerCommonModule.Model
         {
         }
 
-        public virtual int CompareTo(ModelEntry other)
+        public virtual int CompareTo(ModelEntry? other)
         {
             Debug.Assert(other != null);
 
