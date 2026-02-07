@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CompetitionDomain\CompetitionDomain.csproj" />
     <ProjectReference Include="..\PlayerDomain\PlayerDomain.csproj" />
     <ProjectReference Include="..\ServerCommonModule\ServerCommonModule.csproj" />
   </ItemGroup>

@@ -22,7 +22,7 @@ namespace CompetitionDomain.Model
         public Guid RoundId { get; set; }
 
         [FieldName("board_number"), FieldType(SqlDbType.Int), FieldIsNullable(true)]
-        public int? BoardNumber { get; set; }
+        public int BoardNumber { get; set; }
 
         [FieldName("black_player_id"), FieldType(SqlDbType.UniqueIdentifier)]
         public Guid BlackPlayerId { get; set; }

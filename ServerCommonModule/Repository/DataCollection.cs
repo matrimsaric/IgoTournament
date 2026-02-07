@@ -15,7 +15,7 @@ namespace ServerCommonModule.Repository
 {
     public abstract class DataCollection<T> : ICollection<T>, IDataCollection
     {
-        public const BindingFlags BINDING_FLAGS = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
+        public const BindingFlags BINDING_FLAGS = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
         public const string EXT_PROP_LIST_VALUES = @"ListValues";
 
         public bool Sorted { get; private set; } = false;

@@ -141,6 +141,7 @@ namespace ServerCommonModule.Database
 
         public async Task<int> ExecuteNonQuery(IDbConnection connection, string commandText, params IDataParameter[] parameters)
         {
+
             return await ExecuteNonQuery(connection, null, commandText, parameters);
         }
 
@@ -162,11 +163,18 @@ namespace ServerCommonModule.Database
             {
                 using (DbCommand dbCommand = DbCommand(connection, commandText, parameters))
                 {
+                    
                     if (transaction != null)
                     {
                         DbTransaction? dbTransaction = transaction as DbTransaction;
                         dbCommand.Transaction = dbTransaction;
                     }
+                    Console.WriteLine("SCommandText:"); Console.WriteLine(commandText);
+                    foreach (DbParameter p in dbCommand.Parameters) { Console.WriteLine($"PARAM: {p.ParameterName}, TYPE: {p.DbType}, NPGSQL: {(p is Npgsql.NpgsqlParameter np ? np.NpgsqlDbType.ToString() : "unknown")}, VALUE: {p.Value}"); }
+
+                    Console.WriteLine("=== FINAL SQL SENT TO POSTGRES ===");
+                    Console.WriteLine(dbCommand.CommandText);
+                    Console.WriteLine("=== END SQL ===");
 
                     rowsAffected = await DbCommandExecute(dbCommand);
                 }

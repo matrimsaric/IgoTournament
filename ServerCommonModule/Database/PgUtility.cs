@@ -26,12 +26,17 @@ namespace ServerCommonModule.Database
 
         private void LoadMappingSqlType()
         {
-            _mapSQLNpgType.Add(SqlDbType.DateTime, NpgsqlDbType.TimestampTz);
+            _mapSQLNpgType.Add(SqlDbType.Date, NpgsqlDbType.Date);
+            _mapSQLNpgType.Add(SqlDbType.DateTime, NpgsqlDbType.Timestamp);
+            _mapSQLNpgType.Add(SqlDbType.DateTime2, NpgsqlDbType.Timestamp); 
+            _mapSQLNpgType.Add(SqlDbType.DateTimeOffset, NpgsqlDbType.TimestampTz);
             _mapSQLNpgType.Add(SqlDbType.BigInt, NpgsqlDbType.Bigint);
             _mapSQLNpgType.Add(SqlDbType.Decimal, NpgsqlDbType.Numeric);
             _mapSQLNpgType.Add(SqlDbType.Int, NpgsqlDbType.Integer);
             _mapSQLNpgType.Add(SqlDbType.Money, NpgsqlDbType.Money);
             _mapSQLNpgType.Add(SqlDbType.NVarChar, NpgsqlDbType.Varchar);
+            _mapSQLNpgType.Add(SqlDbType.VarChar, NpgsqlDbType.Varchar);
+            _mapSQLNpgType.Add(SqlDbType.Xml, NpgsqlDbType.Jsonb);
             _mapSQLNpgType.Add(SqlDbType.SmallInt, NpgsqlDbType.Smallint);
             _mapSQLNpgType.Add(SqlDbType.TinyInt, NpgsqlDbType.Smallint);
             _mapSQLNpgType.Add(SqlDbType.UniqueIdentifier, NpgsqlDbType.Uuid);
@@ -76,12 +81,23 @@ namespace ServerCommonModule.Database
         public override IDataParameter CreateSqlParameter(string parameterName, SqlDbType parameterType, object parameterValue)
         {
             NpgsqlDbType npgsparam = GetNpgsqlDbType(parameterType);
+
+            // Special-case JSONB fields
+            if (parameterName.Equals("@parsed_moves", StringComparison.OrdinalIgnoreCase))
+            {
+                return new NpgsqlParameter(parameterName, NpgsqlDbType.Jsonb)
+                {
+                    Value = parameterValue ?? DBNull.Value
+                };
+            }
+
             NpgsqlParameter lParameter = new()
             {
                 ParameterName = parameterName,
                 NpgsqlDbType = npgsparam,
                 Value = parameterValue ?? DBNull.Value
             };
+
             return lParameter;
         }
 

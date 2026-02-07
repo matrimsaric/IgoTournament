@@ -5,8 +5,6 @@ using System.Text;
 
 namespace PlayerDomain.ControlModule.Interfaces
 {
-    public interface IPlayerRepository
-    {
         public interface IPlayerRepository
         {
             Task<PlayerCollection> GetAllPlayers(bool reload = true);
@@ -16,5 +14,4 @@ namespace PlayerDomain.ControlModule.Interfaces
             Task<string> UpdatePlayer(Player updatedPlayer, bool reload = true);
             Task<string> DeletePlayer(Player deletePlayer, bool reload = true);
         }
-    }
 }

@@ -20,6 +20,9 @@ namespace ServerCommonModule.Model
         [FieldName("name"), FieldType(SqlDbType.NVarChar), DisplayName("name")]
         public string Name { get; set; } = String.Empty;
 
+        [FieldName("modified_date")]
+        [FieldType(SqlDbType.DateTime)]
+        public DateTime ModifiedDate { get; set; }
 
 
         public ModelEntry()
