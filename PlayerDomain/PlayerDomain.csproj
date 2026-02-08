@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ImageDomain\ImageDomain.csproj" />
     <ProjectReference Include="..\ServerCommonModule\ServerCommonModule.csproj" />
   </ItemGroup>
 

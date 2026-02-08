@@ -18,14 +18,18 @@ namespace ConsoleApp
         private readonly IMatchRepository _matchRepo;
         private readonly ISgfRecordRepository _sgfRepo;
 
-        public TaskRouter(PlayerConsoleHandler playerHandler, IEnvironmentalParameters env, IDbUtilityFactory dbFactory)
+        public TaskRouter(
+            PlayerConsoleHandler playerHandler,
+            IPlayerRepository playerRepo,
+            IRoundRepository roundRepo,
+            IMatchRepository matchRepo,
+            ISgfRecordRepository sgfRepo)
         {
             _playerHandler = playerHandler;
-
-           _playerRepo = new PlayerRepository(env, dbFactory);;
-            _roundRepo =new RoundRepository(env, dbFactory);
-            _matchRepo = new MatchRepository(env, dbFactory);
-            _sgfRepo = new SgfRecordRepository(env, dbFactory);
+            _playerRepo = playerRepo;
+            _roundRepo = roundRepo;
+            _matchRepo = matchRepo;
+            _sgfRepo = sgfRepo;
         }
 
         public async Task Execute(int taskNumber)

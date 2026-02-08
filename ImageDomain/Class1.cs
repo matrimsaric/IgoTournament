@@ -1,4 +1,4 @@
-﻿namespace ApplicationLayer
+﻿namespace ImageDomain
 {
     public class Class1
     {

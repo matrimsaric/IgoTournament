@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 
-namespace PlayerDomain.Model
+namespace CompetitionDomain.Model
 {
     // ============================================================
     // TEAM MEMBERSHIP

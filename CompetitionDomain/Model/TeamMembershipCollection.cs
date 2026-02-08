@@ -1,9 +1,10 @@
-﻿using ServerCommonModule.Model;
+﻿using CompetitionDomain.Model;
+using ServerCommonModule.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PlayerDomain.Model
+namespace CompetitionDomain.Model
 {
     public class TeamMembershipCollection : ModelEntryCollection<TeamMembership>
     {

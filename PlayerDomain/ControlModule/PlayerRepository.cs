@@ -1,5 +1,10 @@
-﻿using PlayerDomain.ControlModule.Interfaces;
+﻿using CommonModule.Enums;
+using ImageDomain.ControlModule;
+using ImageDomain.ControlModule.Interfaces;
+using ImageDomain.Model;
+using PlayerDomain.ControlModule.Interfaces;
 using PlayerDomain.Model;
+using ServerCommonModule.Configuration;
 using ServerCommonModule.Database;
 using ServerCommonModule.Database.Interfaces;
 using ServerCommonModule.Repository;
@@ -18,23 +23,15 @@ namespace PlayerDomain.ControlModule
         private readonly IRepositoryFactory factory;
         private IRepositoryManager<Player>? playerRepoManager;
         private readonly IDbUtilityFactory dbUtilityFactory;
+        private readonly IImageService imageService;
 
         private PlayerCollection players = new PlayerCollection();
-
-        public PlayerRepository()
-        {
-            IEnvironmentalParameters env = new EnvironmentalParameters();
-            env.ConnectionString = "Host=localhost;Username=postgres;Password=modena;Database=IgoTournament";
-            env.DatabaseType = "PostgreSQL";
-
-            dbUtilityFactory = new PgUtilityFactory(env, null);
-            factory = new RepositoryFactory(dbUtilityFactory, env);
-        }
 
         public PlayerRepository(IEnvironmentalParameters env, IDbUtilityFactory dbFactory)
         {
             dbUtilityFactory = dbFactory;
             factory = new RepositoryFactory(dbFactory, env);
+            imageService = new ImageService(new ImageRepository(env, dbUtilityFactory));
         }
 
         private async Task<PlayerCollection> LoadCollection(bool reload)
@@ -90,6 +87,34 @@ namespace PlayerDomain.ControlModule
 
             await playerRepoManager!.DeleteSingleItem(deleteMe);
             return string.Empty;
+        }
+
+        public Task<ImageCollection> GetImages(Guid playerId, bool reload = true)
+    => imageService.GetImagesForObject(playerId, (int)ImageObjectType.Player, reload);
+
+        public Task<Image?> GetImage(Guid imageId, bool reload = true)
+            => imageService.GetImageById(imageId, reload);
+
+        public Task<string> AddImage(Guid playerId, Image newImage, bool reload = true)
+        {
+            newImage.ObjectId = playerId;
+            newImage.ObjectType = (int)ImageObjectType.Player;
+            return imageService.AddImage(newImage, reload);
+        }
+
+        public Task<string> UpdateImage(Image updatedImage, bool reload = true)
+            => imageService.UpdateImage(updatedImage, reload);
+
+        public Task<string> DeleteImage(Image deleteImage, bool reload = true)
+            => imageService.DeleteImage(deleteImage, reload);
+
+        public Task<Image?> GetPrimaryImageForPlayer(Guid playerId, bool reload = true)
+        {
+            return imageService.GetPrimaryImageForObject(
+                playerId,
+                (int)ImageObjectType.Player,
+                reload
+            );
         }
 
         private async Task<string> CheckForDuplicates(Player player, bool reload)

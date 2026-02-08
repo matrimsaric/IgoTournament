@@ -12,9 +12,9 @@ namespace ConsoleApp
 
     public class PlayerConsoleHandler
     {
-        private readonly PlayerRepository _playerRepository;
+        private readonly IPlayerRepository _playerRepository;
 
-        public PlayerConsoleHandler(PlayerRepository playerManager)
+        public PlayerConsoleHandler(IPlayerRepository playerManager)
         {
             _playerRepository = playerManager;
         }

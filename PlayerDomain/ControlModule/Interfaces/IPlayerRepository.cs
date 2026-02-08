@@ -1,4 +1,5 @@
-﻿using PlayerDomain.Model;
+﻿using ImageDomain.Model;
+using PlayerDomain.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,5 +14,8 @@ namespace PlayerDomain.ControlModule.Interfaces
             Task<string> CreatePlayer(Player newPlayer, bool reload = true);
             Task<string> UpdatePlayer(Player updatedPlayer, bool reload = true);
             Task<string> DeletePlayer(Player deletePlayer, bool reload = true);
-        }
+
+            Task<Image?> GetPrimaryImageForPlayer(Guid playerId, bool reload = true);
+
+    }
 }

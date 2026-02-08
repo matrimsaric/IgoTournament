@@ -1,6 +1,7 @@
 ﻿using ConsoleApp;
 using PlayerDomain.ControlModule;
 using PlayerDomain.ControlModule.Interfaces;
+using ServerCommonModule.Configuration;
 using ServerCommonModule.Database;
 using ServerCommonModule.Database.Interfaces;
 //using TournamentDomain.ControlModule;
@@ -9,25 +10,23 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        //string sgf = File.ReadAllText("C:\\Users\\matri\\OneDrive\\Pictures\\GOPROS\\GameSGFs\\match1game1.sgf"); 
-        //string json = SgfParser.ParseMovesToJson(sgf); 
-        //Console.WriteLine(json);
-        //var input2 = Console.ReadLine();
-        //return;
-        // Set up environment parameters
-        IEnvironmentalParameters env = new EnvironmentalParameters();
-        env.ConnectionString = "Host=localhost;Username=postgres;Password=modena;Database=IgoTournament";
-        env.ConnectionString = "Host=localhost;Port=5434;Username=postgres;Password=modena;Database=IgoTournament";
-        env.DatabaseType = "PostgreSQL";
+        var bootstrap = new RepositoryBootstrapper();
 
-        IDbUtilityFactory dbFactory = new PgUtilityFactory(env, null);
+        var playerRepo = bootstrap.CreatePlayerRepository();
+        var roundRepo = bootstrap.CreateRoundRepository();
+        var matchRepo = bootstrap.CreateMatchRepository();
+        var sgfRepo = bootstrap.CreateSgfRepository();
 
-        // Create manager + handler
-        var playerManager = new PlayerRepository(env, dbFactory);
-        var playerHandler = new PlayerConsoleHandler(playerManager);
+        var playerHandler = new PlayerConsoleHandler(playerRepo);
 
+        var router = new TaskRouter(
+            playerHandler,
+            playerRepo,
+            roundRepo,
+            matchRepo,
+            sgfRepo
+        );
 
-        var router = new TaskRouter(playerHandler, env, dbFactory);
 
         bool exit = false;
 

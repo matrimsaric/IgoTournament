@@ -2,30 +2,28 @@
 using ServerCommonModule.Model;
 using ServerCommonModule.Model.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Text;
 
-namespace PlayerDomain.Model
+namespace CompetitionDomain.Model
 {
     [Table("teams")]
     [HasModifiedDate(true)]
-    public class Team : ModelEntry
+    public class Team : ModelEntry, IComparable<Team>
     {
         [FieldName("name"), FieldType(SqlDbType.NVarChar)]
         public new string Name { get; set; } = string.Empty;
 
         [FieldName("name_jp"), FieldType(SqlDbType.NVarChar), FieldIsNullable(true)]
-        public string NameJp { get; set; } = String.Empty;
+        public string NameJp { get; set; } = string.Empty;
 
         [FieldName("colour_primary"), FieldType(SqlDbType.NVarChar), FieldIsNullable(true)]
-        public string ColourPrimary { get; set; } = String.Empty;
+        public string ColourPrimary { get; set; } = string.Empty;
 
         [FieldName("colour_secondary"), FieldType(SqlDbType.NVarChar), FieldIsNullable(true)]
-        public string ColourSecondary { get; set; } = String.Empty;
+        public string ColourSecondary { get; set; } = string.Empty;
 
         [FieldName("notes"), FieldType(SqlDbType.NVarChar), FieldIsNullable(true)]
-        public string Notes { get; set; } = String.Empty;
+        public string Notes { get; set; } = string.Empty;
 
         public override IModelEntry Clone()
         {
@@ -38,6 +36,12 @@ namespace PlayerDomain.Model
                 ColourSecondary = this.ColourSecondary,
                 Notes = this.Notes
             };
+        }
+
+        public int CompareTo(Team? other)
+        {
+            if (other == null) return 1;
+            return string.Compare(Name, other.Name, StringComparison.Ordinal);
         }
     }
 }

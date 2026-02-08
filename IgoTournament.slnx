@@ -5,6 +5,7 @@
   <Project Path="ConsoleApp/ConsoleApp.csproj" />
   <Project Path="DataLayer/DataLayer.csproj" />
   <Project Path="EloDomain/EloDomain.csproj" />
+  <Project Path="ImageDomain/ImageDomain.csproj" Id="2be63462-e694-49ca-b46d-323ffae8db65" />
   <Project Path="PlayerDomain/PlayerDomain.csproj" />
   <Project Path="ServerCommonModule/ServerCommonModule.csproj" />
   <Project Path="TestLayer/TestLayer.csproj" />
