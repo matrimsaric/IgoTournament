@@ -1,4 +1,5 @@
-﻿using CompetitionDomain.Model;
+﻿using CompetitionDomain.ControlModule.Comparers;
+using CompetitionDomain.Model;
 using ServerCommonModule.Model;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ namespace CompetitionDomain.Model
 {
     public class TeamMembershipCollection : ModelEntryCollection<TeamMembership>
     {
-        public TeamMembershipCollection() : base(false, null) { }
+        public TeamMembershipCollection() : base(true, new TeamMembershipComparer()) { }
         public override TeamMembership CreateItem() => new();
     }
 }

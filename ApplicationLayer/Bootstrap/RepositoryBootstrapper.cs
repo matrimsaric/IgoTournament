@@ -10,19 +10,27 @@ using ServerCommonModule.Database.Interfaces;
 
 public class RepositoryBootstrapper
 {
+    public enum DatabaseEnvironment { Live, Test }
+
     public IEnvironmentalParameters Environment { get; }
     public IDbUtilityFactory DbFactory { get; }
 
-    public RepositoryBootstrapper()
+    public RepositoryBootstrapper(DatabaseEnvironment env)
     {
         Environment = new EnvironmentalParameters
         {
-            ConnectionString = ServerDefaults.DefaultConnectionString,
+            ConnectionString = env switch
+            {
+                DatabaseEnvironment.Live => ServerDefaults.DefaultConnectionString,
+                DatabaseEnvironment.Test => ServerDefaults.TestConnectionString,
+                _ => throw new ArgumentOutOfRangeException()
+            },
             DatabaseType = ServerDefaults.DefaultDatabaseType
         };
 
         DbFactory = new PgUtilityFactory(Environment, null);
     }
+
 
     public IPlayerRepository CreatePlayerRepository()
         => new PlayerRepository(Environment, DbFactory);

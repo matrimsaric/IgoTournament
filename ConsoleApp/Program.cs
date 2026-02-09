@@ -4,13 +4,14 @@ using PlayerDomain.ControlModule.Interfaces;
 using ServerCommonModule.Configuration;
 using ServerCommonModule.Database;
 using ServerCommonModule.Database.Interfaces;
+using static RepositoryBootstrapper;
 //using TournamentDomain.ControlModule;
 
 class Program
 {
     static async Task Main(string[] args)
     {
-        var bootstrap = new RepositoryBootstrapper();
+        var bootstrap = new RepositoryBootstrapper(DatabaseEnvironment.Test);
 
         var playerRepo = bootstrap.CreatePlayerRepository();
         var roundRepo = bootstrap.CreateRoundRepository();

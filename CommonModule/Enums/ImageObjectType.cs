@@ -6,6 +6,7 @@
         Player = 1,
         Team = 2,
         Round = 3,
-        Match = 4
+        Match = 4,
+        Tournament = 5,
     }
 }

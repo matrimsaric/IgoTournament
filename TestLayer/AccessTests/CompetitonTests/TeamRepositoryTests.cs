@@ -1,11 +1,10 @@
 ﻿using CommonModule.Enums;
+using CompetitionDomain.ControlModule;
+using CompetitionDomain.Model;
 using ImageDomain.ControlModule.Interfaces;
 using ImageDomain.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using PlayerDomain.ControlModule;
-using PlayerDomain.ControlModule.Interfaces;
-using PlayerDomain.Model;
 using ServerCommonModule.Database.Interfaces;
 using ServerCommonModule.Repository;
 using ServerCommonModule.Repository.Interfaces;
@@ -13,194 +12,193 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TestLayer.PlayerTests
+namespace TestLayer.CompetitionTests
 {
     [TestClass]
-    public class PlayerRepositoryTests
+    public class TeamRepositoryTests
     {
         private Mock<IDbUtilityFactory> dbFactoryMock;
         private Mock<IEnvironmentalParameters> envMock;
-        private Mock<IRepositoryManager<Player>> repoManagerMock;
+        private Mock<IRepositoryManager<Team>> repoManagerMock;
         private Mock<IRepositoryFactory> factoryMock;
         private Mock<IImageService> imageServiceMock;
 
-        private PlayerRepository repository;
+        private TeamRepository repository;
 
         [TestInitialize]
         public void Setup()
         {
             dbFactoryMock = new Mock<IDbUtilityFactory>();
             envMock = new Mock<IEnvironmentalParameters>();
-            repoManagerMock = new Mock<IRepositoryManager<Player>>();
+            repoManagerMock = new Mock<IRepositoryManager<Team>>();
             factoryMock = new Mock<IRepositoryFactory>();
             imageServiceMock = new Mock<IImageService>();
 
             envMock.SetupGet(e => e.ConnectionString).Returns("Host=test;");
             envMock.SetupGet(e => e.DatabaseType).Returns("PostgreSQL");
 
-            repository = new PlayerRepository(envMock.Object, dbFactoryMock.Object);
+            repository = new TeamRepository(envMock.Object, dbFactoryMock.Object);
 
-            // Inject mocked factory
-            typeof(PlayerRepository)
+            typeof(TeamRepository)
                 .GetField("factory", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                 .SetValue(repository, factoryMock.Object);
 
-            // Inject mocked image service
-            typeof(PlayerRepository)
+            typeof(TeamRepository)
                 .GetField("imageService", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
                 .SetValue(repository, imageServiceMock.Object);
         }
 
-        // ------------------------------------------------------------
-        // BASIC CRUD TESTS
-        // ------------------------------------------------------------
-
         [TestMethod]
-        public async Task GetAllPlayers_LoadsCollection()
+        public async Task GetAllTeams_LoadsCollection()
         {
-            var players = new PlayerCollection
+            var teams = new TeamCollection
             {
-                new Player { Id = Guid.NewGuid(), Name = "Lee Sedol", Rank = "9" }
+                new Team { Id = Guid.NewGuid(), Name = "Alpha" }
             };
 
             repoManagerMock.Setup(r => r.LoadCollection()).Returns(Task.CompletedTask);
 
             factoryMock
-                .Setup(f => f.Get(It.IsAny<PlayerCollection>()))
-                .Callback<DataCollection<Player>>(pc =>
+                .Setup(f => f.Get(It.IsAny<TeamCollection>()))
+                .Callback<DataCollection<Team>>(dc =>
                 {
-                    foreach (var p in players)
-                        pc.Add(p);
+                    foreach (var t in teams)
+                        dc.Add(t);
                 })
                 .Returns(repoManagerMock.Object);
 
-            var result = await repository.GetAllPlayers(true);
+            var result = await repository.GetAllTeams(true);
             var list = result.ToList();
 
             Assert.AreEqual(1, list.Count);
-            Assert.AreEqual("Lee Sedol", list[0].Name);
+            Assert.AreEqual("Alpha", list[0].Name);
         }
 
         [TestMethod]
-        public async Task GetPlayerById_ReturnsCorrectPlayer()
+        public async Task GetTeamById_ReturnsCorrectTeam()
         {
             var id = Guid.NewGuid();
 
-            var players = new PlayerCollection
+            var teams = new TeamCollection
             {
-                new Player { Id = id, Name = "Iyama Yuta", Rank = "9" }
+                new Team { Id = id, Name = "Bravo" }
             };
 
             repoManagerMock.Setup(r => r.LoadCollection()).Returns(Task.CompletedTask);
 
             factoryMock
-                .Setup(f => f.Get(It.IsAny<PlayerCollection>()))
-                .Callback<DataCollection<Player>>(pc =>
+                .Setup(f => f.Get(It.IsAny<TeamCollection>()))
+                .Callback<DataCollection<Team>>(dc =>
                 {
-                    foreach (var p in players)
-                        pc.Add(p);
+                    foreach (var t in teams)
+                        dc.Add(t);
                 })
                 .Returns(repoManagerMock.Object);
 
-            var result = await repository.GetPlayerById(id);
+            var result = await repository.GetTeamById(id);
 
             Assert.IsNotNull(result);
-            Assert.AreEqual("Iyama Yuta", result.Name);
+            Assert.AreEqual("Bravo", result.Name);
         }
 
         [TestMethod]
-        public async Task CreatePlayer_Inserts_WhenNoDuplicate()
+        public async Task CreateTeam_InsertsTeam()
         {
-            var newPlayer = new Player
+            var newTeam = new Team
             {
                 Id = Guid.NewGuid(),
-                Name = "Shin Jinseo",
-                Rank = "9"
+                Name = "New Team"
             };
 
             repoManagerMock.Setup(r => r.LoadCollection()).Returns(Task.CompletedTask);
-            repoManagerMock.Setup(r => r.InsertSingleItem(newPlayer)).Returns(Task.CompletedTask);
+            repoManagerMock.Setup(r => r.InsertSingleItem(newTeam)).Returns(Task.CompletedTask);
 
             factoryMock
-                .Setup(f => f.Get(It.IsAny<PlayerCollection>()))
+                .Setup(f => f.Get(It.IsAny<TeamCollection>()))
                 .Returns(repoManagerMock.Object);
 
-            var result = await repository.CreatePlayer(newPlayer);
+            var result = await repository.CreateTeam(newTeam);
 
             Assert.AreEqual(string.Empty, result);
-            repoManagerMock.Verify(r => r.InsertSingleItem(newPlayer), Times.Once);
+            repoManagerMock.Verify(r => r.InsertSingleItem(newTeam), Times.Once);
         }
 
         [TestMethod]
-        public async Task CreatePlayer_ReturnsError_WhenDuplicate()
+        public async Task CreateTeam_DetectsDuplicate()
         {
-            var existing = new Player { Id = Guid.NewGuid(), Name = "Lee Sedol", Rank = "9" };
-            var newPlayer = new Player { Id = Guid.NewGuid(), Name = "Lee Sedol", Rank = "1" };
-
-            var players = new PlayerCollection { existing };
+            var teams = new TeamCollection
+            {
+                new Team { Id = Guid.NewGuid(), Name = "Alpha" }
+            };
 
             repoManagerMock.Setup(r => r.LoadCollection()).Returns(Task.CompletedTask);
 
             factoryMock
-                .Setup(f => f.Get(It.IsAny<PlayerCollection>()))
-                .Callback<DataCollection<Player>>(pc =>
+                .Setup(f => f.Get(It.IsAny<TeamCollection>()))
+                .Callback<DataCollection<Team>>(dc =>
                 {
-                    foreach (var p in players)
-                        pc.Add(p);
+                    foreach (var t in teams)
+                        dc.Add(t);
                 })
                 .Returns(repoManagerMock.Object);
 
-            var result = await repository.CreatePlayer(newPlayer);
+            var duplicate = new Team
+            {
+                Id = Guid.NewGuid(),
+                Name = "Alpha"
+            };
 
-            Assert.AreEqual("Duplicate player detected.", result);
-            repoManagerMock.Verify(r => r.InsertSingleItem(It.IsAny<Player>()), Times.Never);
+            var result = await repository.CreateTeam(duplicate);
+
+            Assert.AreEqual("Duplicate team detected.", result);
+            repoManagerMock.Verify(r => r.InsertSingleItem(It.IsAny<Team>()), Times.Never);
         }
 
         [TestMethod]
-        public async Task UpdatePlayer_CallsUpdate()
+        public async Task UpdateTeam_CallsUpdate()
         {
-            var existing = new Player { Id = Guid.NewGuid(), Name = "Ke Jie", Rank = "9" };
-            var players = new PlayerCollection { existing };
+            var existing = new Team { Id = Guid.NewGuid(), Name = "Update Me" };
+            var teams = new TeamCollection { existing };
 
             repoManagerMock.Setup(r => r.LoadCollection()).Returns(Task.CompletedTask);
 
             factoryMock
-                .Setup(f => f.Get(It.IsAny<PlayerCollection>()))
-                .Callback<DataCollection<Player>>(pc =>
+                .Setup(f => f.Get(It.IsAny<TeamCollection>()))
+                .Callback<DataCollection<Team>>(dc =>
                 {
-                    foreach (var p in players)
-                        pc.Add(p);
+                    foreach (var t in teams)
+                        dc.Add(t);
                 })
                 .Returns(repoManagerMock.Object);
 
             repoManagerMock.Setup(r => r.UpdateSingleItem(existing)).Returns(Task.CompletedTask);
 
-            var result = await repository.UpdatePlayer(existing);
+            var result = await repository.UpdateTeam(existing);
 
             Assert.AreEqual(string.Empty, result);
             repoManagerMock.Verify(r => r.UpdateSingleItem(existing), Times.Once);
         }
 
         [TestMethod]
-        public async Task DeletePlayer_RemovesAndDeletes()
+        public async Task DeleteTeam_RemovesAndDeletes()
         {
-            var existing = new Player { Id = Guid.NewGuid(), Name = "Iyama Yuta", Rank = "9" };
-            var players = new PlayerCollection { existing };
+            var existing = new Team { Id = Guid.NewGuid(), Name = "Delete Me" };
+            var teams = new TeamCollection { existing };
 
             repoManagerMock.Setup(r => r.LoadCollection()).Returns(Task.CompletedTask);
 
             factoryMock
-                .Setup(f => f.Get(It.IsAny<PlayerCollection>()))
-                .Callback<DataCollection<Player>>(pc =>
+                .Setup(f => f.Get(It.IsAny<TeamCollection>()))
+                .Callback<DataCollection<Team>>(dc =>
                 {
-                    foreach (var p in players)
-                        pc.Add(p);
+                    foreach (var t in teams)
+                        dc.Add(t);
                 })
                 .Returns(repoManagerMock.Object);
 
             repoManagerMock.Setup(r => r.DeleteSingleItem(existing)).Returns(Task.CompletedTask);
 
-            var result = await repository.DeletePlayer(existing);
+            var result = await repository.DeleteTeam(existing);
 
             Assert.AreEqual(string.Empty, result);
             repoManagerMock.Verify(r => r.DeleteSingleItem(existing), Times.Once);
@@ -213,14 +211,14 @@ namespace TestLayer.PlayerTests
         [TestMethod]
         public async Task GetImages_DelegatesToImageService()
         {
-            var playerId = Guid.NewGuid();
+            var teamId = Guid.NewGuid();
             var images = new ImageCollection();
 
             imageServiceMock
-                .Setup(s => s.GetImagesForObject(playerId, (int)ImageObjectType.Player, true))
+                .Setup(s => s.GetImagesForObject(teamId, (int)ImageObjectType.Team, true))
                 .ReturnsAsync(images);
 
-            var result = await repository.GetImages(playerId);
+            var result = await repository.GetImages(teamId);
 
             Assert.AreSame(images, result);
         }
@@ -241,16 +239,16 @@ namespace TestLayer.PlayerTests
         }
 
         [TestMethod]
-        public async Task GetPrimaryImageForPlayer_DelegatesToImageService()
+        public async Task GetPrimaryImageForTeam_DelegatesToImageService()
         {
-            var playerId = Guid.NewGuid();
+            var teamId = Guid.NewGuid();
             var image = new Image();
 
             imageServiceMock
-                .Setup(s => s.GetPrimaryImageForObject(playerId, (int)ImageObjectType.Player, true))
+                .Setup(s => s.GetPrimaryImageForObject(teamId, (int)ImageObjectType.Team, true))
                 .ReturnsAsync(image);
 
-            var result = await repository.GetPrimaryImageForPlayer(playerId);
+            var result = await repository.GetPrimaryImageForTeam(teamId);
 
             Assert.AreSame(image, result);
         }
@@ -258,18 +256,18 @@ namespace TestLayer.PlayerTests
         [TestMethod]
         public async Task AddImage_DelegatesToImageService()
         {
-            var playerId = Guid.NewGuid();
+            var teamId = Guid.NewGuid();
             var image = new Image();
 
             imageServiceMock
                 .Setup(s => s.AddImage(image, true))
                 .ReturnsAsync(string.Empty);
 
-            var result = await repository.AddImage(playerId, image);
+            var result = await repository.AddImage(teamId, image);
 
             Assert.AreEqual(string.Empty, result);
-            Assert.AreEqual(playerId, image.ObjectId);
-            Assert.AreEqual((int)ImageObjectType.Player, image.ObjectType);
+            Assert.AreEqual(teamId, image.ObjectId);
+            Assert.AreEqual((int)ImageObjectType.Team, image.ObjectType);
         }
 
         [TestMethod]

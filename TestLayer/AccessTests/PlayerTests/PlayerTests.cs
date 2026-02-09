@@ -5,7 +5,7 @@ using System;
 namespace TestLayer.PlayerTests
 {
     [TestClass]
-    public class PlayerClassTests
+    public class PlayerTests
     {
         [TestMethod]
         public void Clone_CreatesDeepCopy()

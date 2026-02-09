@@ -64,9 +64,11 @@ namespace ImageDomain.ControlModule
 
         public async Task<string> UpdateImage(Image updatedImage, bool reload = true)
         {
+            await LoadCollection(reload);
             await imageRepoManager!.UpdateSingleItem(updatedImage);
             return string.Empty;
         }
+
 
         public async Task<string> DeleteImage(Image deleteImage, bool reload = true)
         {
