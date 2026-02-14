@@ -11,7 +11,7 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        var bootstrap = new RepositoryBootstrapper(DatabaseEnvironment.Test);
+        var bootstrap = new RepositoryBootstrapper(DatabaseEnvironment.Live);
 
         var playerRepo = bootstrap.CreatePlayerRepository();
         var roundRepo = bootstrap.CreateRoundRepository();

@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Workflows\" />
     <Folder Include="Services\" />
   </ItemGroup>
 

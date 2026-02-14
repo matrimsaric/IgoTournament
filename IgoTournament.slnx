@@ -9,4 +9,5 @@
   <Project Path="PlayerDomain/PlayerDomain.csproj" />
   <Project Path="ServerCommonModule/ServerCommonModule.csproj" />
   <Project Path="TestLayer/TestLayer.csproj" />
+  <Project Path="Tournament.Api/Tournament.Api.csproj" Id="33b532a2-159a-48b4-860d-639c84cfa957" />
 </Solution>
