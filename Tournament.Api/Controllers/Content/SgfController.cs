@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Tournament.Api.Controllers
+namespace Tournament.Api.Controllers.Content
 {
-    public class TournamentController : Controller
+    public class SgfController : Controller
     {
         public IActionResult Index()
         {

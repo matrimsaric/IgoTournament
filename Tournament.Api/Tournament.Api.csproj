@@ -15,7 +15,12 @@
     <Folder Include="Mapping\" />
     <Folder Include="Middleware\" />
     <Folder Include="Configuration\" />
-    <Folder Include="Services\" />
+    <Folder Include="Services\Content\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PlayerDomain\PlayerDomain.csproj" />
+    <ProjectReference Include="..\ServerCommonModule\ServerCommonModule.csproj" />
   </ItemGroup>
 
 </Project>

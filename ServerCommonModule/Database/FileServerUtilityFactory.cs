@@ -11,25 +11,25 @@ using System.Threading.Tasks;
 
 namespace ServerCommonModule.Database
 {
-    public class PgUtilityFactory : IDbUtilityFactory
+    public class FileServerUtilityFactory : IDbUtilityFactory
     {
         private readonly IEnvironmentalParameters _environmentParameters;
         private readonly IServiceProvider _serviceProvider;
 
 
-        public PgUtilityFactory(IEnvironmentalParameters environmentParameters, IServiceProvider serviceProvider)
+        public FileServerUtilityFactory(IEnvironmentalParameters environmentParameters, IServiceProvider serviceProvider)
         {
             _environmentParameters = environmentParameters;
             _serviceProvider = serviceProvider;
 
         }
 
-        public PgUtilityFactory(IOptionsMonitor<EnvironmentalParameters> envParams, IServiceProvider serviceProvider)
-        {
-            _environmentParameters = envParams.CurrentValue;
-            _serviceProvider = serviceProvider;
+        //public FileServerUtilityFactory(IOptionsMonitor<EnvironmentalParameters> envParams, IServiceProvider serviceProvider)
+        //{
+        //    _environmentParameters = envParams.CurrentValue;
+        //    _serviceProvider = serviceProvider;
 
-        }
+        //}
 
         public IDbUtility Get()
         {
