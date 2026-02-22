@@ -1,3 +1,5 @@
+using CompetitionDomain.ControlModule.Interfaces;
+using CompetitionDomain.ControlModule.Services;
 using Npgsql.Internal;
 using PlayerDomain.ControlModule;
 using PlayerDomain.ControlModule.Interfaces;
@@ -7,6 +9,11 @@ using ServerCommonModule.Database;
 using ServerCommonModule.Database.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenLocalhost(5000); // HTTP only
+});
 
 // 1. Bind environment settings
 builder.Services.Configure<EnvironmentalParameters>(
@@ -34,6 +41,7 @@ builder.Services.AddSingleton<IPlayerRepository, PlayerRepository>();
 builder.Services.AddSingleton<IPlayerService, PlayerService>();
 
 // Add services to the container.
+builder.Services.AddScoped<ISgfParser, SgfParser>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -47,7 +55,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+// TODO Address before production: https://docs.microsoft.com/en-us/aspnet/core/security/enforcing-ssl?view=aspnetcore-8.0&tabs=visual-studio#redirect-http-to-https
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

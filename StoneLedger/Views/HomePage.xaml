@@ -1,0 +1,39 @@
+<ContentPage
+    x:Class="StoneLedger.Views.HomePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Stone Ledger">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="20">
+
+            <Label Text="Stone Ledger"
+                   FontSize="32"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <Label Text="Igo Go tournament archive"
+                   FontSize="18"
+                   HorizontalOptions="Center"
+                   TextColor="{DynamicResource SecondaryTextColor}" />
+
+            <Button Text="Players"
+                    FontSize="20"
+                    Command="{Binding GoToPlayersCommand}" />
+
+            <Button Text="Matches"
+                    FontSize="20"
+                    Command="{Binding GoToMatchesCommand}" />
+
+            <Button Text="Rounds"
+                    FontSize="20"
+                    Command="{Binding GoToRoundsCommand}" />
+
+            <Button Text="Replay a Game"
+                    FontSize="20"
+                    Command="{Binding GoToReplayCommand}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

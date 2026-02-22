@@ -8,6 +8,7 @@
   <Project Path="ImageDomain/ImageDomain.csproj" Id="2be63462-e694-49ca-b46d-323ffae8db65" />
   <Project Path="PlayerDomain/PlayerDomain.csproj" />
   <Project Path="ServerCommonModule/ServerCommonModule.csproj" />
+  <Project Path="StoneLedger/StoneLedger.csproj" Id="f2dac5f6-8a27-4948-bbb1-22449f47fc62" />
   <Project Path="TestLayer/TestLayer.csproj" />
   <Project Path="Tournament.Api/Tournament.Api.csproj" Id="33b532a2-159a-48b4-860d-639c84cfa957" />
 </Solution>
