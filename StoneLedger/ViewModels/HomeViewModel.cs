@@ -9,6 +9,8 @@ namespace StoneLedger.ViewModels
         public ICommand GoToRoundsCommand { get; }
         public ICommand GoToReplayCommand { get; }
 
+        public ICommand GoToTournamentsCommand { get; }
+
         public HomeViewModel()
         {
             GoToPlayersCommand = new Command(async () =>
@@ -22,6 +24,9 @@ namespace StoneLedger.ViewModels
 
             GoToReplayCommand = new Command(async () =>
                 await Shell.Current.GoToAsync("replay"));
+
+            GoToTournamentsCommand = new Command(async () =>
+        await Shell.Current.GoToAsync("tournaments"));
         }
     }
 }

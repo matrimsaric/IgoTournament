@@ -1,0 +1,29 @@
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="StoneLedger.Views.Tournaments.TournamentListPage"
+    Title="Tournaments">
+
+    <VerticalStackLayout Padding="20">
+
+        <ActivityIndicator 
+            IsRunning="{Binding IsBusy}" 
+            IsVisible="{Binding IsBusy}" />
+
+        <CollectionView 
+            ItemsSource="{Binding Tournaments}"
+            SelectionMode="Single"
+            SelectedItem="{Binding SelectedTournament, Mode=TwoWay}">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="10" Margin="0,5" BorderColor="LightGray">
+                        <Label Text="{Binding Name}" FontSize="18" />
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+    </VerticalStackLayout>
+</ContentPage>

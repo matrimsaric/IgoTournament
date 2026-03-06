@@ -33,6 +33,11 @@
                     FontSize="20"
                     Command="{Binding GoToReplayCommand}" />
 
+            <Button Text="Tournaments"
+        FontSize="20"
+        Command="{Binding GoToTournamentsCommand}" />
+
+
         </VerticalStackLayout>
     </ScrollView>
 

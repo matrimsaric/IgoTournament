@@ -8,6 +8,7 @@ namespace StoneLedger.ViewModels.Players
     public class PlayerListViewModel : BaseViewModel
     {
         private readonly PlayerService _playerService;
+
         public ObservableCollection<Player> PlayerCollection { get; } = new();
 
         private Player _selectedPlayer;
@@ -23,37 +24,38 @@ namespace StoneLedger.ViewModels.Players
             }
         }
 
+        public ICommand LoadPlayersCommand { get; }
         public ICommand AddPlayerCommand { get; }
 
-        public PlayerListViewModel()
+        public PlayerListViewModel(PlayerService playerService)
         {
-            _playerService = new PlayerService();
+            _playerService = playerService;
 
+            LoadPlayersCommand = new Command(async () => await LoadPlayers());
             AddPlayerCommand = new Command(async () =>
                 await Shell.Current.GoToAsync("playerdetail"));
-
-            // Placeholder data so the page compiles and displays something
-            LoadPlayers();
         }
 
-        private async void LoadPlayers()
+        private async Task LoadPlayers()
         {
-            try 
-            { 
-                IsBusy = true; 
+            if (IsBusy) return;
+            IsBusy = true;
+
+            try
+            {
+                PlayerCollection.Clear();
                 var players = await _playerService.GetAllPlayersAsync();
-                PlayerCollection.Clear(); 
+
                 foreach (var p in players)
-                    PlayerCollection.Add(p); 
+                    PlayerCollection.Add(p);
             }
             catch (Exception ex)
-            { 
-                // Temporary debugging feedback
+            {
                 await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
-            } 
+            }
             finally
-            { 
-                IsBusy = false; 
+            {
+                IsBusy = false;
             }
         }
 

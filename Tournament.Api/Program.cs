@@ -1,5 +1,8 @@
+using CompetitionDomain.ControlModule;
 using CompetitionDomain.ControlModule.Interfaces;
 using CompetitionDomain.ControlModule.Services;
+using CompetitionDomain.Services;
+using CompetitionDomain.Services.Interfaces;
 using Npgsql.Internal;
 using PlayerDomain.ControlModule;
 using PlayerDomain.ControlModule.Interfaces;
@@ -36,9 +39,19 @@ builder.Services.AddSingleton<IDbUtilityFactory, PgUtilityFactory>();
 
 // 4. Register repositories
 builder.Services.AddSingleton<IPlayerRepository, PlayerRepository>();
+builder.Services.AddSingleton<ITournamentRepository, TournamentRepository>();
+builder.Services.AddSingleton<IRoundRepository, RoundRepository>();
+builder.Services.AddSingleton<IMatchRepository, MatchRepository>();
+builder.Services.AddSingleton<ISgfRecordRepository, SgfRecordRepository>();
+
 
 // 5. Register services
 builder.Services.AddSingleton<IPlayerService, PlayerService>();
+builder.Services.AddSingleton<ITournamentService, TournamentService>();
+builder.Services.AddSingleton<IRoundService, RoundService>();
+builder.Services.AddSingleton<IMatchService, MatchService>();
+builder.Services.AddSingleton<ISgfRecordService, SgfRecordService>();
+
 
 // Add services to the container.
 builder.Services.AddScoped<ISgfParser, SgfParser>();

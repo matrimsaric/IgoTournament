@@ -7,17 +7,14 @@ namespace StoneLedger.Services.Api
     {
         private readonly HttpClient _http;
 
-        public PlayerService()
+        public PlayerService(HttpClient http)
         {
-            // You can move this base address to config later
-            _http = new HttpClient { BaseAddress = new Uri("http://localhost:5000") };
-            Console.WriteLine("Using API base: " + _http.BaseAddress);
+            _http = http;
         }
 
         public async Task<List<Player>> GetAllPlayersAsync()
         {
             var result = await _http.GetFromJsonAsync<List<Player>>("/api/content/players");
-
             return result ?? new List<Player>();
         }
     }

@@ -2,7 +2,9 @@
     x:Class="StoneLedger.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:views="clr-namespace:StoneLedger.Views">
+    xmlns:views="clr-namespace:StoneLedger.Views"
+    xmlns:players="clr-namespace:StoneLedger.Views.Players"
+    xmlns:tournaments="clr-namespace:StoneLedger.Views.Tournaments">
 
     <ShellContent
         Title="Home"
@@ -11,9 +13,17 @@
 
     <ShellContent
         Title="Players"
-        ContentTemplate="{DataTemplate views:Players.PlayerListPage}"
+        ContentTemplate="{DataTemplate players:PlayerListPage}"
         Route="players" />
 
-    <ShellContent Title="Player Detail" ContentTemplate="{DataTemplate views:Players.PlayerDetailPage}" Route="playerdetail" />
+    <ShellContent
+        Title="Player Detail"
+        ContentTemplate="{DataTemplate players:PlayerDetailPage}"
+        Route="playerdetail" />
+
+    <!--<ShellContent  
+        Title="Tournaments"  
+        Route="tournaments"  
+        ContentTemplate="{DataTemplate tournaments:TournamentListPage}" />-->
 
 </Shell>
