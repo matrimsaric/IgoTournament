@@ -1,0 +1,22 @@
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="StoneLedger.Views.Rounds.AddRoundPage"
+    Title="Add Round">
+
+    <VerticalStackLayout Padding="20" Spacing="15">
+
+        <Entry 
+            Placeholder="Round Name"
+            Text="{Binding RoundName}" />
+
+        <Button 
+            Text="Save"
+            Command="{Binding SaveCommand}"
+            BackgroundColor="#4CAF50"
+            TextColor="White"
+            CornerRadius="8" />
+
+    </VerticalStackLayout>
+
+</ContentPage>

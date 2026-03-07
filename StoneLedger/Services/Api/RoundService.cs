@@ -1,10 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CompetitionDomain.Model;
+using System.Net.Http.Json;
 
 namespace StoneLedger.Services.Api
 {
-    internal class RoundService
+    public class RoundService : IRoundService
     {
+        private readonly HttpClient _http;
+
+        public RoundService(HttpClient http)
+        {
+            _http = http;
+        }
+
+        public async Task<List<Round>> GetRoundsForTournamentAsync(Guid tournamentId)
+        {
+            var result = await _http.GetFromJsonAsync<List<Round>>(
+                $"api/content/tournaments/{tournamentId}/rounds");
+
+            return result ?? new List<Round>();
+        }
+
+        public async Task<Round> CreateRoundAsync(Round newRound)
+        {
+            var response = await _http.PostAsJsonAsync("api/content/rounds", newRound);
+
+            response.EnsureSuccessStatusCode();
+
+            var created = await response.Content.ReadFromJsonAsync<Round>();
+            return created!;
+        }
+
     }
 }

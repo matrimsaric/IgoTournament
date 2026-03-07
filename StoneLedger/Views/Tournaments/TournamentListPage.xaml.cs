@@ -1,10 +1,13 @@
-using StoneLedger.Services.ViewModels.Tournaments;
+using CompetitionDomain.Model;
+using StoneLedger.Views.Rounds;
 
 namespace StoneLedger.Views.Tournaments
 {
     public partial class TournamentListPage : ContentPage
     {
+        // ((CollectionView)sender).SelectedItem = null;
         private readonly TournamentListViewModel _vm;
+       
 
         public TournamentListPage(TournamentListViewModel vm)
         {
@@ -17,5 +20,16 @@ namespace StoneLedger.Views.Tournaments
             base.OnAppearing();
             _vm.LoadTournamentsCommand.Execute(null);
         }
+
+        private async void OnTournamentSelected(Tournament tournament)
+        {
+            await Shell.Current.GoToAsync(
+                $"///{nameof(RoundListPage)}?TournamentId={tournament.Id}"
+            );
+
+            _vm.SelectedTournament = null;
+        }
+
+
     }
 }

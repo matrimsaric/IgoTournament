@@ -1,0 +1,49 @@
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="StoneLedger.Views.Rounds.RoundListPage"
+    Title="Rounds">
+
+    <VerticalStackLayout Padding="10">
+
+        <Button 
+            Text="Add New Round"
+            Command="{Binding AddRoundCommand}"
+            BackgroundColor="#4CAF50"
+            TextColor="White"
+            CornerRadius="8" />
+
+        <CollectionView 
+            ItemsSource="{Binding Rounds}"
+            SelectionMode="Single"
+            SelectedItem="{Binding SelectedRound, Mode=TwoWay}">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame 
+                        Padding="10" 
+                        Margin="0,5"
+                        BorderColor="LightGray"
+                        HasShadow="False">
+
+                        <VerticalStackLayout>
+                            <Label 
+                                Text="{Binding Name}" 
+                                FontSize="18" />
+
+                            <!-- Optional: if your Round model has more fields -->
+                            <!--<Label 
+                                Text="{Binding Description}" 
+                                FontSize="14"
+                                TextColor="Gray" />-->
+                        </VerticalStackLayout>
+
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+    </VerticalStackLayout>
+
+</ContentPage>

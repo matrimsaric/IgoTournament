@@ -4,6 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:StoneLedger.Views"
     xmlns:players="clr-namespace:StoneLedger.Views.Players"
+    xmlns:rounds="clr-namespace:StoneLedger.Views.Rounds"
+    xmlns:matches="clr-namespace:StoneLedger.Views.Matches"
     xmlns:tournaments="clr-namespace:StoneLedger.Views.Tournaments">
 
     <ShellContent
@@ -21,9 +23,26 @@
         ContentTemplate="{DataTemplate players:PlayerDetailPage}"
         Route="playerdetail" />
 
-    <!--<ShellContent  
+    <ShellContent  
         Title="Tournaments"  
         Route="tournaments"  
-        ContentTemplate="{DataTemplate tournaments:TournamentListPage}" />-->
+        ContentTemplate="{DataTemplate tournaments:TournamentListPage}" />
+
+    <ShellContent
+    Route="RoundListPage"
+    ContentTemplate="{DataTemplate rounds:RoundListPage}" />
+
+    <ShellContent
+    Route="MatchListPage"
+    ContentTemplate="{DataTemplate matches:MatchListPage}" />
+
+    <ShellContent
+ Route="AddRoundPage"
+ ContentTemplate="{DataTemplate rounds:AddRoundPage}" />
+
+    <ShellContent
+Route="AddMatchPage"
+ContentTemplate="{DataTemplate matches:AddMatchPage}" />
+
 
 </Shell>

@@ -1,4 +1,5 @@
 ﻿using CompetitionDomain.Model;
+using CompetitionDomain.Services;
 using CompetitionDomain.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,10 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 public class RoundController : ControllerBase
 {
     private readonly IRoundService _service;
+    private readonly IMatchService _matchService;
 
-    public RoundController(IRoundService service)
+    public RoundController(IRoundService service, IMatchService matchService    )
     {
         _service = service;
+        _matchService = matchService;
     }
 
     [HttpGet]
@@ -48,4 +51,20 @@ public class RoundController : ControllerBase
         var result = await _service.DeleteRoundAsync(id);
         return Ok(result);
     }
+
+    // GET: api/content/rounds/{id}/matches
+    [HttpGet("{id:guid}/matches")]
+    public async Task<IActionResult> GetMatchesForRound(Guid id)
+    {
+        // Get all matches
+        var matches = await _matchService.GetAllMatchesAsync();
+
+        // Filter by round ID
+        var filtered = matches
+            .Where(m => m.RoundId == id)
+            .ToList();
+
+        return Ok(filtered);
+    }
+
 }

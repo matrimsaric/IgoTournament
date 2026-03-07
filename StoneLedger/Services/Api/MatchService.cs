@@ -1,10 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CompetitionDomain.Model;
+using System.Net.Http.Json;
 
 namespace StoneLedger.Services.Api
 {
-    internal class MatchService
+    public class MatchService : IMatchService
     {
+        private readonly HttpClient _httpClient;
+
+        public MatchService(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
+        public async Task<List<Match>> GetMatchesForRoundAsync(Guid roundId)
+        {
+            var url = $"api/content/rounds/{roundId}/matches";
+            var result = await _httpClient.GetFromJsonAsync<List<Match>>(url);
+
+            return result ?? new List<Match>();
+        }
+
+        public async Task<Match> CreateMatchAsync(Match newMatch)
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/content/matches", newMatch);
+
+            response.EnsureSuccessStatusCode();
+
+            var created = await response.Content.ReadFromJsonAsync<Match>();
+            return created!;
+        }
+
     }
 }
