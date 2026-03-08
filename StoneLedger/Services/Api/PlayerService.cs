@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using PlayerDomain.Model;
 using StoneLedger.Models;
 
 namespace StoneLedger.Services.Api

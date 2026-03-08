@@ -34,7 +34,7 @@ public class RoundController : ControllerBase
     public async Task<IActionResult> CreateRound([FromBody] Round newRound)
     {
         var result = await _service.CreateRoundAsync(newRound);
-        return Ok(result);
+        return Ok(newRound);
     }
 
     [HttpPut("{id:guid}")]

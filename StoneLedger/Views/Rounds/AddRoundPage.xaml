@@ -6,9 +6,18 @@
 
     <VerticalStackLayout Padding="20" Spacing="15">
 
-        <Entry 
-            Placeholder="Round Name"
-            Text="{Binding RoundName}" />
+        <Entry Placeholder="Round Name"
+           Text="{Binding RoundName}" />
+
+        <Entry Placeholder="Round Number"
+           Keyboard="Numeric"
+           Text="{Binding RoundNumber}" />
+
+        <DatePicker Date="{Binding RoundDate}" />
+
+        <Editor Placeholder="Notes"
+            AutoSize="TextChanges"
+            Text="{Binding Notes}" />
 
         <Button 
             Text="Save"

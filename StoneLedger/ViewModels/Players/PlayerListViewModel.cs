@@ -1,4 +1,5 @@
-﻿using StoneLedger.Models;
+﻿using PlayerDomain.Model;
+using StoneLedger.Models;
 using StoneLedger.Services.Api;
 using System.Collections.ObjectModel;
 using System.Windows.Input;

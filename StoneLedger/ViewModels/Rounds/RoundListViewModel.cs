@@ -8,8 +8,26 @@ using System.Windows.Input;
 
 namespace StoneLedger.ViewModels.Rounds
 {
+    [QueryProperty(nameof(TournamentId), "TournamentId")]
     public class RoundListViewModel : BaseViewModel
     {
+        public Guid _tournamentGuid { get; set; }
+
+        public string TournamentId
+        {
+            set
+            {
+                Console.WriteLine($"TournamentId setter hit with: {value}");
+
+                if (Guid.TryParse(value, out var parsed))
+                {
+                    Console.WriteLine($"Parsed GUID = {parsed}");
+                    _tournamentGuid = parsed;   // <-- THIS WAS MISSING
+
+                    _ = LoadRoundsAsync(parsed); // fire and forget
+                }
+            }
+        }
         private readonly IRoundService _roundService;
         public ICommand AddRoundCommand { get; }
 
@@ -69,7 +87,8 @@ namespace StoneLedger.ViewModels.Rounds
 
         private async void OnAddRound()
         {
-            await Shell.Current.GoToAsync($"///{nameof(AddRoundPage)}");
+            await Shell.Current.GoToAsync($"///{nameof(AddRoundPage)}?TournamentId={_tournamentGuid}");
+
         }
 
     }

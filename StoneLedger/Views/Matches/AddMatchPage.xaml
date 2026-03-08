@@ -12,17 +12,26 @@
                Keyboard="Numeric"
                Text="{Binding BoardNumber}" />
 
-        <Entry Placeholder="Black Player ID"
-               Text="{Binding BlackPlayerId}" />
+        <Label Text="Player 1" />
+        <Picker ItemsSource="{Binding Players}"
+            ItemDisplayBinding="{Binding Name}"
+            SelectedItem="{Binding SelectedPlayer1}" />
 
-        <Entry Placeholder="White Player ID"
-               Text="{Binding WhitePlayerId}" />
+        <Label Text="Player 2" />
+        <Picker ItemsSource="{Binding Players}"
+            ItemDisplayBinding="{Binding Name}"
+            SelectedItem="{Binding SelectedPlayer2}" />
 
         <Entry Placeholder="Result (e.g., B+R)"
                Text="{Binding Result}" />
 
-        <Entry Placeholder="SGF File Path"
-               Text="{Binding SgfPath}" />
+        <Button Text="Select SGF File"
+        Command="{Binding PickSgfCommand}" />
+
+        <Label Text="{Binding SgfFilePath}" 
+       FontAttributes="Italic"
+       TextColor="Gray" />
+
 
         <Button 
             Text="Save"
