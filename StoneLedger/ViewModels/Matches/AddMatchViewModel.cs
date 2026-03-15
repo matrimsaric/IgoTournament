@@ -3,6 +3,7 @@ using PlayerDomain.Model;
 using PlayerDomain.Services;
 using StoneLedger.Services.Api;
 using StoneLedger.ViewModels;
+using StoneLedger.Views.Matches;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using PlayerService = StoneLedger.Services.Api.PlayerService;
@@ -10,9 +11,11 @@ using PlayerService = StoneLedger.Services.Api.PlayerService;
 namespace StoneLedger.ViewModels.Matches
 {
     [QueryProperty(nameof(RoundId), "RoundId")]
+    [QueryProperty(nameof(RoundNumber), "RoundNumber")]
     public class AddMatchViewModel : BaseViewModel
     {
         private readonly MatchService _matchService;
+        private readonly SgfService _sgfService;
         private readonly PlayerService _playerService;
 
         public ObservableCollection<Player> Players { get; } = new();
@@ -34,24 +37,59 @@ namespace StoneLedger.ViewModels.Matches
 
         public Guid _roundId { get; set; }
 
-        public string RoundId
+        public string  RoundId
         {
             set
             {
-                Console.WriteLine($"TournamentId setter hit with: {value}");
-
                 if (Guid.TryParse(value, out var parsed))
                 {
-                    Console.WriteLine($"Parsed Round = {parsed}");
+                    Console.WriteLine($"Parsed GUID = {parsed}");
                     _roundId = parsed;   // <-- THIS WAS MISSING
+
+                    _ = LoadPlayersAsync(); // fire and forget
                 }
             }
         }
 
-        public AddMatchViewModel(MatchService matchService, PlayerService playerService)
+        public int _roundNumber { get; set; }
+        public int RoundNumber
+        {
+            set { 
+                _roundNumber = value;
+                    Console.WriteLine($"RoundNumber setter hit with: {value}");
+            }
+        }
+
+        public List<string> WinnerOptions { get; } = new() { "Black", "White", "Draw" };
+        public string SelectedWinner { get; set; }
+
+        public List<string> ResultTypes { get; } = new() { "Resign", "Timeout", "Other", "Points" };
+        private string _selectedResultType;
+        public string SelectedResultType
+        {
+            get => _selectedResultType;
+            set
+            {
+                if (_selectedResultType != value)
+                {
+                    _selectedResultType = value;
+                    OnPropertyChanged(); // updates SelectedResultType binding
+                    OnPropertyChanged(nameof(IsPointsVisible)); // updates visibility
+                }
+            }
+        }
+
+        public string Points { get; set; } // string so binding is easy
+
+        public bool IsPointsVisible => SelectedResultType == "Points";
+
+
+
+        public AddMatchViewModel(MatchService matchService, PlayerService playerService, SgfService sgfService)
         {
             _matchService = matchService;
             _playerService = playerService;
+            _sgfService = sgfService;
             SaveCommand = new Command(async () => await SaveAsync());
             PickSgfCommand = new Command(async () => await PickSgfAsync());
 
@@ -72,20 +110,59 @@ namespace StoneLedger.ViewModels.Matches
             var match = new Match
             {
                 Id = Guid.NewGuid(),
+                Name = $"{SelectedPlayer1.Name} vs {SelectedPlayer2.Name}",
                 RoundId = _roundId,
                 BoardNumber = BoardNumber,
                 BlackPlayerId = SelectedPlayer1.Id,
                 WhitePlayerId = SelectedPlayer2.Id,
-                Result = Result,
-                GameDate = DateTime.Today,
-                Name = "TEMP NAME" // will be auto‑generated later
+                WinnerId = SelectedPlayer1.Id,
+                Result = string.IsNullOrEmpty(Result) ? BuildResult() : Result,
+                GameDate = DateTime.Today.Date
             };
 
-            //await _matchService.CreateMatchAsync(match);
+            var sgfGenerated = await BuildSgfRecord(match);
 
-            // Optionally, you could also save the SGF data to a separate service or associate it with the match here.
+            match.SgfId= sgfGenerated.Id;
+            await _matchService.CreateMatchAsync(match);
 
-            await Shell.Current.GoToAsync("..");
+            sgfGenerated.MatchId = match.Id; // Associate the SGF record with the newly created match
+
+            await _sgfService.CreateSgfRecord(sgfGenerated);
+
+            await Shell.Current.GoToAsync( $"///{nameof(MatchListPage)}?RoundId={_roundId}&RoundNumber={_roundNumber}");
+        }
+
+        public string BuildResult()
+{
+    if (SelectedWinner == "Draw")
+        return "0";
+
+    var color = SelectedWinner == "Black" ? "B" : "W";
+
+    return SelectedResultType switch
+    {
+        "Resign" => $"{color}+R",
+        "Timeout" => $"{color}+T",
+        "Other" => $"{color}+O",
+        "Points" => $"{color}+{Points}",
+        _ => ""
+    };
+}
+
+
+        private async Task<SgfRecord> BuildSgfRecord(Match newMatch)
+        {
+            string autoName = SgfRecord.GenerateAutoName(newMatch.GameDate, _roundNumber, newMatch.BoardNumber, SelectedPlayer1.Name, SelectedPlayer2.Name);
+
+           return new SgfRecord
+            {
+                Id = Guid.NewGuid(),
+                Name = autoName,
+                MatchId = newMatch.Id,
+                RawSgf = SgfRaw,
+                ParsedMovesJson = string.Empty,
+                RetrievedAt = DateTime.Now
+            };
         }
 
         private async Task PickSgfAsync()

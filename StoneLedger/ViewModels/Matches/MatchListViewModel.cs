@@ -15,6 +15,27 @@ namespace StoneLedger.ViewModels.Matches
         public ObservableCollection<Match> Matches { get; }
             = new ObservableCollection<Match>();
 
+        private Guid _roundId;
+        public Guid RoundId
+        {
+            get => _roundId;
+            set
+            {
+                SetProperty(ref _roundId, value);
+                _ = LoadMatchesAsync(value);
+            }
+        }
+
+        private int _roundNumber;
+        public int RoundNumber
+        {
+            get => _roundNumber;
+            set
+            {
+                SetProperty(ref _roundNumber, value);
+            }
+        }
+
         public MatchListViewModel(MatchService matchService)
         {
             _matchService = matchService;
@@ -28,6 +49,7 @@ namespace StoneLedger.ViewModels.Matches
 
             try
             {
+                _roundId = roundId;
                 Matches.Clear();
                 var items = await _matchService.GetMatchesForRoundAsync(roundId);
 
@@ -67,7 +89,7 @@ namespace StoneLedger.ViewModels.Matches
 
         private async void OnAddMatch()
         {
-            await Shell.Current.GoToAsync($"///{nameof(AddMatchPage)}");
+            await Shell.Current.GoToAsync($"///{nameof(AddMatchPage)}?RoundId={_roundId}&RoundNumber={RoundNumber}");
         }
     }
 }

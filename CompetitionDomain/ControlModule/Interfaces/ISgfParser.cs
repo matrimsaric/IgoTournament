@@ -9,5 +9,7 @@ namespace CompetitionDomain.ControlModule.Interfaces
     public interface ISgfParser
     {
         List<SgfMove> ParseMoves(string sgf);
+
+        public string ParseMovesToJson(string sgf);
     }
 }

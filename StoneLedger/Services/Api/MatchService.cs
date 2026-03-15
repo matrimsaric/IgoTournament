@@ -20,14 +20,11 @@ namespace StoneLedger.Services.Api
             return result ?? new List<Match>();
         }
 
-        public async Task<Match> CreateMatchAsync(Match newMatch)
+        public async Task CreateMatchAsync(Match newMatch)
         {
             var response = await _httpClient.PostAsJsonAsync("api/content/matches", newMatch);
 
             response.EnsureSuccessStatusCode();
-
-            var created = await response.Content.ReadFromJsonAsync<Match>();
-            return created!;
         }
 
     }

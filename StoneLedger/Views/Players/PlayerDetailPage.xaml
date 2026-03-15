@@ -1,26 +1,82 @@
-<ContentPage
-    x:Class="StoneLedger.Views.Players.PlayerDetailPage"
+<ContentPage 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="StoneLedger.Views.Players.PlayerDetailPage"
     Title="Player Details">
 
-    <VerticalStackLayout Padding="20" Spacing="16">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
 
-        <Label Text="Player Details"
-               FontSize="28"
-               FontAttributes="Bold"
-               HorizontalOptions="Center" />
+            <!-- Header -->
+            <Label Text="Player Details"
+                   FontSize="24"
+                   FontAttributes="Bold" />
 
-        <Entry Placeholder="Player Name"
-               Text="{Binding Name}" />
+            <!-- Image Preview -->
+            <Frame Padding="0"
+                   BorderColor="LightGray"
+                   CornerRadius="8"
+                   WidthRequest="{Binding SelectedImageWidth}"
+                   HeightRequest="{Binding SelectedImageHeight}"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Start"
+                   HasShadow="False"
+                   BackgroundColor="DimGray">
 
-        <!--<Button Text="Save"
-                Command="{Binding SaveCommand}" />
+                <Image Source="{Binding SelectedImageUrl}"
+                       Aspect="AspectFit" />
+            </Frame>
 
-        <Button Text="Delete"
-                Command="{Binding DeleteCommand}"
-                TextColor="Red" />-->
+            <!-- Image Type Picker -->
+            <Label Text="Image Type" />
+            <Picker ItemsSource="{Binding ImageTypes}"
+                    SelectedItem="{Binding SelectedImageType}" />
 
-    </VerticalStackLayout>
+            <!-- Change Image Button -->
+            <Button Text="Change Image"
+                    Command="{Binding ChangeImageCommand}" />
+
+            <!-- Name -->
+            <Label Text="Name" />
+            <Entry Text="{Binding Name}" />
+
+            <!-- Japanese Name -->
+            <Label Text="Japanese Name" />
+            <Entry Text="{Binding NameJp}" />
+
+            <!-- Rank -->
+            <Label Text="Rank" />
+            <Entry Text="{Binding Rank}" />
+
+            <!-- Birth Year -->
+            <Label Text="Birth Year" />
+            <Entry Text="{Binding BirthYear}"
+                   Keyboard="Numeric" />
+
+            <!-- Affiliation -->
+            <Label Text="Affiliation" />
+            <Entry Text="{Binding Affiliation}" />
+
+            <!-- Notes -->
+            <Label Text="Notes" />
+            <Editor Text="{Binding Notes}"
+                    AutoSize="TextChanges"
+                    HeightRequest="120" />
+
+            <!-- Archive Toggle -->
+            <HorizontalStackLayout Spacing="10">
+                <Label Text="Archived" VerticalOptions="Center" />
+                <Switch IsToggled="{Binding IsArchived}" />
+            </HorizontalStackLayout>
+
+            <!-- Save Button -->
+            <Button Text="Save"
+                    Command="{Binding SaveCommand}"
+                    BackgroundColor="#4CAF50"
+                    TextColor="White"
+                    CornerRadius="8" />
+
+        </VerticalStackLayout>
+    </ScrollView>
 
 </ContentPage>

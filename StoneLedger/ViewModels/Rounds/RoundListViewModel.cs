@@ -79,7 +79,7 @@ namespace StoneLedger.ViewModels.Rounds
            // await Shell.Current.DisplayAlert("Round Selected", round.Name, "OK");
 
             await Shell.Current.GoToAsync(
-        $"///{nameof(MatchListPage)}?RoundId={round.Id}"
+        $"///{nameof(MatchListPage)}?RoundId={round.Id}&RoundNumber={round.RoundNumber}"
     );
 
             SelectedRound = null;

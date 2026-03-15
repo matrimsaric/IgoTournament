@@ -56,6 +56,10 @@ namespace ImageDomain.ControlModule
         public async Task<string> CreateImage(Image newImage, bool reload = true)
         {
             ImageCollection all = await LoadCollection(reload);
+
+            if(newImage.Id == Guid.Empty)
+                newImage.Id = Guid.NewGuid();
+
             all.Add(newImage);
 
             await imageRepoManager!.InsertSingleItem(newImage);

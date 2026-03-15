@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CompetitionDomain.Model;
 using CompetitionDomain.Services.Interfaces;
+using CompetitionDomain.ControlModule.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tournament.Api.Controllers.Content
 {
@@ -9,10 +11,12 @@ namespace Tournament.Api.Controllers.Content
     public class SgfRecordController : ControllerBase
     {
         private readonly ISgfRecordService _service;
+        private readonly ISgfParser _sgfParser;
 
-        public SgfRecordController(ISgfRecordService service)
+        public SgfRecordController(ISgfRecordService service, ISgfParser sgfParser)
         {
             _service = service;
+            _sgfParser = sgfParser;
         }
 
         // GET: api/content/sgf-records
@@ -43,6 +47,11 @@ namespace Tournament.Api.Controllers.Content
         [HttpPost]
         public async Task<IActionResult> CreateSgfRecord([FromBody] SgfRecord newRecord)
         {
+            if( string.IsNullOrEmpty(newRecord.ParsedMovesJson) && !string.IsNullOrEmpty(newRecord.RawSgf))
+            {
+                newRecord.ParsedMovesJson = _sgfParser.ParseMovesToJson(newRecord.RawSgf);
+            }
+            // Get  Formated Sgf Data
             var result = await _service.CreateSgfRecordAsync(newRecord);
             return Ok(result);
         }

@@ -2,11 +2,8 @@
 {
     public enum ImageObjectType
     {
-        Unknown = 0,
-        Player = 1,
-        Team = 2,
-        Round = 3,
-        Match = 4,
-        Tournament = 5,
+        Player = 0,
+        Team = 1,
+        Tournament = 2,
     }
 }

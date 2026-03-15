@@ -4,9 +4,11 @@ namespace StoneLedger.Views.Players;
 
 public partial class PlayerDetailPage : ContentPage
 {
-	public PlayerDetailPage()
+	public PlayerDetailPage(PlayerDetailViewModel vm)
 	{
 		InitializeComponent();
-        BindingContext = new PlayerDetailViewModel();
+        BindingContext = vm;
+
+        Loaded += async (_, _) => await vm.LoadPortraitAsync();
     }
 }

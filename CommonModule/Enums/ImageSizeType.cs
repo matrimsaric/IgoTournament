@@ -2,9 +2,11 @@
 {
     public enum ImageSizeType
     {
-        Unknown = 0,
-        Square = 1,
-        Rectangular = 2,
-        Thumbnail = 3
+        Portrait = 0,
+        Thumbnail = 1,
+        Vertical = 2,
+        Full = 3,
+        Spare1 = 4,
+        Spare2 = 5
     }
 }

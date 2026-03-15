@@ -6,6 +6,6 @@ namespace StoneLedger.Services.Api
     {
         Task<List<Match>> GetMatchesForRoundAsync(Guid roundId);
 
-        Task<Match> CreateMatchAsync(Match newMatch);
+        Task CreateMatchAsync(Match newMatch);
     }
 }

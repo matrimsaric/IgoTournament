@@ -44,6 +44,7 @@ namespace StoneLedger
             });
 
             builder.Services.AddTransient<TournamentService>();
+
             // builder.Services.AddSingleton<RoundService>();
             // builder.Services.AddSingleton<MatchService>();
 
@@ -74,6 +75,11 @@ namespace StoneLedger
             builder.Services.AddTransient<AddMatchPage>();
             builder.Services.AddTransient<AddMatchPage>();
             builder.Services.AddTransient<AddMatchViewModel>();
+            builder.Services.AddTransient<SgfService>();
+
+            builder.Services.AddTransient<ImageService>();
+            builder.Services.AddTransient<PlayerDetailViewModel>();
+            builder.Services.AddTransient<PlayerDetailPage>();
 
 
 
