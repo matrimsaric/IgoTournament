@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:playerviews="clr-namespace:StoneLedger.Views.Players"
+    xmlns:matchviews="clr-namespace:StoneLedger.Views.Matches"
+    x:Class="StoneLedger.Views.Matches.MatchDetailPage">
+
+    <Grid ColumnDefinitions="*, 1.2*, *"
+          Padding="10"
+          Style="{StaticResource FormCardStyle}"   BackgroundColor="LightSteelBlue"
+          ColumnSpacing="10">
+
+        <!-- Left Player -->
+        <playerviews:PlayerContentView Grid.Column="0" />
+
+        <!-- Match Content -->
+        <matchviews:MatchContentView Grid.Column="1" />
+
+        <!-- Right Player -->
+        <playerviews:PlayerContentView Grid.Column="2" />
+
+    </Grid>
+</ContentPage>

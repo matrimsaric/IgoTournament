@@ -76,6 +76,7 @@ namespace StoneLedger
             builder.Services.AddTransient<AddMatchPage>();
             builder.Services.AddTransient<AddMatchViewModel>();
             builder.Services.AddTransient<SgfService>();
+            builder.Services.AddTransient<MatchDetailPage>();
 
             builder.Services.AddTransient<ImageService>();
             builder.Services.AddTransient<PlayerDetailViewModel>();

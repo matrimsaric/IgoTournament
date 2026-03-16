@@ -79,10 +79,10 @@ namespace StoneLedger.ViewModels.Matches
         private async void OnMatchSelected(Match match)
         {
             // Placeholder navigation for now
-            await Shell.Current.DisplayAlert("Match Selected", match.Name, "OK");
+           // await Shell.Current.DisplayAlert("Match Selected", match.Name, "OK");
 
             // Later:
-            // await Shell.Current.GoToAsync($"///{nameof(MatchDetailPage)}?MatchId={match.Id}");
+            await Shell.Current.GoToAsync($"///{nameof(MatchDetailPage)}?MatchId={match.Id}");
 
             SelectedMatch = null;
         }

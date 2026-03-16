@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="StoneLedger.Views.Matches.MatchContentView">
+
+    <Grid BackgroundColor="#7ED321" Padding="10">
+        <VerticalStackLayout Spacing="6">
+            <Label Text="Match Details"
+                   FontAttributes="Bold"
+                   FontSize="18"
+                   TextColor="Black" />
+
+            <Label Text="• Round: 3" />
+            <Label Text="• Date: Today" />
+            <Label Text="• Status: In Progress" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentView>
