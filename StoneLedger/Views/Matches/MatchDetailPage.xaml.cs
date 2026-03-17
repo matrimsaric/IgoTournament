@@ -1,17 +1,24 @@
 using CompetitionDomain.Model;
 using StoneLedger.ViewModels.Matches;
+using StoneLedger.ViewModels.Players;
 
 namespace StoneLedger.Views.Matches;
 
 [QueryProperty(nameof(MatchId), "MatchId")]
 public partial class MatchDetailPage : ContentPage
 {
-    
 
-    public MatchDetailPage()
-	{
-		InitializeComponent();
-	}
+
+    private readonly MatchDetailViewModel _vm;
+
+    public MatchDetailPage(MatchDetailViewModel vm)
+    {
+        InitializeComponent();
+        _vm = vm;
+        BindingContext = vm;
+
+      
+    }
 
     public string MatchId
     {
@@ -21,8 +28,8 @@ public partial class MatchDetailPage : ContentPage
 
             if (Guid.TryParse(value, out var parsed))
             {
-              //  if (BindingContext is AddMatchViewModel vm)
-                   // _ = vm.RoundId = value;
+                if (BindingContext is MatchDetailViewModel vm)
+                   _ =  _vm.LoadMatchAsync(parsed);
             }
         }
     }

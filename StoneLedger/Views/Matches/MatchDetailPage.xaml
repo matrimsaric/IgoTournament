@@ -11,14 +11,13 @@
           Style="{StaticResource FormCardStyle}"   BackgroundColor="LightSteelBlue"
           ColumnSpacing="10">
 
-        <!-- Left Player -->
-        <playerviews:PlayerContentView Grid.Column="0" />
+        <playerviews:PlayerContentView Grid.Column="0"
+                               PlayerId="{Binding PlayerAId}" />
 
-        <!-- Match Content -->
         <matchviews:MatchContentView Grid.Column="1" />
 
-        <!-- Right Player -->
-        <playerviews:PlayerContentView Grid.Column="2" />
+        <playerviews:PlayerContentView Grid.Column="2"
+                               PlayerId="{Binding PlayerBId}" />
 
     </Grid>
 </ContentPage>

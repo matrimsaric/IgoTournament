@@ -2,21 +2,51 @@
 <ContentView
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:conv="clr-namespace:StoneLedger.Resources.Converters"
     x:Class="StoneLedger.Views.Players.PlayerContentView">
+    <ContentView.Resources>
+        <conv:NullToDefaultImageConverter x:Key="NullToDefaultImageConverter" />
+    </ContentView.Resources>
+    <Grid x:Name="RootLayout" 
+          ColumnDefinitions="100, *"
+          Padding="10"
+          ColumnSpacing="12">
 
-    <Grid BackgroundColor="#4A90E2" Padding="10">
-        <VerticalStackLayout Spacing="6">
-            <Label Text="Player Form"
-                   FontAttributes="Bold"
-                   FontSize="18"
-                   TextColor="White" />
 
-            <Label Text="• Wins: 3"
-                   TextColor="White" />
-            <Label Text="• Losses: 2"
-                   TextColor="White" />
-            <Label Text="• Streak: W2"
-                   TextColor="White" />
+
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer Command="{Binding OpenPlayerCommand}" />
+        </Grid.GestureRecognizers>
+        
+        <!-- Portrait -->
+        <Frame Grid.Column="0"
+       WidthRequest="100"
+       HeightRequest="100"
+       CornerRadius="8"
+       HasShadow="False"
+       BackgroundColor="{AppThemeBinding Light=#EEE, Dark=#333}">
+            <Image Aspect="AspectFill"
+           Source="{Binding PortraitUrl, Converter={StaticResource NullToDefaultImageConverter}}" />
+        </Frame>
+
+        <!-- Text Info -->
+        <VerticalStackLayout Grid.Column="1"
+                             Spacing="4"
+                             VerticalOptions="Center">
+
+            <Label Text="{Binding Name}"
+                   FontSize="20"
+                   FontAttributes="Bold"/>
+
+            <Label Text="{Binding Rank}"
+                   FontSize="14"
+                   TextColor="Gray"/>
+
+            <Label Text="{Binding BirthYear, StringFormat='Born {0}'}"
+                   FontSize="14"
+                   TextColor="Gray"/>
+
         </VerticalStackLayout>
+
     </Grid>
 </ContentView>

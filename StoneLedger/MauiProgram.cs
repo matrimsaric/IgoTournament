@@ -1,6 +1,7 @@
 ﻿using CompetitionDomain.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using StoneLedger.Resources.Converters;
 using StoneLedger.Services.Api;
 using StoneLedger.ViewModels;
 using StoneLedger.ViewModels.Matches;
@@ -82,6 +83,11 @@ namespace StoneLedger
             builder.Services.AddTransient<PlayerDetailViewModel>();
             builder.Services.AddTransient<PlayerDetailPage>();
 
+            builder.Services.AddTransient<PlayerContentViewModel>();
+            builder.Services.AddTransient<PlayerContentView>();
+            builder.Services.AddTransient<MatchDetailViewModel>();
+
+            builder.Services.AddSingleton<NullToDefaultImageConverter>();
 
 
             return builder.Build();

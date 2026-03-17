@@ -27,5 +27,16 @@ namespace StoneLedger.Services.Api
             response.EnsureSuccessStatusCode();
         }
 
+        public async Task<Match?> GetMatchByIdAsync(Guid id)
+        {
+            var response = await _httpClient.GetAsync($"api/content/matches/{id}");
+
+            if (!response.IsSuccessStatusCode)
+                return default;
+
+            return await response.Content.ReadFromJsonAsync<Match>();
+
+
+        }
     }
 }
