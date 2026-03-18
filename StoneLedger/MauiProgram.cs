@@ -86,6 +86,8 @@ namespace StoneLedger
             builder.Services.AddTransient<PlayerContentViewModel>();
             builder.Services.AddTransient<PlayerContentView>();
             builder.Services.AddTransient<MatchDetailViewModel>();
+            builder.Services.AddTransient<MatchContentViewModel>();
+            builder.Services.AddTransient<MatchContentView>();
 
             builder.Services.AddSingleton<NullToDefaultImageConverter>();
 

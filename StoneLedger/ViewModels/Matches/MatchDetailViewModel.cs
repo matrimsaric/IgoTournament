@@ -13,6 +13,14 @@ namespace StoneLedger.ViewModels.Matches
         public Guid PlayerAId { get; private set; }
         public Guid PlayerBId { get; private set; }
 
+        private Guid _matchId;
+        public Guid MatchId
+        {
+            get => _matchId;
+            set => SetProperty(ref _matchId, value);
+        }
+
+
         public MatchDetailViewModel(MatchService matchService)
         {
             _matchService = matchService;
@@ -24,6 +32,9 @@ namespace StoneLedger.ViewModels.Matches
 
             PlayerAId = match.BlackPlayerId;
             PlayerBId = match.WhitePlayerId;
+
+            MatchId = match.Id;
+            OnPropertyChanged(nameof(MatchId));
 
             OnPropertyChanged(nameof(PlayerAId));
             OnPropertyChanged(nameof(PlayerBId));

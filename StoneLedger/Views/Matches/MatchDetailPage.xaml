@@ -14,7 +14,7 @@
         <playerviews:PlayerContentView Grid.Column="0"
                                PlayerId="{Binding PlayerAId}" />
 
-        <matchviews:MatchContentView Grid.Column="1" />
+        <matchviews:MatchContentView Grid.Column="1" MatchId="{Binding MatchId}" />
 
         <playerviews:PlayerContentView Grid.Column="2"
                                PlayerId="{Binding PlayerBId}" />

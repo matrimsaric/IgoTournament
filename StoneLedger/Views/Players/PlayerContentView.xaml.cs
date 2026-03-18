@@ -54,9 +54,10 @@ public partial class PlayerContentView : ContentView
 
 
 
-    private static async void OnPlayerIdChanged(BindableObject bindable, object oldValue, object newValue)
+private static async void OnPlayerIdChanged(BindableObject bindable, object oldValue, object newValue)
     {
-        var control = (PlayerContentView)bindable;
+    Console.WriteLine($"Image loading");
+    var control = (PlayerContentView)bindable;
         var vm = control._vm;
 
         if (newValue is Guid id && id != Guid.Empty)

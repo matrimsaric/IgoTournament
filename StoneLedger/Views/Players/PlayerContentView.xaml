@@ -26,7 +26,7 @@
        HasShadow="False"
        BackgroundColor="{AppThemeBinding Light=#EEE, Dark=#333}">
             <Image Aspect="AspectFill"
-           Source="{Binding PortraitUrl, Converter={StaticResource NullToDefaultImageConverter}}" />
+Source="{Binding PortraitUrl, Converter={StaticResource NullToDefaultImageConverter}}" />
         </Frame>
 
         <!-- Text Info -->

@@ -13,11 +13,18 @@ public partial class MatchDetailPage : ContentPage
 
     public MatchDetailPage(MatchDetailViewModel vm)
     {
-        InitializeComponent();
         _vm = vm;
         BindingContext = vm;
+        InitializeComponent();
+       
 
       
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        Console.WriteLine($"MatchDetailPage: MatchId = {((MatchDetailViewModel)BindingContext).MatchId}");
     }
 
     public string MatchId

@@ -83,8 +83,11 @@ namespace StoneLedger.ViewModels.Players
                 .FirstOrDefault()
                 ?? images.FirstOrDefault();
 
+            await Task.Delay(30);
             PortraitUrl = null;
             PortraitUrl = portrait?.ImageUrl;
+            Console.WriteLine($"PortraitUrl set to: {PortraitUrl}");
+
             OnPropertyChanged(nameof(PortraitUrl));
             OnPropertyChanged(nameof(Player));
         }
