@@ -4,29 +4,32 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:conv="clr-namespace:StoneLedger.Resources.Converters"
     x:Class="StoneLedger.Views.Players.PlayerContentView">
+
     <ContentView.Resources>
         <conv:NullToDefaultImageConverter x:Key="NullToDefaultImageConverter" />
     </ContentView.Resources>
-    <Grid x:Name="RootLayout" 
+
+    <Grid x:Name="RootLayout"
           ColumnDefinitions="100, *"
-          Padding="10"
-          ColumnSpacing="12">
-
-
+          Padding="12"
+          ColumnSpacing="16"
+          BackgroundColor="{StaticResource CardColor}">
 
         <Grid.GestureRecognizers>
             <TapGestureRecognizer Command="{Binding OpenPlayerCommand}" />
         </Grid.GestureRecognizers>
-        
+
         <!-- Portrait -->
         <Frame Grid.Column="0"
-       WidthRequest="100"
-       HeightRequest="100"
-       CornerRadius="8"
-       HasShadow="False"
-       BackgroundColor="{AppThemeBinding Light=#EEE, Dark=#333}">
+               WidthRequest="100"
+               HeightRequest="100"
+               CornerRadius="12"
+               HasShadow="False"
+               BackgroundColor="{StaticResource BackgroundColor}"
+               Padding="0">
+
             <Image Aspect="AspectFill"
-Source="{Binding PortraitUrl, Converter={StaticResource NullToDefaultImageConverter}}" />
+                   Source="{Binding PortraitUrl, Converter={StaticResource NullToDefaultImageConverter}}" />
         </Frame>
 
         <!-- Text Info -->
@@ -35,16 +38,15 @@ Source="{Binding PortraitUrl, Converter={StaticResource NullToDefaultImageConver
                              VerticalOptions="Center">
 
             <Label Text="{Binding Name}"
-                   FontSize="20"
-                   FontAttributes="Bold"/>
+                   Style="{StaticResource ListItemTitleStyle}" />
 
             <Label Text="{Binding Rank}"
                    FontSize="14"
-                   TextColor="Gray"/>
+                   TextColor="{StaticResource SecondaryColor}" />
 
             <Label Text="{Binding BirthYear, StringFormat='Born {0}'}"
                    FontSize="14"
-                   TextColor="Gray"/>
+                   TextColor="{StaticResource SecondaryColor}" />
 
         </VerticalStackLayout>
 

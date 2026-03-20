@@ -2,61 +2,88 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="StoneLedger.Views.Matches.AddMatchPage"
+    BackgroundColor="{StaticResource BackgroundColor}"
     Title="Add Match">
 
-    <VerticalStackLayout Padding="20" Spacing="15">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="24">
 
-        <Label Text="Add New Match" FontSize="24" FontAttributes="Bold" />
+            <!-- Form Card -->
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="16">
 
-        <Entry Placeholder="Board Number" 
-               Keyboard="Numeric"
-               Text="{Binding BoardNumber}" />
+                    <!-- Board Number -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Board Number" Style="{StaticResource FormLabelStyle}" />
+                        <Entry Text="{Binding BoardNumber}" Keyboard="Numeric" />
+                    </VerticalStackLayout>
 
-        <Label Text="Player 1" />
-        <Picker ItemsSource="{Binding Players}"
-            ItemDisplayBinding="{Binding Name}"
-            SelectedItem="{Binding SelectedPlayer1}" />
+                    <!-- Player 1 -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Player 1" Style="{StaticResource FormLabelStyle}" />
+                        <Picker ItemsSource="{Binding Players}"
+                                ItemDisplayBinding="{Binding Name}"
+                                SelectedItem="{Binding SelectedPlayer1}" />
+                    </VerticalStackLayout>
 
-        <Label Text="Player 2" />
-        <Picker ItemsSource="{Binding Players}"
-            ItemDisplayBinding="{Binding Name}"
-            SelectedItem="{Binding SelectedPlayer2}" />
+                    <!-- Player 2 -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Player 2" Style="{StaticResource FormLabelStyle}" />
+                        <Picker ItemsSource="{Binding Players}"
+                                ItemDisplayBinding="{Binding Name}"
+                                SelectedItem="{Binding SelectedPlayer2}" />
+                    </VerticalStackLayout>
 
-        <Label Text="Winner" />
+                    <!-- Winner -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Winner" Style="{StaticResource FormLabelStyle}" />
+                        <Picker Title="Winner"
+                                ItemsSource="{Binding WinnerOptions}"
+                                SelectedItem="{Binding SelectedWinner}" />
+                    </VerticalStackLayout>
 
-        <Picker Title="Winner"
-        ItemsSource="{Binding WinnerOptions}"
-        SelectedItem="{Binding SelectedWinner}" />
+                    <!-- Result Type -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Result Type" Style="{StaticResource FormLabelStyle}" />
+                        <Picker Title="Result Type"
+                                ItemsSource="{Binding ResultTypes}"
+                                SelectedItem="{Binding SelectedResultType}" />
+                    </VerticalStackLayout>
 
-        <Label Text="Result Type" />
+                    <!-- Points -->
+                    <VerticalStackLayout Spacing="4"
+                                         IsVisible="{Binding IsPointsVisible}">
+                        <Label Text="Points" Style="{StaticResource FormLabelStyle}" />
+                        <Entry Text="{Binding Points}"
+                               Keyboard="Numeric"
+                               Placeholder="e.g., 2.5" />
+                    </VerticalStackLayout>
 
-        <Picker Title="Result Type"
-        ItemsSource="{Binding ResultTypes}"
-        SelectedItem="{Binding SelectedResultType}" />
+                    <!-- Result -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Result" Style="{StaticResource FormLabelStyle}" />
+                        <Entry Text="{Binding Result}"
+                               Placeholder="e.g., B+R" />
+                    </VerticalStackLayout>
 
-        <Entry Placeholder="Points (e.g., 2.5)"
-       Keyboard="Numeric"
-       IsVisible="{Binding IsPointsVisible}"
-       Text="{Binding Points}" />
+                    <!-- SGF Picker -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="SGF File" Style="{StaticResource FormLabelStyle}" />
+                        <Button Text="Select SGF File"
+                                Command="{Binding PickSgfCommand}" />
+                        <Label Text="{Binding SgfFilePath}"
+                               FontAttributes="Italic"
+                               TextColor="{StaticResource SecondaryColor}" />
+                    </VerticalStackLayout>
 
-        <Entry Placeholder="Result (e.g., B+R)"
-               Text="{Binding Result}" />
+                </VerticalStackLayout>
+            </Border>
 
-        <Button Text="Select SGF File"
-        Command="{Binding PickSgfCommand}" />
+            <!-- Save Button -->
+            <Button Text="Save"
+                    Command="{Binding SaveCommand}" />
 
-        <Label Text="{Binding SgfFilePath}" 
-       FontAttributes="Italic"
-       TextColor="Gray" />
-
-
-        <Button 
-            Text="Save"
-            Command="{Binding SaveCommand}"
-            BackgroundColor="#4CAF50"
-            TextColor="White"
-            CornerRadius="8" />
-
-    </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 
 </ContentPage>

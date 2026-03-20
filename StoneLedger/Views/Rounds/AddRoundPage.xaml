@@ -2,30 +2,46 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="StoneLedger.Views.Rounds.AddRoundPage"
+    BackgroundColor="{StaticResource BackgroundColor}"
     Title="Add Round">
 
-    <VerticalStackLayout Padding="20" Spacing="15">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="24">
 
-        <Entry Placeholder="Round Name"
-           Text="{Binding RoundName}" />
+            <!-- Form Card -->
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="16">
 
-        <Entry Placeholder="Round Number"
-           Keyboard="Numeric"
-           Text="{Binding RoundNumber}" />
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Round Name" Style="{StaticResource FormLabelStyle}" />
+                        <Entry Text="{Binding RoundName}" />
+                    </VerticalStackLayout>
 
-        <DatePicker Date="{Binding RoundDate}" />
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Round Number" Style="{StaticResource FormLabelStyle}" />
+                        <Entry Text="{Binding RoundNumber}" Keyboard="Numeric" />
+                    </VerticalStackLayout>
 
-        <Editor Placeholder="Notes"
-            AutoSize="TextChanges"
-            Text="{Binding Notes}" />
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Round Date" Style="{StaticResource FormLabelStyle}" />
+                        <DatePicker Date="{Binding RoundDate}" />
+                    </VerticalStackLayout>
 
-        <Button 
-            Text="Save"
-            Command="{Binding SaveCommand}"
-            BackgroundColor="#4CAF50"
-            TextColor="White"
-            CornerRadius="8" />
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Notes" Style="{StaticResource FormLabelStyle}" />
+                        <Editor Text="{Binding Notes}"
+                                AutoSize="TextChanges"
+                                HeightRequest="120" />
+                    </VerticalStackLayout>
 
-    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Save Button -->
+            <Button Text="Save"
+                    Command="{Binding SaveCommand}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
 
 </ContentPage>

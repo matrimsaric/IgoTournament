@@ -82,6 +82,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Resources\Styles\LedgerStyles.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\Matches\AddMatchPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

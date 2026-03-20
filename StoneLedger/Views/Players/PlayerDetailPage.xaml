@@ -2,79 +2,83 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="StoneLedger.Views.Players.PlayerDetailPage"
+    BackgroundColor="{StaticResource BackgroundColor}"
     Title="Player Details">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="16">
-
-            <!-- Header -->
-            <Label Text="Player Details"
-                   FontSize="24"
-                   FontAttributes="Bold" />
+        <VerticalStackLayout Padding="20" Spacing="24">
 
             <!-- Image Preview -->
-            <Frame Padding="0"
-                   BorderColor="LightGray"
-                   CornerRadius="8"
-                   WidthRequest="{Binding SelectedImageWidth}"
-                   HeightRequest="{Binding SelectedImageHeight}"
-                   HorizontalOptions="Center"
-                   VerticalOptions="Start"
-                   HasShadow="False"
-                   BackgroundColor="DimGray">
+            <Border Stroke="#E0E4EB"
+                    StrokeThickness="1"
+                    Background="{StaticResource CardColor}"
+                    StrokeShape="RoundRectangle 12"
+                    Padding="0"
+                    HorizontalOptions="Center"
+                    WidthRequest="{Binding SelectedImageWidth}"
+                    HeightRequest="{Binding SelectedImageHeight}">
 
                 <Image Source="{Binding SelectedImageUrl}"
                        Aspect="AspectFit" />
-            </Frame>
+            </Border>
 
-            <!-- Image Type Picker -->
-            <Label Text="Image Type" />
-            <Picker ItemsSource="{Binding ImageTypes}"
-                    SelectedItem="{Binding SelectedImageType}" />
+            <!-- Image Type -->
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Image Type"
+                       Style="{StaticResource FormLabelStyle}" />
+                <Picker ItemsSource="{Binding ImageTypes}"
+                        SelectedItem="{Binding SelectedImageType}" />
+                <Button Text="Change Image"
+                        Command="{Binding ChangeImageCommand}" />
+            </VerticalStackLayout>
 
-            <!-- Change Image Button -->
-            <Button Text="Change Image"
-                    Command="{Binding ChangeImageCommand}" />
+            <!-- Player Info -->
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="12">
 
-            <!-- Name -->
-            <Label Text="Name" />
-            <Entry Text="{Binding Name}" />
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Name" Style="{StaticResource FormLabelStyle}" />
+                        <Entry Text="{Binding Name}" />
+                    </VerticalStackLayout>
 
-            <!-- Japanese Name -->
-            <Label Text="Japanese Name" />
-            <Entry Text="{Binding NameJp}" />
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Japanese Name" Style="{StaticResource FormLabelStyle}" />
+                        <Entry Text="{Binding NameJp}" />
+                    </VerticalStackLayout>
 
-            <!-- Rank -->
-            <Label Text="Rank" />
-            <Entry Text="{Binding Rank}" />
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Rank" Style="{StaticResource FormLabelStyle}" />
+                        <Entry Text="{Binding Rank}" />
+                    </VerticalStackLayout>
 
-            <!-- Birth Year -->
-            <Label Text="Birth Year" />
-            <Entry Text="{Binding BirthYear}"
-                   Keyboard="Numeric" />
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Birth Year" Style="{StaticResource FormLabelStyle}" />
+                        <Entry Text="{Binding BirthYear}" Keyboard="Numeric" />
+                    </VerticalStackLayout>
 
-            <!-- Affiliation -->
-            <Label Text="Affiliation" />
-            <Entry Text="{Binding Affiliation}" />
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Affiliation" Style="{StaticResource FormLabelStyle}" />
+                        <Entry Text="{Binding Affiliation}" />
+                    </VerticalStackLayout>
 
-            <!-- Notes -->
-            <Label Text="Notes" />
-            <Editor Text="{Binding Notes}"
-                    AutoSize="TextChanges"
-                    HeightRequest="120" />
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Notes" Style="{StaticResource FormLabelStyle}" />
+                        <Editor Text="{Binding Notes}"
+                                AutoSize="TextChanges"
+                                HeightRequest="120" />
+                    </VerticalStackLayout>
 
-            <!-- Archive Toggle -->
-            <HorizontalStackLayout Spacing="10">
-                <Label Text="Archived" VerticalOptions="Center" />
-                <Switch IsToggled="{Binding IsArchived}" />
-            </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="Archived" VerticalOptions="Center" />
+                        <Switch IsToggled="{Binding IsArchived}" />
+                    </HorizontalStackLayout>
+
+                </VerticalStackLayout>
+            </Border>
 
             <!-- Save Button -->
             <Button Text="Save"
-                    Command="{Binding SaveCommand}"
-                    BackgroundColor="#4CAF50"
-                    TextColor="White"
-                    CornerRadius="8" />
+                    Command="{Binding SaveCommand}" />
 
         </VerticalStackLayout>
     </ScrollView>

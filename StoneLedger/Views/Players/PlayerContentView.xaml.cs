@@ -17,6 +17,16 @@ public partial class PlayerContentView : ContentView
         RootLayout.BindingContext = _vm;
     }
 
+    public static readonly BindableProperty IsCompactProperty =
+    BindableProperty.Create(nameof(IsCompact), typeof(bool), typeof(PlayerContentView), false);
+
+    public bool IsCompact
+    {
+        get => (bool)GetValue(IsCompactProperty);
+        set => SetValue(IsCompactProperty, value);
+    }
+
+
     public PlayerContentView(PlayerContentViewModel vm)
     {
         InitializeComponent();

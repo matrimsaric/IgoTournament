@@ -1,23 +1,36 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:playerviews="clr-namespace:StoneLedger.Views.Players"
     xmlns:matchviews="clr-namespace:StoneLedger.Views.Matches"
-    x:Class="StoneLedger.Views.Matches.MatchDetailPage">
+    x:Class="StoneLedger.Views.Matches.MatchDetailPage"
+    BackgroundColor="{StaticResource BackgroundColor}">
 
     <Grid ColumnDefinitions="*, 1.2*, *"
-          Padding="10"
-          Style="{StaticResource FormCardStyle}"   BackgroundColor="LightSteelBlue"
-          ColumnSpacing="10">
+      Padding="20"
+      ColumnSpacing="20">
 
-        <playerviews:PlayerContentView Grid.Column="0"
-                               PlayerId="{Binding PlayerAId}" />
+        <!-- Player A -->
+        <Border Grid.Column="0"
+            Style="{StaticResource CardBorderStyle}">
+            <playerviews:PlayerContentView 
+            PlayerId="{Binding PlayerAId}" />
+        </Border>
 
-        <matchviews:MatchContentView Grid.Column="1" MatchId="{Binding MatchId}" />
+        <!-- Match -->
+        <Border Grid.Column="1"
+            Style="{StaticResource CardBorderStyle}">
+            <matchviews:MatchContentView 
+            MatchId="{Binding MatchId}" />
+        </Border>
 
-        <playerviews:PlayerContentView Grid.Column="2"
-                               PlayerId="{Binding PlayerBId}" />
+        <!-- Player B -->
+        <Border Grid.Column="2"
+            Style="{StaticResource CardBorderStyle}">
+            <playerviews:PlayerContentView 
+            PlayerId="{Binding PlayerBId}" />
+        </Border>
 
     </Grid>
+
 </ContentPage>
