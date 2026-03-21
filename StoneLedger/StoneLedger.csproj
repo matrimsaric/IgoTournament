@@ -88,6 +88,9 @@
 	  <MauiXaml Update="Views\Matches\AddMatchPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Controls\GameReplayerControl.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\Matches\MatchContentView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

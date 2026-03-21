@@ -27,7 +27,7 @@ namespace CompetitionDomain.Model
         [FieldName("raw_sgf"), FieldType(SqlDbType.NVarChar)]
         public string RawSgf { get; set; } = String.Empty;
 
-        [FieldName("parsed_moves"), FieldType(SqlDbType.Structured), FieldIsNullable(true)]
+        [FieldName("parsed_moves"), FieldType(SqlDbType.NVarChar), FieldIsNullable(true)]
         public string ParsedMovesJson { get; set; } = String.Empty;
 
         [FieldName("published_at"), FieldType(SqlDbType.DateTime), FieldIsNullable(true)]

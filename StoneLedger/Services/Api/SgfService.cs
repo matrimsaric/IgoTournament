@@ -1,9 +1,6 @@
 ﻿using CompetitionDomain.Model;
 using StoneLedger.Services.Api.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Net.Http.Json;
-using System.Text;
 
 namespace StoneLedger.Services.Api
 {
@@ -16,10 +13,20 @@ namespace StoneLedger.Services.Api
             _http = http;
         }
 
+        public async Task<SgfRecord?> GetSgfRecordByIdAsync(Guid id)
+        {
+            var sgf =  await _http.GetFromJsonAsync<SgfRecord>($"api/content/sgf-records/{id}");
+            return sgf;
+        }
+
+        public async Task<SgfRecord?> GetSgfRecordByMatchIdAsync(Guid matchId)
+        {
+            return await _http.GetFromJsonAsync<SgfRecord>($"api/content/sgf-records/by-match/{matchId}");
+        }
+
         public async Task CreateSgfRecord(SgfRecord newSgfRecord)
         {
             var response = await _http.PostAsJsonAsync("api/content/sgf-records", newSgfRecord);
-
             response.EnsureSuccessStatusCode();
         }
     }

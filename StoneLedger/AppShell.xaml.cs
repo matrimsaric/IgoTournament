@@ -1,4 +1,6 @@
-﻿using StoneLedger.Views.Players;
+﻿using StoneLedger.Views.Matches;
+using StoneLedger.Views.Players;
+using StoneLedger.Views.Rounds;
 using StoneLedger.Views.Tournaments;
 
 namespace StoneLedger
@@ -14,6 +16,10 @@ namespace StoneLedger
             Routing.RegisterRoute("playerdetail", typeof(PlayerDetailPage)); 
             Routing.RegisterRoute("players", typeof(PlayerListPage));
             Routing.RegisterRoute("tournaments", typeof(TournamentListPage));
+            Routing.RegisterRoute(nameof(MatchDetailPage), typeof(MatchDetailPage));
+            Routing.RegisterRoute(nameof(AddMatchPage), typeof(AddMatchPage));
+            Routing.RegisterRoute(nameof(MatchListPage), typeof(MatchListPage));
+            Routing.RegisterRoute(nameof(RoundListPage), typeof(RoundListPage));
         }
         #pragma warning restore CA1416
     }

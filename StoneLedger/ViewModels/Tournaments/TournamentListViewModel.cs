@@ -44,9 +44,7 @@ public class TournamentListViewModel : BaseViewModel
         if (tournament == null)
             return;
 
-        await Shell.Current.GoToAsync(
-            $"///{nameof(RoundListPage)}?TournamentId={tournament.Id}"
-        );
+        await Shell.Current.GoToAsync($"{nameof(RoundListPage)}?TournamentId={tournament.Id}");
 
         SelectedTournament = null;
     }

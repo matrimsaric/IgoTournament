@@ -1,32 +1,47 @@
 <ContentView
     x:Class="StoneLedger.Views.Matches.MatchContentView"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:StoneLedger.Controls">
 
     <Grid x:Name="RootLayout"
-          Padding="12"
-          BackgroundColor="{StaticResource CardColor}"
-          ColumnDefinitions="*">
+      Padding="12"
+      BackgroundColor="{StaticResource CardColor}">
 
-        <VerticalStackLayout Spacing="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Top: Metadata -->
+        <VerticalStackLayout Grid.Row="0" Spacing="4">
 
             <Label Text="{Binding Match.Name}"
-                   Style="{StaticResource ListItemTitleStyle}" />
+               Style="{StaticResource ListItemTitleStyle}" />
 
             <Label Text="{Binding Match.BoardNumber, StringFormat='Board: {0}'}"
-                   FontSize="14"
-                   TextColor="{StaticResource SecondaryColor}" />
+               FontSize="14"
+               TextColor="{StaticResource SecondaryColor}" />
 
             <Label Text="{Binding Match.GameDate, StringFormat='Date: {0:d}'}"
-                   FontSize="14"
-                   TextColor="{StaticResource SecondaryColor}" />
+               FontSize="14"
+               TextColor="{StaticResource SecondaryColor}" />
 
             <Label Text="{Binding Match.Result, StringFormat='Result: {0}'}"
-                   FontSize="14"
-                   TextColor="{StaticResource SecondaryColor}" />
+               FontSize="14"
+               TextColor="{StaticResource SecondaryColor}" />
 
         </VerticalStackLayout>
 
+        <!-- Bottom: Placeholder for replayer -->
+        <controls:GameReplayerControl
+    Grid.Row="1"
+    Margin="0,12,0,0"
+    HeightRequest="380"
+    Moves="{Binding ParsedMoves}"
+            />
+
     </Grid>
+
 
 </ContentView>

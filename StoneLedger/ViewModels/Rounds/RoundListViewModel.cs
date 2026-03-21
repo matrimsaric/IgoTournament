@@ -75,11 +75,7 @@ namespace StoneLedger.ViewModels.Rounds
 
         private async void OnRoundSelected(Round round)
         {
-            // TODO: Navigate to MatchListPage
-           // await Shell.Current.DisplayAlert("Round Selected", round.Name, "OK");
-
-            await Shell.Current.GoToAsync(
-        $"///{nameof(MatchListPage)}?RoundId={round.Id}&RoundNumber={round.RoundNumber}"
+            await Shell.Current.GoToAsync($"{nameof(MatchListPage)}?RoundId={round.Id}&RoundNumber={round.RoundNumber}"
     );
 
             SelectedRound = null;
@@ -87,7 +83,7 @@ namespace StoneLedger.ViewModels.Rounds
 
         private async void OnAddRound()
         {
-            await Shell.Current.GoToAsync($"///{nameof(AddRoundPage)}?TournamentId={_tournamentGuid}");
+            await Shell.Current.GoToAsync($"{nameof(AddRoundPage)}?TournamentId={_tournamentGuid}");
 
         }
 

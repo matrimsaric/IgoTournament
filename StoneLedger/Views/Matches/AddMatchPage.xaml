@@ -20,7 +20,7 @@
 
                     <!-- Player 1 -->
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="Player 1" Style="{StaticResource FormLabelStyle}" />
+                        <Label Text="Player with Black" Style="{StaticResource FormLabelStyle}" />
                         <Picker ItemsSource="{Binding Players}"
                                 ItemDisplayBinding="{Binding Name}"
                                 SelectedItem="{Binding SelectedPlayer1}" />
@@ -28,7 +28,7 @@
 
                     <!-- Player 2 -->
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="Player 2" Style="{StaticResource FormLabelStyle}" />
+                        <Label Text="Player with White" Style="{StaticResource FormLabelStyle}" />
                         <Picker ItemsSource="{Binding Players}"
                                 ItemDisplayBinding="{Binding Name}"
                                 SelectedItem="{Binding SelectedPlayer2}" />
