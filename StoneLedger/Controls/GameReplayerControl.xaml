@@ -35,6 +35,9 @@
 
                 <Button Text="▶︎"
                 Command="{Binding NextMoveCommand}" />
+
+                <Button Text="⤢"
+        Clicked="OnExpandClicked" />
             </HorizontalStackLayout>
 
         </VerticalStackLayout>

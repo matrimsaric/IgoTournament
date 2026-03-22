@@ -91,6 +91,9 @@
 	  <MauiXaml Update="Controls\GameReplayerControl.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\Matches\ExpandedSgfPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\Matches\MatchContentView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

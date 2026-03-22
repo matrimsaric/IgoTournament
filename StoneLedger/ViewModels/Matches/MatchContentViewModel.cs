@@ -3,6 +3,7 @@ using StoneLedger.Models;
 using StoneLedger.Services.Api;
 using StoneLedger.Services.Api.Interfaces;
 using StoneLedger.ViewModels;
+using StoneLedger.Views.Matches;
 using System.Text.Json;
 using System.Windows.Input;
 
@@ -12,6 +13,10 @@ public class MatchContentViewModel : BaseViewModel
     private readonly SgfService _sgfService;
     public ICommand NextMoveCommand { get; }
     public ICommand PreviousMoveCommand { get; }
+    public ICommand ExpandSgfCommand { get; }
+    public ICommand CloseExpandedSgfCommand { get; }
+
+    public ICommand ToggleExpandCommand { get; }
 
 
     private CompetitionDomain.Model.Match _match;
@@ -53,6 +58,8 @@ public class MatchContentViewModel : BaseViewModel
 
         NextMoveCommand = new Command(NextMove);
         PreviousMoveCommand = new Command(PreviousMove);
+        ExpandSgfCommand = new Command(ExpandSgf);
+        CloseExpandedSgfCommand = new Command(CloseExpandedSgf);
     }
 
     private void NextMove()
@@ -66,6 +73,19 @@ public class MatchContentViewModel : BaseViewModel
     {
         if (CurrentMoveIndex > 0)
             CurrentMoveIndex--;
+    }
+
+    private async void CloseExpandedSgf()
+    {
+        await Shell.Current.Navigation.PopModalAsync();
+    }
+
+
+    private async void ExpandSgf()
+    {
+        await Shell.Current.Navigation.PushModalAsync(
+            new ExpandedSgfPage(ParsedMoves)
+        );
     }
 
     public async Task LoadMatchAsync(Guid matchId)

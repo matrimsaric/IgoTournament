@@ -1,0 +1,12 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:StoneLedger.Controls"
+             x:Class="StoneLedger.Views.Matches.ExpandedSgfPage">
+
+    <VerticalStackLayout Padding="20">
+        <Label Text="Expanded SGF View" FontSize="24" />
+        <controls:GameReplayerControl Moves="{Binding Moves}" />
+        <Button Text="Close" Clicked="OnCloseClicked" />
+    </VerticalStackLayout>
+
+</ContentPage>

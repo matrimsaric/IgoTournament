@@ -5,6 +5,10 @@ namespace StoneLedger.Controls;
 
 public partial class GameReplayerControl : ContentView
 {
+    public event EventHandler? RequestExpand;
+    public bool IsExpanded { get; private set; }
+
+
     public static readonly BindableProperty MovesProperty =
      BindableProperty.Create(
          nameof(Moves),
@@ -41,6 +45,12 @@ public partial class GameReplayerControl : ContentView
         BoardView.Drawable = Drawable;   // ← STEP 5 GOES HERE
     }
 
+    private void OnExpandClicked(object sender, EventArgs e)
+    {
+        RequestExpand?.Invoke(this, EventArgs.Empty);
+    }
+
+
     private static void OnSgfTextChanged(BindableObject bindable, object oldValue, object newValue)
     {
         var control = (GameReplayerControl)bindable;
@@ -66,6 +76,16 @@ public partial class GameReplayerControl : ContentView
                     BoardView.Invalidate();
                 }
             };
+        }
+    }
+
+    public class ExpandEventArgs : EventArgs
+    {
+        public bool IsExpanded { get; }
+
+        public ExpandEventArgs(bool isExpanded)
+        {
+            IsExpanded = isExpanded;
         }
     }
 

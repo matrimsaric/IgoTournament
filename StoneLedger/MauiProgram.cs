@@ -88,6 +88,7 @@ namespace StoneLedger
             builder.Services.AddTransient<MatchDetailViewModel>();
             builder.Services.AddTransient<MatchContentViewModel>();
             builder.Services.AddTransient<MatchContentView>();
+            builder.Services.AddTransient<ExpandedSgfPage>();
 
             builder.Services.AddSingleton<NullToDefaultImageConverter>();
 

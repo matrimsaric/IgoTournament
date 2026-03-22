@@ -1,5 +1,7 @@
 using StoneLedger;
+using StoneLedger.Controls;
 using StoneLedger.ViewModels.Matches;
+using static StoneLedger.Controls.GameReplayerControl;
 
 namespace StoneLedger.Views.Matches;
 
@@ -16,6 +18,9 @@ public partial class MatchContentView : ContentView
 
         // IMPORTANT: bind only the internal layout to the VM
         RootLayout.BindingContext = _vm;
+
+        // Subscribe to the event from the GameReplayerControl
+        Replayer.RequestExpand += OnExpandRequested;
     }
 
     public MatchContentView(MatchContentViewModel vm)
@@ -23,6 +28,9 @@ public partial class MatchContentView : ContentView
         InitializeComponent();
         _vm = vm;
         RootLayout.BindingContext = vm;
+
+        // Subscribe to the event from the GameReplayerControl
+        Replayer.RequestExpand += OnExpandRequested;
     }
 
     public static readonly BindableProperty MatchIdProperty =
@@ -37,6 +45,11 @@ public partial class MatchContentView : ContentView
     {
         get => (Guid)GetValue(MatchIdProperty);
         set => SetValue(MatchIdProperty, value);
+    }
+
+    private void OnExpandRequested(object sender, EventArgs e)
+    {
+        _vm.ExpandSgfCommand.Execute(null);
     }
 
     private static async void OnMatchIdChanged(BindableObject bindable, object oldValue, object newValue)

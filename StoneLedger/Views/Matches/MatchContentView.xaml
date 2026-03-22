@@ -36,6 +36,7 @@
         <!-- Bottom: Placeholder for replayer -->
         <controls:GameReplayerControl
     Grid.Row="1"
+            x:Name="Replayer"
     Margin="0,12,0,0"
     HeightRequest="380"
     Moves="{Binding ParsedMoves}"
