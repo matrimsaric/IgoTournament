@@ -1,12 +1,27 @@
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:controls="clr-namespace:StoneLedger.Controls"
-             x:Class="StoneLedger.Views.Matches.ExpandedSgfPage">
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:StoneLedger.Controls"
+    x:Class="StoneLedger.Views.Matches.ExpandedSgfPage">
 
-    <VerticalStackLayout Padding="20">
-        <Label Text="Expanded SGF View" FontSize="24" />
-        <controls:GameReplayerControl Moves="{Binding Moves}" />
-        <Button Text="Close" Clicked="OnCloseClicked" />
-    </VerticalStackLayout>
+    <Grid Padding="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Button
+        Text="Close"
+        Grid.Row="0"
+        HorizontalOptions="Start"
+        Clicked="OnCloseClicked" />
+
+        <controls:GameReplayerControl
+        Grid.Row="1"
+        Moves="{Binding Moves}"
+        HorizontalOptions="Fill"
+        VerticalOptions="Fill" />
+    </Grid>
+
 
 </ContentPage>

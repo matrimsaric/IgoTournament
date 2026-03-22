@@ -23,8 +23,8 @@
             <!-- The board -->
             <GraphicsView
         x:Name="BoardView"
-        WidthRequest="270"
-        HeightRequest="270" />
+         MinimumWidthRequest="270"
+    MinimumHeightRequest="270" />
 
             <!-- The buttons BELOW the board -->
             <HorizontalStackLayout Spacing="20"

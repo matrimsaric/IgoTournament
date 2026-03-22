@@ -50,6 +50,27 @@ public partial class GameReplayerControl : ContentView
         RequestExpand?.Invoke(this, EventArgs.Empty);
     }
 
+    protected override void OnSizeAllocated(double width, double height)
+    {
+        base.OnSizeAllocated(width, height);
+        System.Diagnostics.Debug.WriteLine($"Modal size: {width} x {height}");
+
+        if (width <= 0 || height <= 0)
+            return;
+
+        // Space for the board: use width, and some of the height
+        var maxBoardSize = Math.Min(width, height - 80); // 80-ish for buttons/margins
+
+        // Enforce a minimum
+        var size = Math.Max(270, maxBoardSize);
+
+        // Optional: snap to whole pixels to keep lines clean
+        size = Math.Floor(size);
+
+        BoardView.WidthRequest = size;
+        BoardView.HeightRequest = size;
+    }
+
 
     private static void OnSgfTextChanged(BindableObject bindable, object oldValue, object newValue)
     {
