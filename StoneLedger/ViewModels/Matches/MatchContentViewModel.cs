@@ -13,6 +13,9 @@ public class MatchContentViewModel : BaseViewModel
     private readonly SgfService _sgfService;
     public ICommand NextMoveCommand { get; }
     public ICommand PreviousMoveCommand { get; }
+
+    public ICommand FirstMoveCommand { get; }
+    public ICommand LastMoveCommand { get; }
     public ICommand ExpandSgfCommand { get; }
     public ICommand CloseExpandedSgfCommand { get; }
 
@@ -60,13 +63,28 @@ public class MatchContentViewModel : BaseViewModel
         PreviousMoveCommand = new Command(PreviousMove);
         ExpandSgfCommand = new Command(ExpandSgf);
         CloseExpandedSgfCommand = new Command(CloseExpandedSgf);
+        FirstMoveCommand = new Command(FirstMove);
+        LastMoveCommand = new Command(LastMove);
     }
+
+    private void FirstMove()
+    {
+        if (ParsedMoves != null)
+            CurrentMoveIndex = 0;
+    }
+
 
     private void NextMove()
     {
         if (ParsedMoves == null) return;
         if (CurrentMoveIndex < ParsedMoves.Count - 1)
             CurrentMoveIndex++;
+    }
+
+    private void LastMove()
+    {
+        if (ParsedMoves != null)
+            CurrentMoveIndex = ParsedMoves.Count - 1;
     }
 
     private void PreviousMove()

@@ -52,6 +52,24 @@ public partial class MatchContentView : ContentView
         _vm.ExpandSgfCommand.Execute(null);
     }
 
+    private void OnJumpClicked(object sender, EventArgs e)
+    {
+        if (!int.TryParse(JumpEntry.Text, out int moveNumber))
+            return;
+
+        // Convert 1-based user input to 0-based index
+        moveNumber -= 1;
+
+        // Clamp to valid range
+        moveNumber = Math.Clamp(moveNumber, 0, Replayer.Moves.Count - 1);
+
+        Replayer.CurrentMoveIndex = moveNumber;
+        Replayer.Redraw();
+
+        _vm.CurrentMoveIndex = moveNumber;
+    }
+
+
     private static async void OnMatchIdChanged(BindableObject bindable, object oldValue, object newValue)
     {
         var control = (MatchContentView)bindable;

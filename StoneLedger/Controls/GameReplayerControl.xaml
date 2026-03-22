@@ -30,11 +30,13 @@
             <HorizontalStackLayout Spacing="20"
                                    HeightRequest="50"
                            HorizontalOptions="Center">
-                <Button Text="◀︎"
-                Command="{Binding PreviousMoveCommand}" />
 
-                <Button Text="▶︎"
-                Command="{Binding NextMoveCommand}" />
+                <Button Text="|◀︎" Command="{Binding FirstMoveCommand}" />
+                <Button Text="◀︎" Command="{Binding PreviousMoveCommand}" />
+                <Button Text="▶︎" Command="{Binding NextMoveCommand}" />
+                <Button Text="▶︎|" Command="{Binding LastMoveCommand}" />
+                
+
 
                 <Button Text="⤢"
         Clicked="OnExpandClicked" />

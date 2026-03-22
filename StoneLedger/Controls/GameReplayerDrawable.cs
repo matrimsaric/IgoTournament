@@ -22,88 +22,105 @@ namespace StoneLedger.Controls
 
         public void Draw(ICanvas canvas, RectF dirtyRect)
         {
-            // 1. Determine square board area
-            float size = Math.Min(dirtyRect.Width, dirtyRect.Height);
-            float left = (dirtyRect.Width - size) / 2f;
-            float top = (dirtyRect.Height - size) / 2f;
+            // Compute geometry
+            var boardRect = CalculateBoardRect(dirtyRect);
+            float padding = boardRect.Width * 0.05f;
+            float cellSize = (boardRect.Width - 2 * padding) / 18f; // 19x19 grid
 
-            RectF boardRect = new RectF(left, top, size, size);
+            DrawBackground(canvas, boardRect);
+            DrawGrid(canvas, boardRect, padding, cellSize);
+            DrawStarPoints(canvas, boardRect, padding, cellSize);
 
-            // 2. Background
-            canvas.FillColor = Colors.Bisque;
-            canvas.FillRectangle(boardRect);
+            if (Moves is null || Moves.Count == 0)
+                return;
 
-            // 3. Grid settings
-            int boardSize = 19;
-            float padding = size * 0.05f; // 5% margin
-            float cellSize = (size - 2 * padding) / (boardSize - 1);
+            DrawStones(canvas, boardRect, padding, cellSize);
+            DrawLastMoveHighlight(canvas, boardRect, padding, cellSize);
+            DrawMoveNumbers(canvas, Moves, cellSize);
+        }
 
+        RectF CalculateBoardRect(RectF dirty)
+        {
+            float size = Math.Min(dirty.Width, dirty.Height);
+            float left = (dirty.Width - size) / 2f;
+            float top = (dirty.Height - size) / 2f;
+
+            return new RectF(left, top, size, size);
+        }
+
+        void DrawGrid(ICanvas canvas, RectF rect, float padding, float cellSize)
+        {
             canvas.StrokeColor = Colors.Black;
             canvas.StrokeSize = 1;
 
-            // 4. Draw grid lines
-            for (int i = 0; i < boardSize; i++)
+            for (int i = 0; i < 19; i++)
             {
-                float offset = boardRect.Left + padding + i * cellSize;
+                float offset = rect.Left + padding + i * cellSize;
 
                 // Horizontal
                 canvas.DrawLine(
-                    boardRect.Left + padding,
+                    rect.Left + padding,
                     offset,
-                    boardRect.Right - padding,
+                    rect.Right - padding,
                     offset);
 
                 // Vertical
                 canvas.DrawLine(
                     offset,
-                    boardRect.Top + padding,
+                    rect.Top + padding,
                     offset,
-                    boardRect.Bottom - padding);
+                    rect.Bottom - padding);
             }
+        }
 
-            // 5. Star points
-            int[] starPoints = { 3, 9, 15 };
-            float radius = size * 0.01f;
+        void DrawStarPoints(ICanvas canvas, RectF rect, float padding, float cellSize)
+        {
+            int[] star = { 3, 9, 15 };
+            float radius = rect.Width * 0.01f;
 
             canvas.FillColor = Colors.Black;
 
-            foreach (int row in starPoints)
+            foreach (int r in star)
             {
-                foreach (int col in starPoints)
+                foreach (int c in star)
                 {
-                    float x = boardRect.Left + padding + col * cellSize;
-                    float y = boardRect.Top + padding + row * cellSize;
-
+                    float x = rect.Left + padding + c * cellSize;
+                    float y = rect.Top + padding + r * cellSize;
                     canvas.FillCircle(x, y, radius);
                 }
             }
-
-            if (Moves != null)
-            {
-                for (int i = 0; i <= CurrentMoveIndex && i < Moves.Count; i++)
-                {
-                    DrawStone(canvas, boardRect, padding, cellSize, Moves[i]);
-
-                    
-
-                }
-                var last = Moves[CurrentMoveIndex];
-                float x = boardRect.Left + padding + last.X * cellSize;
-                float y = boardRect.Top + padding + last.Y * cellSize;
-
-                canvas.StrokeColor = Colors.Red;
-                canvas.StrokeSize = 2;
-                canvas.DrawCircle(x, y, cellSize * 0.55f);
-
-               // if (ShowMoveNumbers)
-               // {
-                    DrawMoveNumbers(canvas, Moves, cellSize);
-               // }
-
-            }
-
-           
         }
+
+        void DrawStones(ICanvas canvas, RectF rect, float padding, float cellSize)
+        {
+            for (int i = 0; i <= CurrentMoveIndex && i < Moves.Count; i++)
+                DrawStone(canvas, rect, padding, cellSize, Moves[i]);
+        }
+
+        void DrawLastMoveHighlight(ICanvas canvas, RectF rect, float padding, float cellSize)
+        {
+            var last = Moves[CurrentMoveIndex];
+
+            float x = rect.Left + padding + last.X * cellSize;
+            float y = rect.Top + padding + last.Y * cellSize;
+
+            canvas.StrokeColor = Colors.Red;
+            canvas.StrokeSize = 2;
+            canvas.DrawCircle(x, y, cellSize * 0.55f);
+        }
+
+
+
+
+
+        void DrawBackground(ICanvas canvas, RectF rect)
+        {
+            canvas.FillColor = Colors.Bisque;
+            canvas.FillRectangle(rect);
+        }
+
+
+
 
         void DrawMoveNumbers(ICanvas canvas, IList<SgfMove> moves, float cellSize)
         {

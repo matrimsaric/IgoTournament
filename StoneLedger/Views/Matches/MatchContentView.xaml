@@ -5,8 +5,8 @@
     xmlns:controls="clr-namespace:StoneLedger.Controls">
 
     <Grid x:Name="RootLayout"
-      Padding="12"
-      BackgroundColor="{StaticResource CardColor}">
+          Padding="12"
+          BackgroundColor="{StaticResource CardColor}">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -15,33 +15,44 @@
 
         <!-- Top: Metadata -->
         <VerticalStackLayout Grid.Row="0" Spacing="4">
-
-            <Label Text="{Binding Match.Name}"
-               Style="{StaticResource ListItemTitleStyle}" />
-
+            <Label Text="{Binding Match.Name}" Style="{StaticResource ListItemTitleStyle}" />
             <Label Text="{Binding Match.BoardNumber, StringFormat='Board: {0}'}"
-               FontSize="14"
-               TextColor="{StaticResource SecondaryColor}" />
-
+                   FontSize="14" TextColor="{StaticResource SecondaryColor}" />
             <Label Text="{Binding Match.GameDate, StringFormat='Date: {0:d}'}"
-               FontSize="14"
-               TextColor="{StaticResource SecondaryColor}" />
-
+                   FontSize="14" TextColor="{StaticResource SecondaryColor}" />
             <Label Text="{Binding Match.Result, StringFormat='Result: {0}'}"
-               FontSize="14"
-               TextColor="{StaticResource SecondaryColor}" />
-
+                   FontSize="14" TextColor="{StaticResource SecondaryColor}" />
         </VerticalStackLayout>
 
-        <!-- Bottom: Placeholder for replayer -->
-        <controls:GameReplayerControl
-    Grid.Row="1"
-            x:Name="Replayer"
-    Margin="0,12,0,0"
-    Moves="{Binding ParsedMoves}"
-            />
+        <!-- Bottom: Replayer + Controls -->
+        <Grid Grid.Row="1" RowDefinitions="*,Auto" RowSpacing="12">
+
+            <!-- Row 0: Replayer fills all available space -->
+            <controls:GameReplayerControl
+        x:Name="Replayer"
+        Grid.Row="0"
+         CurrentMoveIndex="{Binding CurrentMoveIndex}"
+        Moves="{Binding ParsedMoves}" />
+
+            <!-- Row 1: Jump controls take only what they need -->
+            <HorizontalStackLayout
+        Grid.Row="1"
+        Spacing="10"
+        HorizontalOptions="Center">
+
+                <Entry
+            x:Name="JumpEntry"
+            WidthRequest="80"
+            Keyboard="Numeric"
+            Placeholder="Move #" />
+
+                <Button
+            Text="Jump"
+            Clicked="OnJumpClicked" />
+            </HorizontalStackLayout>
+
+        </Grid>
+
 
     </Grid>
-
-
 </ContentView>

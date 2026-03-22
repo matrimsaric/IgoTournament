@@ -81,6 +81,34 @@ public partial class GameReplayerControl : ContentView
         }
     }
 
+    public static readonly BindableProperty CurrentMoveIndexProperty =
+    BindableProperty.Create(
+        nameof(CurrentMoveIndex),
+        typeof(int),
+        typeof(GameReplayerControl),
+        0,
+        propertyChanged: OnCurrentMoveIndexChanged);
+
+    public int CurrentMoveIndex
+    {
+        get => (int)GetValue(CurrentMoveIndexProperty);
+        set => SetValue(CurrentMoveIndexProperty, value);
+    }
+
+    private static void OnCurrentMoveIndexChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var control = (GameReplayerControl)bindable;
+        control.Drawable.CurrentMoveIndex = (int)newValue;
+        control.BoardView.Invalidate();
+    }
+
+
+    public void Redraw()
+    {
+        BoardView.Invalidate();
+    }
+
+
 
     private static void OnSgfTextChanged(BindableObject bindable, object oldValue, object newValue)
     {
@@ -109,6 +137,8 @@ public partial class GameReplayerControl : ContentView
             };
         }
     }
+
+
 
     public class ExpandEventArgs : EventArgs
     {
