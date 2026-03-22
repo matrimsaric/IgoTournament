@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Maui.Graphics;
 using StoneLedger.Models;
+using Font = Microsoft.Maui.Graphics.Font;
 
 namespace StoneLedger.Controls
 {
@@ -9,6 +10,8 @@ namespace StoneLedger.Controls
         private IList<SgfMove>? _moves;
         public IList<SgfMove>? Moves { get; set; }
         public int CurrentMoveIndex { get; set; }
+
+        public bool ShowMoveNumbers { get; set; }
 
 
         public void LoadMoves(IList<SgfMove>? moves)
@@ -81,6 +84,8 @@ namespace StoneLedger.Controls
                 {
                     DrawStone(canvas, boardRect, padding, cellSize, Moves[i]);
 
+                    
+
                 }
                 var last = Moves[CurrentMoveIndex];
                 float x = boardRect.Left + padding + last.X * cellSize;
@@ -90,8 +95,50 @@ namespace StoneLedger.Controls
                 canvas.StrokeSize = 2;
                 canvas.DrawCircle(x, y, cellSize * 0.55f);
 
+               // if (ShowMoveNumbers)
+               // {
+                    DrawMoveNumbers(canvas, Moves, cellSize);
+               // }
+
+            }
+
+           
+        }
+
+        void DrawMoveNumbers(ICanvas canvas, IList<SgfMove> moves, float cellSize)
+        {
+            canvas.Font = Font.Default;
+            canvas.FontSize = cellSize * 0.45f; // scales with board size
+
+            for (int i = 0; i <= CurrentMoveIndex && i < moves.Count; i++)
+            {
+                var move = moves[i];
+                var number = (i + 1).ToString();
+
+                // Center of the stone (corrected)
+                float cx = (move.X + 1f) * cellSize;
+                float cy = (move.Y + 1f) * cellSize;
+
+                var rect = new RectF(
+                    cx - cellSize / 2,
+                    cy - cellSize / 2,
+                    cellSize,
+                    cellSize
+                );
+
+                // Optional: white numbers on black stones, black on white
+                canvas.FontColor = move.Color == "B" ? Colors.White : Colors.Black;
+
+                canvas.DrawString(
+                    number,
+                    rect,
+                    HorizontalAlignment.Center,
+                    VerticalAlignment.Center
+                );
             }
         }
+
+
 
         private void DrawStone(ICanvas canvas, RectF boardRect, float padding, float cellSize, SgfMove move)
         {

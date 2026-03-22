@@ -50,6 +50,7 @@ public partial class GameReplayerControl : ContentView
         RequestExpand?.Invoke(this, EventArgs.Empty);
     }
 
+    bool _showMoveNumbers = false;
     protected override void OnSizeAllocated(double width, double height)
     {
         base.OnSizeAllocated(width, height);
@@ -69,6 +70,15 @@ public partial class GameReplayerControl : ContentView
 
         BoardView.WidthRequest = size;
         BoardView.HeightRequest = size;
+
+        // Enable move numbers only when the board is comfortably large
+        bool shouldShow = size >= 320;
+
+        if (_showMoveNumbers != shouldShow)
+        {
+            _showMoveNumbers = shouldShow;
+            BoardView.Invalidate(); // redraw with/without numbers
+        }
     }
 
 
