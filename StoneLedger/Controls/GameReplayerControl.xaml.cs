@@ -36,6 +36,12 @@ public partial class GameReplayerControl : ContentView
         }
     }
 
+    private void OnToggleAnnotationsPanel(object sender, EventArgs e)
+    {
+        AnnotationsPanel.IsVisible = !AnnotationsPanel.IsVisible;
+    }
+
+
 
     public GameReplayerDrawable Drawable { get; }
 
@@ -210,7 +216,7 @@ public partial class GameReplayerControl : ContentView
         }
     }
 
-    internal void OnMoveNumberToggleChanged(object sender, ToggledEventArgs e)
+    private void OnMoveNumberToggleChanged(object sender, CheckedChangedEventArgs e)
     {
         if (BoardView.Drawable is GameReplayerDrawable replayer)
         {

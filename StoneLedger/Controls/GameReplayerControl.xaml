@@ -34,94 +34,90 @@
             <!-- The buttons BELOW the board -->
             <HorizontalStackLayout Spacing="20"
                                    HeightRequest="50"
+                                       Scale="0.75"
                            HorizontalOptions="Center">
 
                 <Button Text="|◀︎" Command="{Binding FirstMoveCommand}" />
                 <Button Text="◀︎" Command="{Binding PreviousMoveCommand}" />
                 <Button Text="▶︎" Command="{Binding NextMoveCommand}" />
                 <Button Text="▶︎|" Command="{Binding LastMoveCommand}" />
-                
-
-
-                <Button Text="⤢"
-        Clicked="OnExpandClicked" />
+                <Button Text="✎"        WidthRequest="40"        HeightRequest="40"     Clicked="OnToggleAnnotationsPanel" />
+                <Button Text="⤢"    Clicked="OnExpandClicked" />
                 
             </HorizontalStackLayout>
-            <toolkit:Expander>
-                <toolkit:Expander.Header>
-                    <Label Text="Annotations"
+ 
+        </VerticalStackLayout>
+        <Border x:Name="AnnotationsPanel"
+        BackgroundColor="#F0F0F0"
+        Stroke="#CCCCCC"
+        StrokeThickness="1"
+        Padding="10"
+        WidthRequest="180"
+        VerticalOptions="Start"
+        HorizontalOptions="End"
+        Margin="0,20,10,0"
+        IsVisible="False"
+>
+            <Border.Shadow>
+                <Shadow Brush="Black"
+            Opacity="0.4"
+            Offset="4,4"
+            Radius="6" />
+            </Border.Shadow>
+
+            <VerticalStackLayout Spacing="12">
+
+                <Label Text="Annotations"
+               FontAttributes="Bold"
                HorizontalOptions="Center" />
-                </toolkit:Expander.Header>
 
-                <HorizontalStackLayout Spacing="6"
-                           Margin="0,6,0,0"
-                           VerticalOptions="Center">
-
-                    <!-- Tool Selector -->
-                    <Picker x:Name="AnnotationToolPicker"
-                WidthRequest="90"
-                FontSize="12"
+                <!-- Tool Selector -->
+                <Picker x:Name="AnnotationToolPicker"
+                Title="Tool"
+                WidthRequest="150"
                 SelectedIndexChanged="OnAnnotationToolChanged">
+                    <Picker.Items>
+                        <x:String>Ring</x:String>
+                        <x:String>Label</x:String>
+                    </Picker.Items>
+                </Picker>
+
+                <!-- Ring Options -->
+                <HorizontalStackLayout x:Name="RingOptions" Spacing="6">
+                    <Picker x:Name="RingColorPicker"
+                    WidthRequest="120">
                         <Picker.Items>
-                            <x:String>Ring</x:String>
-                            <x:String>Label</x:String>
+                            <x:String>Green</x:String>
+                            <x:String>Blue</x:String>
                         </Picker.Items>
                     </Picker>
+                </HorizontalStackLayout>
 
-                    
-
-                    <!-- Ring Options -->
-                    <HorizontalStackLayout x:Name="RingOptions"
-                               Spacing="4"
-                               VerticalOptions="Center">
-                        <Picker x:Name="RingColorPicker"
-                    WidthRequest="90"
-                    FontSize="12">
-                            <Picker.Items>
-                                <x:String>Green</x:String>
-                                <x:String>Blue</x:String>
-                            </Picker.Items>
-                        </Picker>
-                    </HorizontalStackLayout>
-
-                    <!-- Label Options -->
-                    <HorizontalStackLayout x:Name="LabelOptions"
-                               Spacing="4"
-                               VerticalOptions="Center">
-                        <Entry x:Name="LabelEntry"
+                <!-- Label Options -->
+                <HorizontalStackLayout x:Name="LabelOptions" Spacing="6">
+                    <Entry x:Name="LabelEntry"
                    WidthRequest="40"
-                   FontSize="12"
                    MaxLength="1"
                    Placeholder="A" />
-                        <Label Text="Lbl"
-                   FontSize="12"
+                    <Label Text="Label"
                    VerticalTextAlignment="Center" />
-                    </HorizontalStackLayout>
+                </HorizontalStackLayout>
 
-                    <!-- Clear -->
-                    <Button Text="Clear"
-                WidthRequest="60"
-                FontSize="12"
+                <!-- Move Numbers -->
+                <HorizontalStackLayout Spacing="6">
+                    <CheckBox x:Name="MoveNumberToggle"
+                      Scale="0.75"
+                      CheckedChanged="OnMoveNumberToggleChanged" />
+                    <Label Text="Move #s"
+                   VerticalTextAlignment="Center" />
+                </HorizontalStackLayout>
+
+                <Button Text="Clear"
+                WidthRequest="120"
                 Clicked="OnClearAnnotationsClicked" />
 
-                    <Label Text="Move #s"
-FontSize="12"
-VerticalTextAlignment="Center" />
-                    <Switch x:Name="MoveNumberToggle"
-        Scale="0.75"
-        VerticalOptions="Center"
-        IsToggled="True"
-        Toggled="OnMoveNumberToggleChanged" />
+            </VerticalStackLayout>
+        </Border>
 
-
-
-                </HorizontalStackLayout>
-            </toolkit:Expander>
-
-
-
-
-
-        </VerticalStackLayout>
     </Grid>
 </ContentView>

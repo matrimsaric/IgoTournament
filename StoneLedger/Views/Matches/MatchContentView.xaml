@@ -16,12 +16,14 @@
         <!-- Top: Metadata -->
         <VerticalStackLayout Grid.Row="0" Spacing="4">
             <Label Text="{Binding Match.Name}" Style="{StaticResource ListItemTitleStyle}" />
+            <HorizontalStackLayout>
             <Label Text="{Binding Match.BoardNumber, StringFormat='Board: {0}'}"
-                   FontSize="14" TextColor="{StaticResource SecondaryColor}" />
+                   FontSize="14" TextColor="{StaticResource SecondaryColor}" Padding="0,0,0,10" />
             <Label Text="{Binding Match.GameDate, StringFormat='Date: {0:d}'}"
-                   FontSize="14" TextColor="{StaticResource SecondaryColor}" />
+                   FontSize="14" TextColor="{StaticResource SecondaryColor}" Padding="0,0,0,10"/>
             <Label Text="{Binding Match.Result, StringFormat='Result: {0}'}"
                    FontSize="14" TextColor="{StaticResource SecondaryColor}" />
+            </HorizontalStackLayout>
         </VerticalStackLayout>
 
         <!-- Bottom: Replayer + Controls -->
@@ -36,6 +38,7 @@
 
             <!-- Row 1: Jump controls take only what they need -->
             <HorizontalStackLayout
+                    Scale="0.75"
         Grid.Row="1"
         Spacing="10"
         HorizontalOptions="Center">
