@@ -30,6 +30,7 @@ namespace StoneLedger.Controls
             DrawBackground(canvas, boardRect);
             DrawGrid(canvas, boardRect, padding, cellSize);
             DrawStarPoints(canvas, boardRect, padding, cellSize);
+            DrawBoardNotation(canvas, boardRect, padding, cellSize);
 
             if (Moves is null || Moves.Count == 0)
                 return;
@@ -180,6 +181,50 @@ namespace StoneLedger.Controls
            
 
         }
+
+        void DrawBoardNotation(ICanvas canvas, RectF rect, float padding, float cellSize)
+        {
+            string[] columns = {
+        "A","B","C","D","E","F","G","H","J","K",
+        "L","M","N","O","P","Q","R","S","T"
+    };
+
+            canvas.Font = Font.Default;
+            canvas.FontSize = cellSize * 0.45f;
+            canvas.FontColor = Colors.Black;
+
+            // --- Column letters (top & bottom) ---
+            for (int i = 0; i < 19; i++)
+            {
+                float x = rect.Left + padding + i * cellSize;
+
+                // Adjusted vertical offsets
+                float topY = rect.Top + padding - cellSize * 0.35f;      // was 0.7f
+                float bottomY = rect.Bottom - padding + cellSize * 0.50f; // was 0.2f
+
+                canvas.DrawString(columns[i], x, topY, HorizontalAlignment.Center);
+                canvas.DrawString(columns[i], x, bottomY, HorizontalAlignment.Center);
+            }
+
+            // --- Row numbers (left & right) ---
+            for (int i = 0; i < 19; i++)
+            {
+                int rowNumber = 19 - i;
+                float y = rect.Top + padding + i * cellSize;
+
+                // Adjusted horizontal offsets
+                float leftX = rect.Left + padding - cellSize * 0.55f;     // was 0.7f
+                float rightX = rect.Right - padding + cellSize * 0.40f;   // was 0.2f
+
+                // Slight vertical nudge downward for better centering
+                float adjustedY = y + cellSize * 0.10f;
+
+                canvas.DrawString(rowNumber.ToString(), leftX, adjustedY, HorizontalAlignment.Center);
+                canvas.DrawString(rowNumber.ToString(), rightX, adjustedY, HorizontalAlignment.Center);
+            }
+        }
+
+
 
 
     }
