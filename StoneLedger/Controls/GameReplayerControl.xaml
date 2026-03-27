@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="StoneLedger.Controls.GameReplayerControl">
     <Grid Grid.Row="1"
       Margin="0,12,0,0"
@@ -24,7 +25,11 @@
             <GraphicsView
         x:Name="BoardView"
          MinimumWidthRequest="270"
-    MinimumHeightRequest="270" />
+    MinimumHeightRequest="270" >
+                <GraphicsView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnBoardTapped" />
+                </GraphicsView.GestureRecognizers>
+            </GraphicsView>
 
             <!-- The buttons BELOW the board -->
             <HorizontalStackLayout Spacing="20"
@@ -40,7 +45,82 @@
 
                 <Button Text="⤢"
         Clicked="OnExpandClicked" />
+                
             </HorizontalStackLayout>
+            <toolkit:Expander>
+                <toolkit:Expander.Header>
+                    <Label Text="Annotations"
+               HorizontalOptions="Center" />
+                </toolkit:Expander.Header>
+
+                <HorizontalStackLayout Spacing="6"
+                           Margin="0,6,0,0"
+                           VerticalOptions="Center">
+
+                    <!-- Tool Selector -->
+                    <Picker x:Name="AnnotationToolPicker"
+                WidthRequest="90"
+                FontSize="12"
+                SelectedIndexChanged="OnAnnotationToolChanged">
+                        <Picker.Items>
+                            <x:String>Ring</x:String>
+                            <x:String>Label</x:String>
+                        </Picker.Items>
+                    </Picker>
+
+                    
+
+                    <!-- Ring Options -->
+                    <HorizontalStackLayout x:Name="RingOptions"
+                               Spacing="4"
+                               VerticalOptions="Center">
+                        <Picker x:Name="RingColorPicker"
+                    WidthRequest="90"
+                    FontSize="12">
+                            <Picker.Items>
+                                <x:String>Green</x:String>
+                                <x:String>Blue</x:String>
+                            </Picker.Items>
+                        </Picker>
+                    </HorizontalStackLayout>
+
+                    <!-- Label Options -->
+                    <HorizontalStackLayout x:Name="LabelOptions"
+                               Spacing="4"
+                               VerticalOptions="Center">
+                        <Entry x:Name="LabelEntry"
+                   WidthRequest="40"
+                   FontSize="12"
+                   MaxLength="1"
+                   Placeholder="A" />
+                        <Label Text="Lbl"
+                   FontSize="12"
+                   VerticalTextAlignment="Center" />
+                    </HorizontalStackLayout>
+
+                    <!-- Clear -->
+                    <Button Text="Clear"
+                WidthRequest="60"
+                FontSize="12"
+                Clicked="OnClearAnnotationsClicked" />
+
+                    <Label Text="Move #s"
+FontSize="12"
+VerticalTextAlignment="Center" />
+                    <Switch x:Name="MoveNumberToggle"
+        Scale="0.75"
+        VerticalOptions="Center"
+        IsToggled="True"
+        Toggled="OnMoveNumberToggleChanged" />
+
+
+
+                </HorizontalStackLayout>
+            </toolkit:Expander>
+
+
+
+
 
         </VerticalStackLayout>
     </Grid>

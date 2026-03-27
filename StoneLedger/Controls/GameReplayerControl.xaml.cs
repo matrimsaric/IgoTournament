@@ -1,5 +1,6 @@
-using StoneLedger.Controls;
+using StoneLedger.Controls.Annotations;
 using StoneLedger.Models;
+using System.Net.NetworkInformation;
 
 namespace StoneLedger.Controls;
 
@@ -43,6 +44,11 @@ public partial class GameReplayerControl : ContentView
         InitializeComponent();
         Drawable = new GameReplayerDrawable();
         BoardView.Drawable = Drawable;   // ← STEP 5 GOES HERE
+                                         // Default tool
+        AnnotationToolPicker.SelectedIndex = 0;
+
+        RingOptions.IsVisible = true;
+        LabelOptions.IsVisible = false;
     }
 
     private void OnExpandClicked(object sender, EventArgs e)
@@ -100,6 +106,153 @@ public partial class GameReplayerControl : ContentView
         var control = (GameReplayerControl)bindable;
         control.Drawable.CurrentMoveIndex = (int)newValue;
         control.BoardView.Invalidate();
+    }
+
+    private void OnBoardTapped(object sender, TappedEventArgs e)
+    {
+        if (BoardView.Drawable is not GameReplayerDrawable replayer)
+            return;
+
+        var point = e.GetPosition(BoardView);
+        if (point == null)
+            return;
+
+        // Convert pixel → board coordinate
+        var (x, y) = replayer.PixelToBoard(point.Value.X, point.Value.Y);
+        if (x < 0 || y < 0)
+            return;
+
+        ApplyCurrentAnnotation(x, y);
+    }
+
+    private void OnAnnotationToolChanged(object sender, EventArgs e)
+    {
+        var tool = AnnotationToolPicker.SelectedItem as string;
+
+        if (tool == "Ring")
+        {
+            RingOptions.IsVisible = true;
+            LabelOptions.IsVisible = false;
+        }
+        else if (tool == "Label")
+        {
+            RingOptions.IsVisible = false;
+            LabelOptions.IsVisible = true;
+        }
+    }
+
+
+    private void ApplyCurrentAnnotation(int x, int y)
+    {
+        if (BoardView.Drawable is not GameReplayerDrawable replayer)
+            return;
+
+        var tool = AnnotationToolPicker.SelectedItem as string;
+
+        switch (tool)
+        {
+            case "Ring":
+                ApplyRingAnnotation(replayer, x, y);
+                break;
+
+            case "Label":
+                ApplyLabelAnnotation(replayer, x, y);
+                break;
+        }
+
+        BoardView.Invalidate();
+    }
+
+    private void ApplyRingAnnotation(GameReplayerDrawable replayer, int x, int y)
+    {
+        Color ringColor = Colors.Green;
+
+        switch (RingColorPicker.SelectedItem)
+        {
+            case "Blue Ring":
+                ringColor = Colors.Blue;
+                break;
+        }
+
+        replayer.Annotations.Add(new StoneRingAnnotation
+        {
+            X = x,
+            Y = y,
+            Color = ringColor
+        });
+    }
+
+    private void ApplyLabelAnnotation(GameReplayerDrawable replayer, int x, int y)
+    {
+        var text = LabelEntry.Text;
+
+        if (string.IsNullOrWhiteSpace(text))
+            return;
+
+        replayer.Annotations.Add(new StoneLabelAnnotation
+        {
+            X = x,
+            Y = y,
+            Text = text.Trim().Substring(0, 1),
+            Color = Colors.IndianRed
+        });
+    }
+
+
+
+
+    internal void OnClearAnnotationsClicked(object sender, EventArgs e)
+    {
+        if (BoardView.Drawable is GameReplayerDrawable replayer)
+        {
+            replayer.Annotations.Clear();
+            BoardView.Invalidate();
+        }
+    }
+
+    internal void OnMoveNumberToggleChanged(object sender, ToggledEventArgs e)
+    {
+        if (BoardView.Drawable is GameReplayerDrawable replayer)
+        {
+            replayer.ShowMoveNumbers = e.Value;
+            BoardView.Invalidate();
+        }
+    }
+
+    internal void OnAddRingClicked(object sender, EventArgs e)
+    {
+        if (BoardView.Drawable is not GameReplayerDrawable replayer)
+            return;
+
+        if (replayer.Moves == null || replayer.Moves.Count == 0)
+            return;
+
+        var move = replayer.Moves[replayer.CurrentMoveIndex];
+
+        // Determine ring color
+        Color ringColor = Colors.Green;
+
+        switch (RingColorPicker.SelectedItem)
+        {
+            case "Blue Ring":
+                ringColor = Colors.Blue;
+                break;
+
+            case "Green Ring":
+            default:
+                ringColor = Colors.Green;
+                break;
+        }
+
+        // Add annotation
+        replayer.Annotations.Add(new StoneRingAnnotation
+        {
+            X = move.X,
+            Y = move.Y,
+            Color = ringColor
+        });
+
+        BoardView.Invalidate();
     }
 
 

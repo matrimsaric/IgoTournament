@@ -1,4 +1,5 @@
-﻿using CompetitionDomain.Services.Interfaces;
+﻿using CommunityToolkit.Maui;
+using CompetitionDomain.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StoneLedger.Resources.Converters;
@@ -21,8 +22,8 @@ namespace StoneLedger
         {
             var builder = MauiApp.CreateBuilder();
 
-            builder
-                .UseMauiApp<App>()
+            builder.UseMauiApp<App>()
+       .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
