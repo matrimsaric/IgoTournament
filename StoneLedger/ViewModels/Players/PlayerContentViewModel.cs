@@ -69,11 +69,9 @@ namespace StoneLedger.ViewModels.Players
                 (int)CommonModule.Enums.ImageSizeType.Portrait
             );
 
-            // Wait for both to complete
             await Task.WhenAll(playerTask, imagesTask);
 
             Player = playerTask.Result;
-
             if (Player is null)
                 return;
 
@@ -83,7 +81,6 @@ namespace StoneLedger.ViewModels.Players
 
             var images = imagesTask.Result;
 
-            // Pick the best portrait
             var portrait = images
                 .Where(i => i.SizeType == (int)ImageSizeType.Portrait)
                 .OrderBy(i => i.SortOrder)
@@ -92,20 +89,24 @@ namespace StoneLedger.ViewModels.Players
 
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                PortraitUrl = null;
                 PortraitUrl = portrait?.ImageUrl;
             });
-
-          
 
             OnPropertyChanged(nameof(PortraitUrl));
             OnPropertyChanged(nameof(Player));
 
+            // ------------------------------------------------------------
+            // TEAM LOGO: fire-and-forget, cannot break portrait load
+            // ------------------------------------------------------------
+            _ = LoadTeamLogoAsync(playerId);
+        }
+
+        private async Task LoadTeamLogoAsync(Guid playerId)
+        {
             try
             {
-                var teamImageTask = _imageService.GetTeamImagesForObjectAsync(playerId);
-                await Task.WhenAll(teamImageTask);
-                var teamImage = teamImageTask.Result;
+                var teamImage = await _imageService.GetTeamImagesForObjectAsync(playerId);
+
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     TeamImageUrl = teamImage?.ImageUrl;
@@ -115,7 +116,7 @@ namespace StoneLedger.ViewModels.Players
             }
             catch
             {
-
+                // swallow silently — team logo is optional
             }
         }
 
