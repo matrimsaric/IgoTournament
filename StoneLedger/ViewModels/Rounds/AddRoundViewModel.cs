@@ -1,4 +1,5 @@
 ﻿using CompetitionDomain.Model;
+using StoneLedger.Models;
 using StoneLedger.Services.Api;
 using StoneLedger.ViewModels;
 using System.Windows.Input;
@@ -43,18 +44,37 @@ public class AddRoundViewModel : BaseViewModel
         if (string.IsNullOrWhiteSpace(RoundName))
             return;
 
-        var round = new Round
+        //var round = new Round
+        //{
+        //    Id = Guid.NewGuid(),
+        //    Name = RoundName,
+        //    TournamentId = _tournamentGuid,
+        //    RoundNumber = RoundNumber,
+        //    RoundDate = RoundDate,
+        //    Notes = Notes
+        //};
+
+        var dto = new RoundDto
         {
             Id = Guid.NewGuid(),
             Name = RoundName,
             TournamentId = _tournamentGuid,
             RoundNumber = RoundNumber,
             RoundDate = RoundDate,
-            Notes = Notes
+            Notes = (string.IsNullOrEmpty(Notes) ? string.Empty : Notes)
         };
 
-        await _roundService.CreateRoundAsync(round);
+        try
+        {
+            await _roundService.CreateRoundAsync(dto);
+            await Shell.Current.GoToAsync(".."); // navigate back
+        }
+        catch
+        {
 
-        await Shell.Current.GoToAsync(".."); // navigate back
+        }
+        
+
+       
     }
 }

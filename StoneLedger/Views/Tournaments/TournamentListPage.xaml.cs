@@ -1,4 +1,5 @@
 using CompetitionDomain.Model;
+using StoneLedger.Views.Matches;
 using StoneLedger.Views.Rounds;
 
 namespace StoneLedger.Views.Tournaments
@@ -23,9 +24,7 @@ namespace StoneLedger.Views.Tournaments
 
         private async void OnTournamentSelected(Tournament tournament)
         {
-            await Shell.Current.GoToAsync(
-                $"///{nameof(RoundListPage)}?TournamentId={tournament.Id}"
-            );
+            await Shell.Current.GoToAsync($"{nameof(RoundListPage)}?TournamentId={tournament.Id}");
 
             _vm.SelectedTournament = null;
         }

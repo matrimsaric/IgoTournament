@@ -1,4 +1,5 @@
 ﻿using CompetitionDomain.Model;
+using StoneLedger.Models;
 
 namespace StoneLedger.Services.Api
 {
@@ -6,6 +7,6 @@ namespace StoneLedger.Services.Api
     {
         Task<List<Round>> GetRoundsForTournamentAsync(Guid tournamentId);
 
-        Task<Round> CreateRoundAsync(Round newRound);
+        Task<Round> CreateRoundAsync(RoundDto newRound);
     }
 }

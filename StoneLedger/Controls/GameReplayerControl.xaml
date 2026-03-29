@@ -34,7 +34,6 @@
             <!-- The buttons BELOW the board -->
             <HorizontalStackLayout Spacing="20"
                                    HeightRequest="50"
-                                       Scale="0.75"
                            HorizontalOptions="Center">
 
                 <Button Text="|◀︎" Command="{Binding FirstMoveCommand}" />
@@ -43,7 +42,16 @@
                 <Button Text="▶︎|" Command="{Binding LastMoveCommand}" />
                 <Button Text="✎"        WidthRequest="40"        HeightRequest="40"     Clicked="OnToggleAnnotationsPanel" />
                 <Button Text="⤢"    Clicked="OnExpandClicked" />
-                
+                <!-- Move Numbers Toggle -->
+                <HorizontalStackLayout Spacing="6"
+                           VerticalOptions="Center">
+                    <CheckBox x:Name="MoveNumberToggle"
+                              IsChecked="True"
+                  CheckedChanged="OnMoveNumberToggleChanged" />
+                    <Label Text="Move #s"
+               VerticalTextAlignment="Center" />
+                </HorizontalStackLayout>
+
             </HorizontalStackLayout>
  
         </VerticalStackLayout>
@@ -79,6 +87,9 @@
                     <Picker.Items>
                         <x:String>Ring</x:String>
                         <x:String>Label</x:String>
+                        <x:String>Symbol</x:String>
+                        <x:String>Territory</x:String>
+                        <x:String>Eraser</x:String>
                     </Picker.Items>
                 </Picker>
 
@@ -89,6 +100,9 @@
                         <Picker.Items>
                             <x:String>Green</x:String>
                             <x:String>Blue</x:String>
+                            <x:String>Yellow</x:String>
+                            <x:String>Purple</x:String>
+                            <x:String>Orange</x:String>
                         </Picker.Items>
                     </Picker>
                 </HorizontalStackLayout>
@@ -103,14 +117,18 @@
                    VerticalTextAlignment="Center" />
                 </HorizontalStackLayout>
 
-                <!-- Move Numbers -->
-                <HorizontalStackLayout Spacing="6">
-                    <CheckBox x:Name="MoveNumberToggle"
-                      Scale="0.75"
-                      CheckedChanged="OnMoveNumberToggleChanged" />
-                    <Label Text="Move #s"
-                   VerticalTextAlignment="Center" />
+                <!-- Symbol Options -->
+                <HorizontalStackLayout x:Name="SymbolOptions" Spacing="6" IsVisible="False">
+                    <Picker x:Name="SymbolPicker" WidthRequest="120">
+                        <Picker.Items>
+                            <x:String>Skull</x:String>
+                            <x:String>Smiley</x:String>
+                            <x:String>Sad</x:String>
+                            <x:String>Scared</x:String>
+                        </Picker.Items>
+                    </Picker>
                 </HorizontalStackLayout>
+
 
                 <Button Text="Clear"
                 WidthRequest="120"

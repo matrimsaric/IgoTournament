@@ -1,4 +1,5 @@
 ﻿using CompetitionDomain.Model;
+using StoneLedger.Models;
 using System.Net.Http.Json;
 
 namespace StoneLedger.Services.Api
@@ -20,9 +21,11 @@ namespace StoneLedger.Services.Api
             return result ?? new List<Round>();
         }
 
-        public async Task<Round> CreateRoundAsync(Round newRound)
+        public async Task<Round> CreateRoundAsync(RoundDto newRound)
         {
             var response = await _http.PostAsJsonAsync("api/content/rounds", newRound);
+
+            var content = await response.Content.ReadAsStringAsync();
 
             response.EnsureSuccessStatusCode();
 

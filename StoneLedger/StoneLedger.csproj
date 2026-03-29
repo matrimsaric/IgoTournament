@@ -66,15 +66,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Maui" Version="14.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.5" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.51" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.5" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="ViewModels\Replay\" />
-	  <Folder Include="Views\Replay\" />
 	</ItemGroup>
 
 	<ItemGroup>

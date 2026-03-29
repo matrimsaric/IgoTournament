@@ -30,7 +30,13 @@ public class RoundController : ControllerBase
         return round is null ? NotFound() : Ok(round);
     }
 
-    [HttpPost]
+    //[HttpPost]
+    //public IActionResult CreateRound([FromBody] object body)
+    //{
+    //    return Ok(body);
+    //}
+
+    //[HttpPost]
     public async Task<IActionResult> CreateRound([FromBody] Round newRound)
     {
         var result = await _service.CreateRoundAsync(newRound);

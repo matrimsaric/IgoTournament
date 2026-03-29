@@ -121,6 +121,13 @@ namespace StoneLedger.Controls
             return false;
         }
 
+        public void RemoveAnnotationAt(int x, int y)
+        {
+            var existing = Annotations.FirstOrDefault(a => a.X == x && a.Y == y);
+            if (existing != null)
+                Annotations.Remove(existing);
+        }
+
         public (int x, int y) PixelToBoard(double px, double py)
         {
             // Ensure layout is valid

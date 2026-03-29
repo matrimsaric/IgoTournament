@@ -20,6 +20,7 @@ namespace StoneLedger
             Routing.RegisterRoute(nameof(AddMatchPage), typeof(AddMatchPage));
             Routing.RegisterRoute(nameof(MatchListPage), typeof(MatchListPage));
             Routing.RegisterRoute(nameof(RoundListPage), typeof(RoundListPage));
+            Routing.RegisterRoute(nameof(AddRoundPage), typeof(AddRoundPage));
         }
         #pragma warning restore CA1416
     }

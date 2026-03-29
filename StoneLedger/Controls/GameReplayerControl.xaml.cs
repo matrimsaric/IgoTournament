@@ -139,11 +139,25 @@ public partial class GameReplayerControl : ContentView
         {
             RingOptions.IsVisible = true;
             LabelOptions.IsVisible = false;
+            SymbolOptions.IsVisible = false;
         }
         else if (tool == "Label")
         {
             RingOptions.IsVisible = false;
             LabelOptions.IsVisible = true;
+            SymbolOptions.IsVisible = false;
+        }
+        else if (tool == "Symbol")
+        {
+            RingOptions.IsVisible = true;
+            LabelOptions.IsVisible = false;
+            SymbolOptions.IsVisible = true;
+        }
+        else if (tool == "Territory")
+        {
+            RingOptions.IsVisible = true;
+            LabelOptions.IsVisible = false;
+            SymbolOptions.IsVisible = false;
         }
     }
 
@@ -153,7 +167,17 @@ public partial class GameReplayerControl : ContentView
         if (BoardView.Drawable is not GameReplayerDrawable replayer)
             return;
 
+        // Always remove existing annotation first
+        replayer.RemoveAnnotationAt(x, y);
+
         var tool = AnnotationToolPicker.SelectedItem as string;
+
+        // If eraser selected, stop here — do NOT add anything
+        if (tool == "Eraser")
+        {
+            BoardView.Invalidate();
+            return;
+        }
 
         switch (tool)
         {
@@ -164,21 +188,60 @@ public partial class GameReplayerControl : ContentView
             case "Label":
                 ApplyLabelAnnotation(replayer, x, y);
                 break;
+
+            case "Symbol":
+                ApplySymbolAnnotation(replayer, x, y);
+                break;
+
+            case "Territory":
+                ApplyTerritoryAnnotation(replayer, x, y);
+                break;
         }
 
         BoardView.Invalidate();
     }
 
+    private void ApplyTerritoryAnnotation(GameReplayerDrawable replayer, int x, int y)
+    {
+        var color = GetSelectedColor();
+
+        replayer.Annotations.Add(new TerritoryAnnotation
+        {
+            X = x,
+            Y = y,
+            Color = color
+        });
+    }
+
+
+    private void ApplySymbolAnnotation(GameReplayerDrawable replayer, int x, int y)
+    {
+        var choice = SymbolPicker.SelectedItem as string;
+        if (choice == null)
+            return;
+
+        string symbol = choice switch
+        {
+            "Skull" => "☠️",
+            "Smiley" => "🙂",
+            "Sad" => "☹️",
+            "Scared" => "😱",
+            _ => "?"
+        };
+
+        replayer.Annotations.Add(new StoneSymbolAnnotation
+        {
+            X = x,
+            Y = y,
+            Symbol = symbol,
+            Color = GetSelectedColor()
+        });
+    }
+
+
     private void ApplyRingAnnotation(GameReplayerDrawable replayer, int x, int y)
     {
-        Color ringColor = Colors.Green;
-
-        switch (RingColorPicker.SelectedItem)
-        {
-            case "Blue Ring":
-                ringColor = Colors.Blue;
-                break;
-        }
+        Color ringColor = GetSelectedColor();
 
         replayer.Annotations.Add(new StoneRingAnnotation
         {
@@ -187,6 +250,20 @@ public partial class GameReplayerControl : ContentView
             Color = ringColor
         });
     }
+
+    private Color GetSelectedColor()
+    {
+        return RingColorPicker.SelectedItem switch
+        {
+            "Green" => Colors.Green,
+            "Blue" => Colors.Blue,
+            "Yellow" => Colors.Goldenrod,
+            "Purple" => Colors.Purple,
+            "Orange" => Colors.Orange,
+            _ => Colors.Black
+        };
+    }
+
 
     private void ApplyLabelAnnotation(GameReplayerDrawable replayer, int x, int y)
     {
@@ -225,41 +302,41 @@ public partial class GameReplayerControl : ContentView
         }
     }
 
-    internal void OnAddRingClicked(object sender, EventArgs e)
-    {
-        if (BoardView.Drawable is not GameReplayerDrawable replayer)
-            return;
+    //internal void OnAddRingClicked(object sender, EventArgs e)
+    //{
+    //    if (BoardView.Drawable is not GameReplayerDrawable replayer)
+    //        return;
 
-        if (replayer.Moves == null || replayer.Moves.Count == 0)
-            return;
+    //    if (replayer.Moves == null || replayer.Moves.Count == 0)
+    //        return;
 
-        var move = replayer.Moves[replayer.CurrentMoveIndex];
+    //    var move = replayer.Moves[replayer.CurrentMoveIndex];
 
-        // Determine ring color
-        Color ringColor = Colors.Green;
+    //    // Determine ring color
+    //    Color ringColor = Colors.Green;
 
-        switch (RingColorPicker.SelectedItem)
-        {
-            case "Blue Ring":
-                ringColor = Colors.Blue;
-                break;
+    //    switch (RingColorPicker.SelectedItem)
+    //    {
+    //        case "Blue Ring":
+    //            ringColor = Colors.Blue;
+    //            break;
 
-            case "Green Ring":
-            default:
-                ringColor = Colors.Green;
-                break;
-        }
+    //        case "Green Ring":
+    //        default:
+    //            ringColor = Colors.Green;
+    //            break;
+    //    }
 
-        // Add annotation
-        replayer.Annotations.Add(new StoneRingAnnotation
-        {
-            X = move.X,
-            Y = move.Y,
-            Color = ringColor
-        });
+    //    // Add annotation
+    //    replayer.Annotations.Add(new StoneRingAnnotation
+    //    {
+    //        X = move.X,
+    //        Y = move.Y,
+    //        Color = ringColor
+    //    });
 
-        BoardView.Invalidate();
-    }
+    //    BoardView.Invalidate();
+    //}
 
 
     public void Redraw()
@@ -269,15 +346,17 @@ public partial class GameReplayerControl : ContentView
 
 
 
-    private static void OnSgfTextChanged(BindableObject bindable, object oldValue, object newValue)
-    {
-        var control = (GameReplayerControl)bindable;
-        var sgf = newValue as string;
+    //private static void OnSgfTextChanged(BindableObject bindable, object oldValue, object newValue)
+    //{
+    //    var control = (GameReplayerControl)bindable;
+    //    var sgf = newValue as string;
 
-        // TODO: parse SGF into an internal model
-        //control.Drawable.LoadRawSgf(sgf);
-        control.BoardView.Invalidate();
-    }
+    //    // TODO: parse SGF into an internal model
+    //    //control.Drawable.LoadRawSgf(sgf);
+    //    control.BoardView.Invalidate();
+    //}
+
+
 
     protected override void OnBindingContextChanged()
     {
