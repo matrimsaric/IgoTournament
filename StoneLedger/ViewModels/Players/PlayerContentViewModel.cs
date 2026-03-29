@@ -44,6 +44,13 @@ namespace StoneLedger.ViewModels.Players
             set => SetProperty(ref _portraitUrl, value);
         }
 
+        private string _teamImageUrl;
+        public string TeamImageUrl
+        {
+            get => _teamImageUrl;
+            set => SetProperty(ref _teamImageUrl, value);
+        }
+
         public Player Player { get; private set; }
 
         public PlayerContentViewModel(PlayerService playerService, ImageService imageService)
@@ -83,13 +90,33 @@ namespace StoneLedger.ViewModels.Players
                 .FirstOrDefault()
                 ?? images.FirstOrDefault();
 
-            await Task.Delay(30);
-            PortraitUrl = null;
-            PortraitUrl = portrait?.ImageUrl;
-            Console.WriteLine($"PortraitUrl set to: {PortraitUrl}");
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                PortraitUrl = null;
+                PortraitUrl = portrait?.ImageUrl;
+            });
+
+          
 
             OnPropertyChanged(nameof(PortraitUrl));
             OnPropertyChanged(nameof(Player));
+
+            try
+            {
+                var teamImageTask = _imageService.GetTeamImagesForObjectAsync(playerId);
+                await Task.WhenAll(teamImageTask);
+                var teamImage = teamImageTask.Result;
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    TeamImageUrl = teamImage?.ImageUrl;
+                });
+
+                OnPropertyChanged(nameof(TeamImageUrl));
+            }
+            catch
+            {
+
+            }
         }
 
         private async Task OpenPlayer()

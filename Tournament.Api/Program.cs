@@ -46,6 +46,8 @@ builder.Services.AddSingleton<IRoundRepository, RoundRepository>();
 builder.Services.AddSingleton<IMatchRepository, MatchRepository>();
 builder.Services.AddSingleton<ISgfRecordRepository, SgfRecordRepository>();
 builder.Services.AddSingleton<IImageRepository, ImageRepository>();
+builder.Services.AddSingleton<ITeamMembershipRepository, TeamMembershipRepository>();
+
 
 // 5. Register services
 builder.Services.AddSingleton<IPlayerService, PlayerService>();
@@ -54,6 +56,7 @@ builder.Services.AddSingleton<IRoundService, RoundService>();
 builder.Services.AddSingleton<IMatchService, MatchService>();
 builder.Services.AddSingleton<ISgfRecordService, SgfRecordService>();
 builder.Services.AddSingleton<IImageService , ImageService>();
+builder.Services.AddSingleton<ITeamMembershipService, TeamMembershipService>();
 
 // Add services to the container.
 builder.Services.AddScoped<ISgfParser, SgfParser>();

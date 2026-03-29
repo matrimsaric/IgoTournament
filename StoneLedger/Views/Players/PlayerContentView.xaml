@@ -10,7 +10,8 @@
     </ContentView.Resources>
 
     <Grid x:Name="RootLayout"
-          ColumnDefinitions="100, *"
+          ColumnDefinitions="120, *, 100"
+          RowDefinitions="Auto, Auto, Auto"
           Padding="12"
           ColumnSpacing="16"
           BackgroundColor="{StaticResource CardColor}">
@@ -20,35 +21,53 @@
         </Grid.GestureRecognizers>
 
         <!-- Portrait -->
-        <Frame Grid.Column="0"
-               WidthRequest="100"
-               HeightRequest="100"
-               CornerRadius="12"
-               HasShadow="False"
-               BackgroundColor="{StaticResource BackgroundColor}"
-               Padding="0">
-
+        <Border Grid.RowSpan="3"
+                Grid.Column="0"
+                WidthRequest="120"
+                HeightRequest="120"
+                StrokeThickness="0"
+                BackgroundColor="{StaticResource BackgroundColor}"
+                StrokeShape="RoundRectangle 16"
+                Padding="0"
+                VerticalOptions="Center">
             <Image Aspect="AspectFill"
                    Source="{Binding PortraitUrl, Converter={StaticResource NullToDefaultImageConverter}}" />
-        </Frame>
+        </Border>
 
-        <!-- Text Info -->
-        <VerticalStackLayout Grid.Column="1"
-                             Spacing="4"
-                             VerticalOptions="Center">
+        <!-- Name -->
+        <Label Grid.Column="1"
+               Grid.Row="0"
+               Text="{Binding Name}"
+               Style="{StaticResource ListItemTitleStyle}" />
 
-            <Label Text="{Binding Name}"
-                   Style="{StaticResource ListItemTitleStyle}" />
+        <!-- Rank -->
+        <Label Grid.Column="1"
+               Grid.Row="1"
+               Text="{Binding Rank}"
+               FontSize="14"
+               TextColor="{StaticResource SecondaryColor}" />
 
-            <Label Text="{Binding Rank}"
-                   FontSize="14"
-                   TextColor="{StaticResource SecondaryColor}" />
+        <!-- Birth Year -->
+        <Label Grid.Column="1"
+               Grid.Row="2"
+               Text="{Binding BirthYear, StringFormat='Born {0}'}"
+               FontSize="14"
+               TextColor="{StaticResource SecondaryColor}" />
 
-            <Label Text="{Binding BirthYear, StringFormat='Born {0}'}"
-                   FontSize="14"
-                   TextColor="{StaticResource SecondaryColor}" />
+        <!-- Team Image -->
+        <Border Grid.Column="2"
+                Grid.RowSpan="3"
+                WidthRequest="80"
+                HeightRequest="80"
+                StrokeThickness="0"
+                BackgroundColor="{StaticResource BackgroundColor}"
+                StrokeShape="RoundRectangle 12"
+                Padding="0"
+                VerticalOptions="Center">
+            <Image Aspect="AspectFill"
+       Source="{Binding TeamImageUrl, Converter={StaticResource NullToDefaultImageConverter}}" />
 
-        </VerticalStackLayout>
+        </Border>
 
     </Grid>
 </ContentView>

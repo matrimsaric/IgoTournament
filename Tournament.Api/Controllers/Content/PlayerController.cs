@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CommonModule.Enums;
+using CompetitionDomain.Services.Interfaces;
+using ImageDomain.ControlModule.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using PlayerDomain.Model;
 using PlayerDomain.Services.Interfaces;
 using Image = ImageDomain.Model.Image;
@@ -10,10 +13,14 @@ namespace Tournament.Api.Controllers.Content
     public class PlayerController : ControllerBase
     {
         private readonly IPlayerService _service;
+        private readonly ITeamMembershipService _team_service;
+        private readonly IImageService _imageService;
 
-        public PlayerController(IPlayerService service)
+        public PlayerController(IPlayerService service, ITeamMembershipService teamService, IImageService imageService)
         {
             _service = service;
+            _team_service = teamService;
+            _imageService = imageService;
         }
 
         // GET: api/content/players
@@ -58,6 +65,39 @@ namespace Tournament.Api.Controllers.Content
         }
 
         // IMAGES
+        [HttpGet("{id:guid}/team-image")]
+        public async Task<IActionResult> GetTeamImage(Guid id)
+        {
+            // 1. Load player
+            var player = await _service.GetPlayerByIdAsync(id);
+            if (player is null)
+                return NotFound("Player not found");
+
+            // 2. Load team membership
+            var membership = await _team_service.GetCurrentMembershipForPlayerAsync(id);
+            if (membership is null)
+                return NotFound("Player has no team membership");
+
+            // 3. Load team images using the generic ImageService
+            var images = await _imageService.GetImagesForObject(
+                membership.TeamId,
+                (int)ImageObjectType.Team
+            );
+
+            if (images is null || images.Count == 0)
+                return NotFound("Team has no images");
+
+            // 4. Pick the portrait image (or fallback)
+            var image = images
+                .Where(i => i.SizeType == (int)ImageSizeType.Portrait)
+                .OrderBy(i => i.SortOrder)
+                .FirstOrDefault()
+                ?? images.FirstOrDefault();
+
+            return Ok(image);
+        }
+
+
         [HttpGet("{id:guid}/images")]
         public async Task<IActionResult> GetImages(Guid id)
         {

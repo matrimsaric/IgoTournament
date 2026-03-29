@@ -27,6 +27,13 @@ namespace StoneLedger.Services.Api
             ) ?? Enumerable.Empty<Image>();
         }
 
+        public async Task<Image> GetTeamImagesForObjectAsync(Guid id)
+        {
+            return await _http.GetFromJsonAsync<Image>(
+                $"api/content/players/{id}/team-image"
+            ) ?? default;
+        }
+
         public async Task<Image?> GetPrimaryImageAsync(Guid objectId, int objectType)
         {
             return await _http.GetFromJsonAsync<Image>(
