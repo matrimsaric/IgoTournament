@@ -44,6 +44,14 @@ namespace StoneLedger.ViewModels.Players
             set => SetProperty(ref _portraitUrl, value);
         }
 
+        private int _sideIndicator;
+        public int SideIndicator
+        {
+            get => _sideIndicator;
+            set => SetProperty(ref _sideIndicator, value);
+        }
+
+
         private string _teamImageUrl;
         public string TeamImageUrl
         {

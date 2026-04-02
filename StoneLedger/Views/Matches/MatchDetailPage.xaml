@@ -14,7 +14,7 @@
         <Border Grid.Column="0"
             Style="{StaticResource CardBorderStyle}">
             <playerviews:PlayerContentView 
-            PlayerId="{Binding PlayerAId}" />
+            PlayerId="{Binding PlayerAId}" SideIndicator="1" />
         </Border>
 
         <!-- Match -->
@@ -28,7 +28,7 @@
         <Border Grid.Column="2"
             Style="{StaticResource CardBorderStyle}">
             <playerviews:PlayerContentView 
-            PlayerId="{Binding PlayerBId}" />
+            PlayerId="{Binding PlayerBId}" SideIndicator="2" />
         </Border>
 
     </Grid>

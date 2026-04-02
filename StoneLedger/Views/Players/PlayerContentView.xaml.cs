@@ -26,6 +26,20 @@ public partial class PlayerContentView : ContentView
         set => SetValue(IsCompactProperty, value);
     }
 
+    public static readonly BindableProperty SideIndicatorProperty =
+     BindableProperty.Create(
+         nameof(SideIndicator),
+         typeof(int),
+         typeof(PlayerContentView),
+         0,
+         propertyChanged: OnSideIndicatorChanged);
+
+    public int SideIndicator
+    {
+        get => (int)GetValue(SideIndicatorProperty);
+        set => SetValue(SideIndicatorProperty, value);
+    }
+
 
     public PlayerContentView(PlayerContentViewModel vm)
     {
@@ -40,10 +54,24 @@ public partial class PlayerContentView : ContentView
         };
     }
 
+    private static void OnSideIndicatorChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        if (bindable is PlayerContentView view &&
+            view.BindingContext is PlayerContentViewModel vm)
+        {
+            vm.SideIndicator = (int)newValue;
+        }
+    }
+
     protected override void OnBindingContextChanged()
     {
         base.OnBindingContextChanged();
 
+
+        if (BindingContext is PlayerContentViewModel vm)
+        {
+            vm.SideIndicator = SideIndicator;
+        }
         // The parent BindingContext is now available
         // The control can now bind PlayerId correctly
     }

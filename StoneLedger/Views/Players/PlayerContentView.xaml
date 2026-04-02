@@ -3,7 +3,8 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:conv="clr-namespace:StoneLedger.Resources.Converters"
-    x:Class="StoneLedger.Views.Players.PlayerContentView">
+    x:Class="StoneLedger.Views.Players.PlayerContentView"
+    x:Name="Root">
 
     <ContentView.Resources>
         <conv:NullToDefaultImageConverter x:Key="NullToDefaultImageConverter" />
@@ -11,7 +12,7 @@
 
     <Grid x:Name="RootLayout"
           ColumnDefinitions="120, *, 100"
-          RowDefinitions="Auto, Auto, Auto"
+          RowDefinitions="Auto, Auto, Auto, Auto"
           Padding="12"
           ColumnSpacing="16"
           BackgroundColor="{StaticResource CardColor}">
@@ -68,6 +69,43 @@
        Source="{Binding TeamImageUrl, Converter={StaticResource NullToDefaultImageConverter}}" />
 
         </Border>
+        <!--<BoxView Grid.Row="3" Grid.ColumnSpan="4" HeightRequest="40" Color="Red" />-->
+        <!-- Black stone -->
+        <Image x:Name="BlackStone"
+       Source="blackplayer.png"
+       Grid.Row="3"
+       Grid.Column="0"
+               Grid.ColumnSpan="3"
+       HeightRequest="240"
+       WidthRequest="240"
+       HorizontalOptions="Start"
+       IsVisible="False">
+            <Image.Triggers>
+                <DataTrigger TargetType="Image"
+                      Binding="{Binding Source={x:Reference Root}, Path=SideIndicator}"
+                     Value="1">
+                    <Setter Property="IsVisible" Value="True" />
+                </DataTrigger>
+            </Image.Triggers>
+        </Image>
 
+        <!-- White stone -->
+        <Image x:Name="WhiteStone"
+       Source="whiteplayer.png"
+       Grid.Row="3"
+       Grid.Column="0"
+               Grid.ColumnSpan="3"
+       HeightRequest="240"
+       WidthRequest="240"
+       HorizontalOptions="Start"
+       IsVisible="False">
+            <Image.Triggers>
+                <DataTrigger TargetType="Image"
+                      Binding="{Binding Source={x:Reference Root}, Path=SideIndicator}"
+                     Value="2">
+                    <Setter Property="IsVisible" Value="True" />
+                </DataTrigger>
+            </Image.Triggers>
+        </Image>
     </Grid>
 </ContentView>
