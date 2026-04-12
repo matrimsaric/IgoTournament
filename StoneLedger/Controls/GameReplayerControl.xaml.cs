@@ -9,6 +9,62 @@ public partial class GameReplayerControl : ContentView
     public event EventHandler? RequestExpand;
     public bool IsExpanded { get; private set; }
 
+    public static readonly BindableProperty MoveNumberStartIndexProperty =
+    BindableProperty.Create(
+        nameof(MoveNumberStartIndex),
+        typeof(int),
+        typeof(GameReplayerControl),
+        0,
+        propertyChanged: OnMoveNumberStartIndexChanged);
+
+    public int MoveNumberStartIndex
+    {
+        get => (int)GetValue(MoveNumberStartIndexProperty);
+        set => SetValue(MoveNumberStartIndexProperty, value);
+    }
+
+    private static void OnMoveNumberStartIndexChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var control = (GameReplayerControl)bindable;
+        control.Drawable.MoveNumberStartIndex = (int)newValue;
+        control.BoardView.Invalidate();
+    }
+
+    public static readonly BindableProperty RenumberFromOneProperty =
+    BindableProperty.Create(
+        nameof(RenumberFromOne),
+        typeof(bool),
+        typeof(GameReplayerControl),
+        false,
+        propertyChanged: OnRenumberFromOneChanged);
+
+    public bool RenumberFromOne
+    {
+        get => (bool)GetValue(RenumberFromOneProperty);
+        set => SetValue(RenumberFromOneProperty, value);
+    }
+
+    private static void OnRenumberFromOneChanged(BindableObject bindable, object oldValue, object newValue)
+    {
+        var control = (GameReplayerControl)bindable;
+        control.Drawable.RenumberFromOne = (bool)newValue;
+        control.BoardView.Invalidate();
+    }
+
+    public static readonly BindableProperty TotalMovesProperty =
+    BindableProperty.Create(
+        nameof(TotalMoves),
+        typeof(int),
+        typeof(GameReplayerControl),
+        0);
+
+    public int TotalMoves
+    {
+        get => (int)GetValue(TotalMovesProperty);
+        set => SetValue(TotalMovesProperty, value);
+    }
+
+
 
     public static readonly BindableProperty MovesProperty =
      BindableProperty.Create(
@@ -32,6 +88,7 @@ public partial class GameReplayerControl : ContentView
             System.Diagnostics.Debug.WriteLine($"[Replayer] Moves received: {moves.Count}");
             System.Diagnostics.Debug.WriteLine($"[Replayer] First move: {moves[0].X},{moves[0].Y} Color={moves[0].Color}");
             control.Drawable.Moves = moves;
+            control.TotalMoves = moves.Count;
             control.BoardView.Invalidate();
         }
     }
@@ -135,29 +192,30 @@ public partial class GameReplayerControl : ContentView
     {
         var tool = AnnotationToolPicker.SelectedItem as string;
 
-        if (tool == "Ring")
+        RingOptions.IsVisible = false;
+        LabelOptions.IsVisible = false;
+        SymbolOptions.IsVisible = false;
+        MoveFromOptions.IsVisible = false;
+
+        switch (tool)
         {
-            RingOptions.IsVisible = true;
-            LabelOptions.IsVisible = false;
-            SymbolOptions.IsVisible = false;
-        }
-        else if (tool == "Label")
-        {
-            RingOptions.IsVisible = false;
-            LabelOptions.IsVisible = true;
-            SymbolOptions.IsVisible = false;
-        }
-        else if (tool == "Symbol")
-        {
-            RingOptions.IsVisible = true;
-            LabelOptions.IsVisible = false;
-            SymbolOptions.IsVisible = true;
-        }
-        else if (tool == "Territory")
-        {
-            RingOptions.IsVisible = true;
-            LabelOptions.IsVisible = false;
-            SymbolOptions.IsVisible = false;
+            case "Ring":
+                RingOptions.IsVisible = true;
+                break;
+            case "Label":
+                LabelOptions.IsVisible = true;
+                RingOptions.IsVisible = true;
+                break;
+            case "Symbol":
+                SymbolOptions.IsVisible = true;
+                RingOptions.IsVisible = true;
+                break;
+            case "Territory":
+                RingOptions.IsVisible = true;
+                break;
+            case "Moves From":
+                MoveFromOptions.IsVisible = true;
+                break;
         }
     }
 
@@ -256,10 +314,15 @@ public partial class GameReplayerControl : ContentView
         return RingColorPicker.SelectedItem switch
         {
             "Green" => Colors.Green,
+            "LimeGreen" => Colors.LimeGreen,
             "Blue" => Colors.Blue,
-            "Yellow" => Colors.Goldenrod,
-            "Purple" => Colors.Purple,
+             "Purple" => Colors.Purple,
+            "White" => Colors.White,
+            "Black" => Colors.Black,
+            "Yellow" => Colors.Yellow,
+            "LightYellow" => Colors.LightYellow,
             "Orange" => Colors.Orange,
+            "Red" => Colors.Red,
             _ => Colors.Black
         };
     }
@@ -289,6 +352,9 @@ public partial class GameReplayerControl : ContentView
         if (BoardView.Drawable is GameReplayerDrawable replayer)
         {
             replayer.Annotations.Clear();
+            // Reset move-number settings
+            MoveNumberStartIndex = 0;   // or 1 if you prefer
+            RenumberFromOne = false;
             BoardView.Invalidate();
         }
     }

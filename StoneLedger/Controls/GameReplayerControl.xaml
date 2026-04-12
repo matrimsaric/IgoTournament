@@ -2,6 +2,7 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Name="GameReplayer"
              x:Class="StoneLedger.Controls.GameReplayerControl">
     <Grid Grid.Row="1"
       Margin="0,12,0,0"
@@ -90,6 +91,7 @@
                         <x:String>Symbol</x:String>
                         <x:String>Territory</x:String>
                         <x:String>Eraser</x:String>
+                        <x:String>Moves From</x:String>
                     </Picker.Items>
                 </Picker>
 
@@ -99,10 +101,15 @@
                     WidthRequest="120">
                         <Picker.Items>
                             <x:String>Green</x:String>
+                            <x:String>LimeGreen</x:String>
                             <x:String>Blue</x:String>
-                            <x:String>Yellow</x:String>
                             <x:String>Purple</x:String>
+                            <x:String>White</x:String>
+                            <x:String>Black</x:String>
+                            <x:String>Yellow</x:String>
+                            <x:String>LightYellow</x:String>
                             <x:String>Orange</x:String>
+                            <x:String>Red</x:String>
                         </Picker.Items>
                     </Picker>
                 </HorizontalStackLayout>
@@ -128,6 +135,20 @@
                         </Picker.Items>
                     </Picker>
                 </HorizontalStackLayout>
+
+                <!-- Moves From Options -->
+                <VerticalStackLayout x:Name="MoveFromOptions" Spacing="6">
+
+                    <Slider
+                            Minimum="1"
+                            WidthRequest="120"
+                            Maximum="{Binding TotalMoves, Source={x:Reference GameReplayer}}"
+                            Value="{Binding MoveNumberStartIndex, Source={x:Reference GameReplayer}}"
+                        />      
+
+                    <Switch IsToggled="{Binding RenumberFromOne, Source={x:Reference GameReplayer}}"
+                        />
+                </VerticalStackLayout>
 
 
                 <Button Text="Clear"

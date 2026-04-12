@@ -29,6 +29,14 @@ namespace StoneLedger.Controls
 
         public int CurrentMoveIndex { get; set; }
         public bool ShowMoveNumbers { get; set; } = true;
+        public int MoveNumberStartIndex { get; set; } = 0;
+
+        /// <summary>
+        /// If true, move numbers start at 1 from MoveNumberStartIndex.
+        /// If false, they use their actual SGF move numbers.
+        /// </summary>
+        public bool RenumberFromOne { get; set; } = false;
+
 
         // --- NEW: Board history with captures applied ---
         private List<BoardState> BoardHistory { get; set; } = new();
@@ -302,15 +310,21 @@ namespace StoneLedger.Controls
 
             var board = BoardHistory[CurrentMoveIndex];
 
-            for (int i = 0; i <= CurrentMoveIndex && i < moves.Count; i++)
+            // Clamp start index
+            int start = Math.Max(0, Math.Min(MoveNumberStartIndex, CurrentMoveIndex));
+
+            for (int i = start; i <= CurrentMoveIndex && i < moves.Count; i++)
             {
                 var move = moves[i];
 
-                // Only draw number if the stone still exists
+                // Only draw number if the stone still exists at this point
                 if (board.Grid[move.X, move.Y] != move.Color)
                     continue;
 
-                var number = (i + 1).ToString();
+                // Compute number to draw
+                int number = RenumberFromOne
+                    ? (i - start + 1)
+                    : (i + 1);
 
                 float cx = (move.X + 1f) * cellSize;
                 float cy = (move.Y + 1f) * cellSize;
@@ -325,13 +339,14 @@ namespace StoneLedger.Controls
                 canvas.FontColor = move.Color == "B" ? Colors.White : Colors.Black;
 
                 canvas.DrawString(
-                    number,
+                    number.ToString(),
                     rect,
                     HorizontalAlignment.Center,
                     VerticalAlignment.Center
                 );
             }
         }
+
 
 
         private void DrawStone(ICanvas canvas, RectF boardRect, float padding, float cellSize, SgfMove move)
