@@ -5,14 +5,17 @@
     BackgroundColor="{StaticResource BackgroundColor}"
     Title="Rounds">
 
-    <VerticalStackLayout Padding="20" Spacing="12">
+    <Grid RowDefinitions="Auto,*">
 
-        <!-- Use global button style -->
+        <!-- Add button -->
         <Button 
+            Grid.Row="0"
             Text="Add New Round"
             Command="{Binding AddRoundCommand}" />
 
+        <!-- Scrollable list -->
         <CollectionView 
+            Grid.Row="1"
             ItemsSource="{Binding Rounds}"
             SelectionMode="Single"
             SelectedItem="{Binding SelectedRound, Mode=TwoWay}">
@@ -20,19 +23,17 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Frame Style="{StaticResource CardFrameStyle}">
-
                         <VerticalStackLayout Spacing="4">
                             <Label 
                                 Text="{Binding Name}" 
                                 Style="{StaticResource ListItemTitleStyle}" />
                         </VerticalStackLayout>
-
                     </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
 
         </CollectionView>
 
-    </VerticalStackLayout>
+    </Grid>
 
 </ContentPage>

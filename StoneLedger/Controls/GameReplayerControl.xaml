@@ -140,7 +140,7 @@
                 <VerticalStackLayout x:Name="MoveFromOptions" Spacing="6">
 
                     <Slider
-                            Minimum="1"
+                            Minimum="0"
                             WidthRequest="120"
                             Maximum="{Binding TotalMoves, Source={x:Reference GameReplayer}}"
                             Value="{Binding MoveNumberStartIndex, Source={x:Reference GameReplayer}}"

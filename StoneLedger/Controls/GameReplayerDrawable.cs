@@ -310,24 +310,30 @@ namespace StoneLedger.Controls
 
             var board = BoardHistory[CurrentMoveIndex];
 
-            // Clamp start index
             int start = Math.Max(0, Math.Min(MoveNumberStartIndex, CurrentMoveIndex));
+
+            var latestAtPoint = new Dictionary<(int x, int y), int>();
 
             for (int i = start; i <= CurrentMoveIndex && i < moves.Count; i++)
             {
-                var move = moves[i];
+                var m = moves[i];
 
-                // Only draw number if the stone still exists at this point
-                if (board.Grid[move.X, move.Y] != move.Color)
-                    continue;
+                // Only consider stones that still exist on the board
+                if (board.Grid[m.X, m.Y] != null)
+                    latestAtPoint[(m.X, m.Y)] = i;
+            }
 
-                // Compute number to draw
+            foreach (var kvp in latestAtPoint)
+            {
+                var (x, y) = kvp.Key;
+                int i = kvp.Value;
+
                 int number = RenumberFromOne
                     ? (i - start + 1)
                     : (i + 1);
 
-                float cx = (move.X + 1f) * cellSize;
-                float cy = (move.Y + 1f) * cellSize;
+                float cx = (x + 1f) * cellSize;
+                float cy = (y + 1f) * cellSize;
 
                 var rect = new RectF(
                     cx - cellSize / 2,
@@ -336,6 +342,7 @@ namespace StoneLedger.Controls
                     cellSize
                 );
 
+                var move = moves[i];
                 canvas.FontColor = move.Color == "B" ? Colors.White : Colors.Black;
 
                 canvas.DrawString(
@@ -346,7 +353,6 @@ namespace StoneLedger.Controls
                 );
             }
         }
-
 
 
         private void DrawStone(ICanvas canvas, RectF boardRect, float padding, float cellSize, SgfMove move)
