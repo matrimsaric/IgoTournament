@@ -20,7 +20,7 @@
         <!-- Match -->
         <Border Grid.Column="1"
             Style="{StaticResource CardBorderStyle}">
-            <matchviews:MatchContentView 
+            <matchviews:MatchContentView   x:Name="MatchContentViewInstance"
             MatchId="{Binding MatchId}" />
         </Border>
 

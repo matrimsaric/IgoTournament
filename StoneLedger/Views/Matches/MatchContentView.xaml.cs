@@ -7,7 +7,7 @@ namespace StoneLedger.Views.Matches;
 
 public partial class MatchContentView : ContentView
 {
-    private readonly MatchContentViewModel _vm;
+    public readonly MatchContentViewModel _vm;
 
     public MatchContentView()
     {
@@ -67,6 +67,15 @@ public partial class MatchContentView : ContentView
         Replayer.Redraw();
 
         _vm.CurrentMoveIndex = moveNumber;
+    }
+
+    private void OnUndoVariationClicked(object sender, EventArgs e)
+    {
+        if (Replayer.Drawable is GameReplayerDrawable drawable)
+        {
+            drawable.RemoveLastVariationMove();
+            Replayer.Redraw();
+        }
     }
 
 

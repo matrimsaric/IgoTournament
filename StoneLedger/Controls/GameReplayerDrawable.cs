@@ -14,6 +14,12 @@ namespace StoneLedger.Controls
         public float Padding { get; private set; }
         public float CellSize { get; private set; }
 
+        // Variation variables
+        public List<SgfMove> VariationMoves { get; set; } = new();
+        public int VariationStartIndex { get; set; } = -1;
+        public bool ShowVariation { get; set; } = false;
+        private static readonly Color VariationBlackColor = Color.FromArgb("4A6FA5"); // Steel Blue
+        private static readonly Color VariationWhiteColor = Color.FromArgb("D8C27A");
 
 
         private IList<SgfMove>? _moves;
@@ -57,9 +63,113 @@ namespace StoneLedger.Controls
             }
         }
 
+        #region Variation Code
+        public void AddVariationMove(int x, int y)
+        {
+            string color = GetNextVariationColor();
+
+            if (VariationStartIndex < 0)
+                VariationStartIndex = CurrentMoveIndex;
+
+            VariationMoves.Add(new SgfMove { X = x, Y = y, Color = color });
+        }
+
+        private string GetNextVariationColor()
+        {
+            // Determine starting colour once
+            if (VariationStartIndex < 0)
+            {
+                var last = Moves[CurrentMoveIndex];
+                string startingColor = last.Color == "B" ? "W" : "B";
+                return startingColor;
+            }
+
+            // After first move, alternate from the starting colour
+            var lastMain = Moves[VariationStartIndex];
+            string startColor = lastMain.Color == "B" ? "W" : "B";
+
+            // VariationMoves.Count = number of moves already added
+            // 0 → first move → startColor
+            // 1 → second move → opposite
+            // 2 → third move → startColor
+            return (VariationMoves.Count % 2 == 0)
+                ? startColor
+                : (startColor == "B" ? "W" : "B");
+        }
 
 
+        private void DrawVariation(ICanvas canvas, RectF rect, float padding, float cellSize)
+        {
+            for (int i = 0; i < VariationMoves.Count; i++)
+            {
+                var m = VariationMoves[i];
 
+                float x = rect.Left + padding + m.X * cellSize;
+                float y = rect.Top + padding + m.Y * cellSize;
+
+                float radius = cellSize * 0.45f;
+
+                // Choose palette colour
+                canvas.FillColor = m.Color == "B"
+                    ? VariationBlackColor
+                    : VariationWhiteColor;
+                canvas.FillCircle(x, y, radius);
+
+                canvas.StrokeColor = Colors.Black;
+                canvas.StrokeSize = 1;
+                canvas.DrawCircle(x, y, radius);
+
+                DrawVariationLetter(canvas, m, i, cellSize);
+            }
+        }
+
+        private void DrawVariationLetter(ICanvas canvas, SgfMove move, int index, float cellSize)
+        {
+            string letter = GetVariationLabel(index);
+
+            float cx = (move.X + 1f) * cellSize;
+            float cy = (move.Y + 1f) * cellSize;
+
+            var rect = new RectF(
+                cx - cellSize / 2,
+                cy - cellSize / 2,
+                cellSize,
+                cellSize
+            );
+
+            canvas.Font = Font.Default;
+            canvas.FontSize = cellSize * 0.45f;
+            canvas.FontColor = Colors.Black;
+
+            canvas.DrawString(
+                letter.ToString(),
+                rect,
+                HorizontalAlignment.Center,
+                VerticalAlignment.Center
+            );
+        }
+
+        private string GetVariationLabel(int index)
+        {
+            // index = 0 → A
+            // index = 25 → Z
+            // index = 26 → AA
+            // index = 27 → AB
+            // etc.
+
+            string label = String.Empty;
+            index++; // shift to 1‑based
+
+            while (index > 0)
+            {
+                index--; // convert to 0‑based
+                label = (char)('A' + (index % 26)) + label;
+                index /= 26;
+            }
+
+            return label;
+        }
+        #endregion  Variation Code
         // -------------------------
         //   BUILD BOARD HISTORY
         // -------------------------
@@ -107,6 +217,17 @@ namespace StoneLedger.Controls
                 RemoveGroup(board, x, y);
         }
 
+        public void RemoveLastVariationMove()
+        {
+            if (VariationMoves.Count == 0)
+                return;
+
+            VariationMoves.RemoveAt(VariationMoves.Count - 1);
+
+            // If no moves left, reset the branch
+            if (VariationMoves.Count == 0)
+                VariationStartIndex = -1;
+        }
 
         private bool HasLiberties(BoardState board, int x, int y, HashSet<(int, int)> visited)
         {
@@ -211,12 +332,15 @@ namespace StoneLedger.Controls
             if (ShowMoveNumbers)
                 DrawMoveNumbers(canvas, Moves, CellSize);
 
+            if (ShowVariation && VariationMoves.Count > 0)
+                DrawVariation(canvas, BoardRect, Padding, CellSize);
+
             foreach (var annotation in Annotations)
                 annotation.Draw(canvas, BoardRect, Padding, CellSize);
         }
 
-
-
+       
+ 
         private void DrawStones(ICanvas canvas, RectF rect, float padding, float cellSize)
         {
             if (CurrentMoveIndex < 0 || CurrentMoveIndex >= BoardHistory.Count)

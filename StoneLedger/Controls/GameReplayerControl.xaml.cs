@@ -30,6 +30,11 @@ public partial class GameReplayerControl : ContentView
         control.BoardView.Invalidate();
     }
 
+    public void Redraw()
+    {
+        BoardView?.Invalidate();
+    }
+
     public static readonly BindableProperty RenumberFromOneProperty =
     BindableProperty.Create(
         nameof(RenumberFromOne),
@@ -196,6 +201,7 @@ public partial class GameReplayerControl : ContentView
         LabelOptions.IsVisible = false;
         SymbolOptions.IsVisible = false;
         MoveFromOptions.IsVisible = false;
+        Drawable.ShowVariation = (tool == "Variation");
 
         switch (tool)
         {
@@ -254,8 +260,12 @@ public partial class GameReplayerControl : ContentView
             case "Territory":
                 ApplyTerritoryAnnotation(replayer, x, y);
                 break;
-        }
 
+            case "Variation":
+                ApplyVariationMove(replayer, x, y);
+                break;
+        }
+        AnnotationsPanel.IsVisible = false;
         BoardView.Invalidate();
     }
 
@@ -270,6 +280,14 @@ public partial class GameReplayerControl : ContentView
             Color = color
         });
     }
+
+
+
+    private void ApplyVariationMove(GameReplayerDrawable replayer, int x, int y)
+    {
+        replayer.AddVariationMove(x, y);
+    }
+
 
 
     private void ApplySymbolAnnotation(GameReplayerDrawable replayer, int x, int y)
@@ -355,6 +373,9 @@ public partial class GameReplayerControl : ContentView
             // Reset move-number settings
             MoveNumberStartIndex = 0;   // or 1 if you prefer
             RenumberFromOne = false;
+            
+            replayer.VariationMoves.Clear();
+            replayer.VariationStartIndex = -1;
             BoardView.Invalidate();
         }
     }
@@ -367,62 +388,6 @@ public partial class GameReplayerControl : ContentView
             BoardView.Invalidate();
         }
     }
-
-    //internal void OnAddRingClicked(object sender, EventArgs e)
-    //{
-    //    if (BoardView.Drawable is not GameReplayerDrawable replayer)
-    //        return;
-
-    //    if (replayer.Moves == null || replayer.Moves.Count == 0)
-    //        return;
-
-    //    var move = replayer.Moves[replayer.CurrentMoveIndex];
-
-    //    // Determine ring color
-    //    Color ringColor = Colors.Green;
-
-    //    switch (RingColorPicker.SelectedItem)
-    //    {
-    //        case "Blue Ring":
-    //            ringColor = Colors.Blue;
-    //            break;
-
-    //        case "Green Ring":
-    //        default:
-    //            ringColor = Colors.Green;
-    //            break;
-    //    }
-
-    //    // Add annotation
-    //    replayer.Annotations.Add(new StoneRingAnnotation
-    //    {
-    //        X = move.X,
-    //        Y = move.Y,
-    //        Color = ringColor
-    //    });
-
-    //    BoardView.Invalidate();
-    //}
-
-
-    public void Redraw()
-    {
-        BoardView.Invalidate();
-    }
-
-
-
-    //private static void OnSgfTextChanged(BindableObject bindable, object oldValue, object newValue)
-    //{
-    //    var control = (GameReplayerControl)bindable;
-    //    var sgf = newValue as string;
-
-    //    // TODO: parse SGF into an internal model
-    //    //control.Drawable.LoadRawSgf(sgf);
-    //    control.BoardView.Invalidate();
-    //}
-
-
 
     protected override void OnBindingContextChanged()
     {

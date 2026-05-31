@@ -51,6 +51,11 @@
                 <Button
             Text="Jump"
             Clicked="OnJumpClicked" />
+
+                <Button
+    Text="Undo variation"
+    Clicked="OnUndoVariationClicked"
+    HorizontalOptions="End" />
             </HorizontalStackLayout>
 
         </Grid>

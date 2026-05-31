@@ -92,6 +92,7 @@
                         <x:String>Territory</x:String>
                         <x:String>Eraser</x:String>
                         <x:String>Moves From</x:String>
+                        <x:String>Variation</x:String>
                     </Picker.Items>
                 </Picker>
 

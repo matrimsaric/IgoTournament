@@ -1,4 +1,5 @@
 using CompetitionDomain.Model;
+using StoneLedger.Controls;
 using StoneLedger.ViewModels.Matches;
 using StoneLedger.ViewModels.Players;
 
@@ -16,9 +17,9 @@ public partial class MatchDetailPage : ContentPage
         _vm = vm;
         BindingContext = vm;
         InitializeComponent();
-       
 
-      
+        this.Focus(); // ensures keyboard events arrive
+
     }
 
     protected override void OnAppearing()
@@ -26,7 +27,7 @@ public partial class MatchDetailPage : ContentPage
         base.OnAppearing();
         Console.WriteLine($"MatchDetailPage: MatchId = {((MatchDetailViewModel)BindingContext).MatchId}");
     }
-
+   
     public string MatchId
     {
         set
