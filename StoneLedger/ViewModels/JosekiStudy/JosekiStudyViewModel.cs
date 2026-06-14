@@ -1,5 +1,7 @@
-﻿using System.Windows.Input;
-using Microsoft.Maui.Graphics;
+﻿using Microsoft.Maui.Graphics;
+using StoneLedger.Models;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 
 namespace StoneLedger.ViewModels.JosekiStudy;
 
@@ -29,6 +31,10 @@ public class JosekiStudyViewModel : BindableObject
     public ICommand LoadCommand { get; }
     public ICommand ExportCommand { get; }
 
+    public ObservableCollection<SgfMove> DefaultStones { get; } = new();
+
+    private string _nextColor = "B"; // alternate automatically
+
     public JosekiStudyViewModel()
     {
         //BoardDrawable = new JosekiBoardDrawable();
@@ -37,6 +43,25 @@ public class JosekiStudyViewModel : BindableObject
         SaveCommand = new Command(() => { /* TODO */ });
         LoadCommand = new Command(() => { /* TODO */ });
         ExportCommand = new Command(() => { /* TODO */ });
+    }
+
+    public void AddDefaultStone(int x, int y)
+    {
+        // Prevent duplicates
+        if (DefaultStones.Any(s => s.X == x && s.Y == y))
+            return;
+
+        DefaultStones.Add(new SgfMove
+        {
+            X = x,
+            Y = y,
+            Color = _nextColor
+        });
+
+        // Alternate colour
+        _nextColor = _nextColor == "B" ? "W" : "B";
+
+        OnPropertyChanged(nameof(DefaultStones));
     }
 
     private void SelectTab(string tab)

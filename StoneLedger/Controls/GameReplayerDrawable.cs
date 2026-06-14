@@ -16,6 +16,7 @@ namespace StoneLedger.Controls
 
         // Variation variables
         public List<SgfMove> VariationMoves { get; set; } = new();
+        public List<SgfMove> DefaultStones { get; set; } = new ();
         public int VariationStartIndex { get; set; } = -1;
         public bool ShowVariation { get; set; } = false;
         private static readonly Color VariationBlackColor = Color.FromArgb("4A6FA5"); // Steel Blue
@@ -177,10 +178,17 @@ namespace StoneLedger.Controls
         {
             BoardHistory.Clear();
 
-            if (Moves == null || Moves.Count == 0)
-                return;
-
             var board = new BoardState();
+
+            // --- NEW: Apply default stones first ---
+            foreach (var stone in DefaultStones)
+                board.Grid[stone.X, stone.Y] = stone.Color;
+
+            if (Moves == null || Moves.Count == 0)
+            {
+                BoardHistory.Add(board);   // ← THIS is the missing piece
+                return;
+            }
 
             foreach (var move in Moves)
             {
@@ -188,6 +196,13 @@ namespace StoneLedger.Controls
                 ApplyMove(board, move);
                 BoardHistory.Add(board);
             }
+        }
+
+        public void SetDefaultStones(IEnumerable<SgfMove> stones)
+        {
+            DefaultStones.Clear();
+            DefaultStones.AddRange(stones);
+            BuildBoardHistory();
         }
 
 
@@ -323,6 +338,12 @@ namespace StoneLedger.Controls
             DrawStarPoints(canvas, BoardRect, Padding, CellSize);
             DrawBoardNotation(canvas, BoardRect, Padding, CellSize);
 
+            //if (Moves is null || Moves.Count == 0)
+            //    return;
+
+            DrawStones(canvas, BoardRect, Padding, CellSize);
+
+            // Only draw move-dependent layers if moves exist
             if (Moves is null || Moves.Count == 0)
                 return;
 

@@ -106,6 +106,7 @@
 
             <controls:GameReplayerControl
                 x:Name="GameReplayer"
+                BoardTapped="OnBoardTapped"
                 Moves="{Binding Moves}"
                 HorizontalOptions="Fill"
                 VerticalOptions="Fill" />

@@ -9,6 +9,8 @@ public partial class GameReplayerControl : ContentView
     public event EventHandler? RequestExpand;
     public bool IsExpanded { get; private set; }
 
+    public event EventHandler<(int X, int Y)>? BoardTapped;
+
     public static readonly BindableProperty MoveNumberStartIndexProperty =
     BindableProperty.Create(
         nameof(MoveNumberStartIndex),
@@ -169,11 +171,25 @@ public partial class GameReplayerControl : ContentView
         set => SetValue(CurrentMoveIndexProperty, value);
     }
 
+    public void SetDefaultStones(IEnumerable<SgfMove> stones)
+    {
+        Drawable.SetDefaultStones(stones);
+        BoardView.Invalidate();
+    }
+
     private static void OnCurrentMoveIndexChanged(BindableObject bindable, object oldValue, object newValue)
     {
         var control = (GameReplayerControl)bindable;
         control.Drawable.CurrentMoveIndex = (int)newValue;
         control.BoardView.Invalidate();
+    }
+
+    public (int x, int y) PixelToBoard(double px, double py)
+    {
+        if (Drawable is not GameReplayerDrawable d)
+            return (-1, -1);
+
+        return d.PixelToBoard(px, py);
     }
 
     private void OnBoardTapped(object sender, TappedEventArgs e)
@@ -191,6 +207,9 @@ public partial class GameReplayerControl : ContentView
             return;
 
         ApplyCurrentAnnotation(x, y);
+
+        // NEW: notify parent page
+        BoardTapped?.Invoke(this, (x, y));
     }
 
     private void OnAnnotationToolChanged(object sender, EventArgs e)
@@ -392,6 +411,10 @@ public partial class GameReplayerControl : ContentView
     protected override void OnBindingContextChanged()
     {
         base.OnBindingContextChanged();
+
+        // Only hook this logic when the page actually uses MatchContentViewModel
+        if (BindingContext is not MatchContentViewModel)
+            return;
 
         if (BindingContext is MatchContentViewModel vm)
         {
