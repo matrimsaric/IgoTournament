@@ -1,12 +1,116 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="StoneLedger.Views.JosekiStudy.JosekiStudyPage"
-             Title="JosekiStudyPage">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:StoneLedger.Controls"
+    x:Class="StoneLedger.Views.JosekiStudy.JosekiStudyPage"
+    Title="Joseki Study">
+
+    <!-- ONE NameScope for everything -->
+    <Grid ColumnDefinitions="260, *">
+
+        <!-- LEFT PANEL -->
+        <ScrollView Grid.Column="0"
+                    BackgroundColor="#F0F0F0"
+                    Padding="10">
+
+            <VerticalStackLayout Spacing="12">
+
+                <Label Text="Annotations"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center" />
+
+                <!-- Tool Selector -->
+                <Picker x:Name="AnnotationToolPicker"
+                        Title="Tool"
+                        WidthRequest="150"
+                        SelectedIndexChanged="OnAnnotationToolChanged">
+                    <Picker.Items>
+                        <x:String>Ring</x:String>
+                        <x:String>Label</x:String>
+                        <x:String>Symbol</x:String>
+                        <x:String>Territory</x:String>
+                        <x:String>Eraser</x:String>
+                        <x:String>Moves From</x:String>
+                        <x:String>Variation</x:String>
+                    </Picker.Items>
+                </Picker>
+
+                <!-- Ring Options -->
+                <HorizontalStackLayout x:Name="RingOptions" Spacing="6">
+                    <Picker x:Name="RingColorPicker"
+                            WidthRequest="120">
+                        <Picker.Items>
+                            <x:String>Green</x:String>
+                            <x:String>LimeGreen</x:String>
+                            <x:String>Blue</x:String>
+                            <x:String>Purple</x:String>
+                            <x:String>White</x:String>
+                            <x:String>Black</x:String>
+                            <x:String>Yellow</x:String>
+                            <x:String>LightYellow</x:String>
+                            <x:String>Orange</x:String>
+                            <x:String>Red</x:String>
+                        </Picker.Items>
+                    </Picker>
+                </HorizontalStackLayout>
+
+                <!-- Label Options -->
+                <HorizontalStackLayout x:Name="LabelOptions" Spacing="6">
+                    <Entry x:Name="LabelEntry"
+                           WidthRequest="40"
+                           MaxLength="1"
+                           Placeholder="A" />
+                    <Label Text="Label"
+                           VerticalTextAlignment="Center" />
+                </HorizontalStackLayout>
+
+                <!-- Symbol Options -->
+                <HorizontalStackLayout x:Name="SymbolOptions"
+                                       Spacing="6"
+                                       IsVisible="False">
+                    <Picker x:Name="SymbolPicker" WidthRequest="120">
+                        <Picker.Items>
+                            <x:String>Skull</x:String>
+                            <x:String>Smiley</x:String>
+                            <x:String>Sad</x:String>
+                            <x:String>Scared</x:String>
+                        </Picker.Items>
+                    </Picker>
+                </HorizontalStackLayout>
+
+                <!-- Moves From Options -->
+                <VerticalStackLayout x:Name="MoveFromOptions" Spacing="6">
+
+                    <Slider Minimum="0"
+                            WidthRequest="120"
+                            Maximum="{Binding TotalMoves, Source={x:Reference GameReplayer}}"
+                            Value="{Binding MoveNumberStartIndex, Source={x:Reference GameReplayer}}" />
+
+                    <Switch IsToggled="{Binding RenumberFromOne, Source={x:Reference GameReplayer}}" />
+                </VerticalStackLayout>
+
+                <Button Text="Clear"
+                        WidthRequest="120"
+                        Clicked="OnClearAnnotationsClicked" />
+
+            </VerticalStackLayout>
+
+        </ScrollView>
+
+        <!-- RIGHT PANEL -->
+        <Grid Grid.Column="1"
+              Padding="12"
+              HorizontalOptions="Fill"
+              VerticalOptions="Fill">
+
+            <controls:GameReplayerControl
+                x:Name="GameReplayer"
+                Moves="{Binding Moves}"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill" />
+
+        </Grid>
+
+    </Grid>
 </ContentPage>

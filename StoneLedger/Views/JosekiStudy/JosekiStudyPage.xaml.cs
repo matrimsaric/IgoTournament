@@ -6,4 +6,14 @@ public partial class JosekiStudyPage : ContentPage
 	{
 		InitializeComponent();
 	}
+
+    private void OnClearAnnotationsClicked(object sender, EventArgs e)
+    {
+
+    }
+
+    private void OnAnnotationToolChanged(object sender, EventArgs e)
+    {
+
+    }
 }

@@ -1,10 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Windows.Input;
+using Microsoft.Maui.Graphics;
 
-namespace StoneLedger.ViewModels.JosekiStudy
+namespace StoneLedger.ViewModels.JosekiStudy;
+
+public class JosekiStudyViewModel : BindableObject
 {
-    internal class JosekiStudyViewModel
+    private string _description;
+    public string Description
     {
+        get => _description;
+        set { _description = value; OnPropertyChanged(); }
+    }
+
+    public object BoardDrawable { get; }
+
+    // Tab state
+    public bool IsAnnotationsTab { get; private set; } = true;
+    public bool IsDescriptionTab { get; private set; }
+    public bool IsSavePrintTab { get; private set; }
+
+    // Tab button colours
+    public Color AnnotationsTabColor => IsAnnotationsTab ? Colors.LightGray : Colors.Transparent;
+    public Color DescriptionTabColor => IsDescriptionTab ? Colors.LightGray : Colors.Transparent;
+    public Color SavePrintTabColor => IsSavePrintTab ? Colors.LightGray : Colors.Transparent;
+
+    public ICommand SelectTabCommand { get; }
+    public ICommand SaveCommand { get; }
+    public ICommand LoadCommand { get; }
+    public ICommand ExportCommand { get; }
+
+    public JosekiStudyViewModel()
+    {
+        //BoardDrawable = new JosekiBoardDrawable();
+
+        SelectTabCommand = new Command<string>(SelectTab);
+        SaveCommand = new Command(() => { /* TODO */ });
+        LoadCommand = new Command(() => { /* TODO */ });
+        ExportCommand = new Command(() => { /* TODO */ });
+    }
+
+    private void SelectTab(string tab)
+    {
+        IsAnnotationsTab = tab == "Annotations";
+        IsDescriptionTab = tab == "Description";
+        IsSavePrintTab = tab == "SavePrint";
+
+        OnPropertyChanged(nameof(IsAnnotationsTab));
+        OnPropertyChanged(nameof(IsDescriptionTab));
+        OnPropertyChanged(nameof(IsSavePrintTab));
+
+        OnPropertyChanged(nameof(AnnotationsTabColor));
+        OnPropertyChanged(nameof(DescriptionTabColor));
+        OnPropertyChanged(nameof(SavePrintTabColor));
     }
 }
