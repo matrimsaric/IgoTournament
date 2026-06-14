@@ -2,10 +2,12 @@
 using StoneLedger.Resources.Converters;
 using StoneLedger.Services.Api;
 using StoneLedger.ViewModels;
+using StoneLedger.ViewModels.JosekiStudy;
 using StoneLedger.ViewModels.Matches;
 using StoneLedger.ViewModels.Players;
 using StoneLedger.ViewModels.Rounds;
 using StoneLedger.Views;
+using StoneLedger.Views.JosekiStudy;
 using StoneLedger.Views.Matches;
 using StoneLedger.Views.Players;
 using StoneLedger.Views.Rounds;
@@ -79,6 +81,9 @@ namespace StoneLedger
             builder.Services.AddTransient<ImageService>();
             builder.Services.AddTransient<PlayerDetailViewModel>();
             builder.Services.AddTransient<PlayerDetailPage>();
+
+            builder.Services.AddTransient<JosekiStudyPage>();
+            builder.Services.AddTransient<JosekiStudyViewModel>();
 
             builder.Services.AddTransient<PlayerContentViewModel>();
             builder.Services.AddTransient<PlayerContentView>();

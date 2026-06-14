@@ -1,4 +1,5 @@
-﻿using StoneLedger.Views.Matches;
+﻿using StoneLedger.Views.JosekiStudy;
+using StoneLedger.Views.Matches;
 using StoneLedger.Views.Players;
 using StoneLedger.Views.Rounds;
 using StoneLedger.Views.Tournaments;
@@ -21,6 +22,7 @@ namespace StoneLedger
             Routing.RegisterRoute(nameof(MatchListPage), typeof(MatchListPage));
             Routing.RegisterRoute(nameof(RoundListPage), typeof(RoundListPage));
             Routing.RegisterRoute(nameof(AddRoundPage), typeof(AddRoundPage));
+            Routing.RegisterRoute("joseki", typeof(JosekiStudyPage));
         }
         #pragma warning restore CA1416
     }
