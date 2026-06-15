@@ -115,10 +115,15 @@ public partial class GameReplayerControl : ContentView
         Drawable = new GameReplayerDrawable();
         BoardView.Drawable = Drawable;   // ← STEP 5 GOES HERE
                                          // Default tool
-        AnnotationToolPicker.SelectedIndex = 0;
 
-        RingOptions.IsVisible = true;
-        LabelOptions.IsVisible = false;
+        if(AnnotationToolPicker != null)
+        {
+            AnnotationToolPicker.SelectedIndex = 0;
+
+            RingOptions.IsVisible = true;
+            LabelOptions.IsVisible = false;
+        }
+        
     }
 
     private void OnExpandClicked(object sender, EventArgs e)
@@ -429,6 +434,65 @@ public partial class GameReplayerControl : ContentView
             };
         }
     }
+
+
+
+    public void ApplyAnnotationFromParent(int x, int y, string tool, string? label, string? symbol, Color color)
+    {
+        if (BoardView.Drawable is not GameReplayerDrawable replayer)
+            return;
+
+        // Remove existing annotation
+        replayer.RemoveAnnotationAt(x, y);
+
+        switch (tool)
+        {
+            case "Ring":
+                replayer.Annotations.Add(new StoneRingAnnotation { X = x, Y = y, Color = color });
+                break;
+
+            case "Label":
+                if (!string.IsNullOrWhiteSpace(label))
+                {
+                    replayer.Annotations.Add(new StoneLabelAnnotation
+                    {
+                        X = x,
+                        Y = y,
+                        Text = label.Substring(0, 1),
+                        Color = color
+                    });
+                }
+                break;
+
+            case "Symbol":
+                if (!string.IsNullOrWhiteSpace(symbol))
+                {
+                    replayer.Annotations.Add(new StoneSymbolAnnotation
+                    {
+                        X = x,
+                        Y = y,
+                        Symbol = symbol,
+                        Color = color
+                    });
+                }
+                break;
+
+            case "Territory":
+                replayer.Annotations.Add(new TerritoryAnnotation { X = x, Y = y, Color = color });
+                break;
+
+            case "Variation":
+                replayer.AddVariationMove(x, y);
+                break;
+
+            case "Eraser":
+                // already removed above
+                break;
+        }
+
+        BoardView.Invalidate();
+    }
+
 
 
 

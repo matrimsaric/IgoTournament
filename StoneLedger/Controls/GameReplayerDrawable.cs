@@ -67,9 +67,15 @@ namespace StoneLedger.Controls
         #region Variation Code
         public void AddVariationMove(int x, int y)
         {
+            ShowVariation = true; // ALWAYS show variations when adding one
             string color = GetNextVariationColor();
 
             if (VariationStartIndex < 0)
+            {
+                if (DefaultStones?.Count > 0)
+                    VariationStartIndex = DefaultStones.Count - 1;
+            }
+            if(VariationStartIndex < 0)
                 VariationStartIndex = CurrentMoveIndex;
 
             VariationMoves.Add(new SgfMove { X = x, Y = y, Color = color });
@@ -77,26 +83,56 @@ namespace StoneLedger.Controls
 
         private string GetNextVariationColor()
         {
-            // Determine starting colour once
-            if (VariationStartIndex < 0)
+            // --- 1. Determine the "main line" last stone ---
+            SgfMove? lastMain = null;
+
+            // Prefer Moves if they exist
+            if (Moves != null && Moves.Count > 0 &&
+                CurrentMoveIndex >= 0 && CurrentMoveIndex < Moves.Count)
             {
-                var last = Moves[CurrentMoveIndex];
-                string startingColor = last.Color == "B" ? "W" : "B";
-                return startingColor;
+                lastMain = Moves[CurrentMoveIndex];
+            }
+            // Otherwise fall back to DefaultStones
+            else if (DefaultStones != null && DefaultStones.Count > 0)
+            {
+                lastMain = DefaultStones.Last();
             }
 
-            // After first move, alternate from the starting colour
-            var lastMain = Moves[VariationStartIndex];
-            string startColor = lastMain.Color == "B" ? "W" : "B";
+            // --- 2. If no stones at all, first variation move is Black ---
+            if (lastMain == null)
+                return "B";
 
-            // VariationMoves.Count = number of moves already added
-            // 0 → first move → startColor
-            // 1 → second move → opposite
-            // 2 → third move → startColor
+            // --- 3. If this is the FIRST variation move ---
+            if (VariationStartIndex < 0)
+            {
+                // Variation starts AFTER the last main-line stone
+                return lastMain.Color == "B" ? "W" : "B";
+            }
+
+            // --- 4. Determine starting colour for the variation branch ---
+            // VariationStartIndex refers to Moves, so guard it
+            SgfMove? variationAnchor = null;
+
+            if (Moves != null && VariationStartIndex >= 0 && VariationStartIndex < Moves.Count)
+            {
+                variationAnchor = Moves[VariationStartIndex];
+            }
+            else if (DefaultStones != null && DefaultStones.Count > 0)
+            {
+                variationAnchor = DefaultStones.Last();
+            }
+
+            if (variationAnchor == null)
+                return "B";
+
+            string startColor = variationAnchor.Color == "B" ? "W" : "B";
+
+            // --- 5. Alternate based on how many variation moves already exist ---
             return (VariationMoves.Count % 2 == 0)
                 ? startColor
                 : (startColor == "B" ? "W" : "B");
         }
+
 
 
         private void DrawVariation(ICanvas canvas, RectF rect, float padding, float cellSize)
@@ -341,16 +377,16 @@ namespace StoneLedger.Controls
             //if (Moves is null || Moves.Count == 0)
             //    return;
 
-            DrawStones(canvas, BoardRect, Padding, CellSize);
+            //DrawStones(canvas, BoardRect, Padding, CellSize);
 
-            // Only draw move-dependent layers if moves exist
-            if (Moves is null || Moves.Count == 0)
-                return;
+            //// Only draw move-dependent layers if moves exist
+            //if (Moves is null || Moves.Count == 0)
+            //    return;
 
             DrawStones(canvas, BoardRect, Padding, CellSize);
             DrawLastMoveHighlight(canvas, BoardRect, Padding, CellSize);
 
-            if (ShowMoveNumbers)
+            if (ShowMoveNumbers && Moves?.Count > 0)
                 DrawMoveNumbers(canvas, Moves, CellSize);
 
             if (ShowVariation && VariationMoves.Count > 0)
@@ -384,20 +420,57 @@ namespace StoneLedger.Controls
         }
 
 
+        //private void DrawLastMoveHighlight(ICanvas canvas, RectF rect, float padding, float cellSize)
+        //{
+        //    if ((Moves == null || Moves?.Count == 0) && DefaultStones.Count == 0)
+        //        return;
+        //    if (CurrentMoveIndex < 0 || CurrentMoveIndex >= Moves?.Count)
+        //        return;
+
+        //    var last =  Moves != null ?  Moves[CurrentMoveIndex] : DefaultStones[DefaultStones.Count  - 1];
+
+        //    float x = rect.Left + padding + last.X * cellSize;
+        //    float y = rect.Top + padding + last.Y * cellSize;
+
+        //    canvas.StrokeColor = Colors.Red;
+        //    canvas.StrokeSize = 2;
+        //    canvas.DrawCircle(x, y, cellSize * 0.55f);
+        //}
+
         private void DrawLastMoveHighlight(ICanvas canvas, RectF rect, float padding, float cellSize)
         {
-            if (CurrentMoveIndex < 0 || CurrentMoveIndex >= Moves.Count)
+            // --- 1. Determine the last stone on the board ---
+            SgfMove? last = null;
+
+            // Prefer main-line moves
+            if (Moves != null && Moves.Count > 0 &&
+                CurrentMoveIndex >= 0 && CurrentMoveIndex < Moves.Count)
+            {
+                last = Moves[CurrentMoveIndex];
+            }
+            // Otherwise fall back to default stones
+            else if (DefaultStones != null && DefaultStones.Count > 0)
+            {
+                last = DefaultStones.Last();
+            }
+
+            // Nothing to highlight
+            if (last == null)
                 return;
 
-            var last = Moves[CurrentMoveIndex];
+            // --- 2. Compute centre point ---
+            float cx = rect.Left + padding + last.X * cellSize;
+            float cy = rect.Top + padding + last.Y * cellSize;
 
-            float x = rect.Left + padding + last.X * cellSize;
-            float y = rect.Top + padding + last.Y * cellSize;
+            // --- 3. Correct highlight sizing ---
+            float radius = cellSize * 0.45f;      // fits inside stone
+            float stroke = cellSize * 0.08f;      // thin, clean ring
 
             canvas.StrokeColor = Colors.Red;
-            canvas.StrokeSize = 2;
-            canvas.DrawCircle(x, y, cellSize * 0.55f);
+            canvas.StrokeSize = stroke;
+            canvas.DrawCircle(cx, cy, radius);
         }
+
 
 
         // --- Existing drawing helpers unchanged ---
@@ -450,6 +523,9 @@ namespace StoneLedger.Controls
 
         void DrawMoveNumbers(ICanvas canvas, IList<SgfMove> moves, float cellSize)
         {
+            if (moves == null || moves.Count == 0)
+                return;
+
             canvas.Font = Font.Default;
             canvas.FontSize = cellSize * 0.45f;
 
