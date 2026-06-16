@@ -56,7 +56,7 @@ public partial class JosekiStudyPage : ContentPage
         string? symbol = SymbolPicker.SelectedItem as string;
         Color color = GetSelectedColor();
 
-        GameReplayer.ApplyAnnotationFromParent(x, y, tool, label, symbol, color);
+        GameReplayer.ApplyAnnotationFromParent(x, y, tool, label, symbol, color, tool == "Joseki");
     }
 
     private Color GetSelectedColor()

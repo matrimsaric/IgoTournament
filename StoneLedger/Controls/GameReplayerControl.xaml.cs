@@ -71,6 +71,8 @@ public partial class GameReplayerControl : ContentView
         set => SetValue(TotalMovesProperty, value);
     }
 
+    private int lastJosekiStone = 0;
+
 
 
     public static readonly BindableProperty MovesProperty =
@@ -309,7 +311,7 @@ public partial class GameReplayerControl : ContentView
 
     private void ApplyVariationMove(GameReplayerDrawable replayer, int x, int y)
     {
-        replayer.AddVariationMove(x, y);
+        replayer.AddVariationMove(x, y, false);
     }
 
 
@@ -437,7 +439,7 @@ public partial class GameReplayerControl : ContentView
 
 
 
-    public void ApplyAnnotationFromParent(int x, int y, string tool, string? label, string? symbol, Color color)
+    public void ApplyAnnotationFromParent(int x, int y, string tool, string? label, string? symbol, Color color, bool joseki)
     {
         if (BoardView.Drawable is not GameReplayerDrawable replayer)
             return;
@@ -482,9 +484,13 @@ public partial class GameReplayerControl : ContentView
                 break;
 
             case "Variation":
-                replayer.AddVariationMove(x, y);
-                break;
+                replayer.AddVariationMove(x, y, false);
 
+                break;
+            case "Joseki":
+                    
+                replayer.AddVariationMove(x, y, true);
+                break;
             case "Eraser":
                 // already removed above
                 break;

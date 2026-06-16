@@ -16,12 +16,12 @@ namespace StoneLedger.Controls
 
         // Variation variables
         public List<SgfMove> VariationMoves { get; set; } = new();
-        public List<SgfMove> DefaultStones { get; set; } = new ();
+        public List<SgfMove> DefaultStones { get; set; } = new();
         public int VariationStartIndex { get; set; } = -1;
+        public static int JosekiEndIndex { get; set; } = -1;
         public bool ShowVariation { get; set; } = false;
         private static readonly Color VariationBlackColor = Color.FromArgb("4A6FA5"); // Steel Blue
         private static readonly Color VariationWhiteColor = Color.FromArgb("D8C27A");
-
 
         private IList<SgfMove>? _moves;
         public IList<SgfMove>? Moves
@@ -44,10 +44,8 @@ namespace StoneLedger.Controls
         /// </summary>
         public bool RenumberFromOne { get; set; } = false;
 
-
-        // --- NEW: Board history with captures applied ---
+        // --- Board history with captures applied ---
         private List<BoardState> BoardHistory { get; set; } = new();
-
 
         // -------------------------
         //   BOARD STATE MODEL
@@ -65,23 +63,191 @@ namespace StoneLedger.Controls
         }
 
         #region Variation Code
-        public void AddVariationMove(int x, int y)
+        public void AddVariationMove(int x, int y, bool joseki)
         {
             ShowVariation = true; // ALWAYS show variations when adding one
-            string color = GetNextVariationColor();
+
+            if(joseki)
+            {
+                JosekiEndIndex = VariationMoves.Count+1;
+            }
+            string color = GetNextVariationColor(joseki);
 
             if (VariationStartIndex < 0)
             {
                 if (DefaultStones?.Count > 0)
                     VariationStartIndex = DefaultStones.Count - 1;
             }
-            if(VariationStartIndex < 0)
+            if (JosekiEndIndex > 0)
+                VariationStartIndex = JosekiEndIndex;
+            if (VariationStartIndex < 0)
                 VariationStartIndex = CurrentMoveIndex;
 
             VariationMoves.Add(new SgfMove { X = x, Y = y, Color = color });
         }
 
-        private string GetNextVariationColor()
+        private string GetNextVariationColor(bool joseki)
+        {
+            // --- 1. Determine the "main line" last stone ---
+            SgfMove? lastMain = null;
+
+            // Prefer Moves if they exist
+            if (Moves != null && Moves.Count > 0 &&
+                CurrentMoveIndex >= 0 && CurrentMoveIndex < Moves.Count)
+            {
+                lastMain = Moves[CurrentMoveIndex];
+            }
+            // Otherwise fall back to DefaultStones
+            else if (DefaultStones != null && DefaultStones.Count > 0)
+            {
+                lastMain = DefaultStones.Last();
+            }
+            else if(VariationMoves?.Count > 0)
+            {
+                // Joseki run through
+                return (VariationMoves.Count % 2 == 0)
+               ? "B"
+               : "W";
+            }
+           else  if (lastMain == null)
+                return "B";
+
+            // --- 3. If this is the FIRST variation move ---
+            if (VariationStartIndex < 0)
+            {
+                // Variation starts AFTER the last main-line stone
+                return lastMain.Color == "B" ? "W" : "B";
+            }
+
+            // --- 4. Determine starting colour for the variation branch ---
+            SgfMove? variationAnchor = null;
+
+            if (Moves != null && VariationStartIndex >= 0 && VariationStartIndex < Moves.Count)
+            {
+                variationAnchor = Moves[VariationStartIndex];
+            }
+            else if (DefaultStones != null && DefaultStones.Count > 0)
+            {
+                variationAnchor = DefaultStones.Last();
+            }
+
+            if (variationAnchor == null)
+                return "B";
+
+            string startColor = variationAnchor.Color == "B" ? "W" : "B";
+
+            // --- 5. Alternate based on how many variation moves already exist ---
+            return (VariationMoves.Count % 2 == 0)
+                ? startColor
+                : (startColor == "B" ? "W" : "B");
+        }
+
+        private void DrawVariation(ICanvas canvas, RectF rect, float padding, float cellSize)
+        {
+            for (int i = 0; i < VariationMoves.Count; i++)
+            {
+                var m = VariationMoves[i];
+
+                float x = rect.Left + padding + m.X * cellSize;
+                float y = rect.Top + padding + m.Y * cellSize;
+
+                float radius = cellSize * 0.45f;
+
+                // Choose palette colour
+                if (JosekiEndIndex > 0 && i < JosekiEndIndex)
+                    canvas.FillColor = m.Color == "B"
+                   ? Colors.Black
+                   : Colors.White;
+                else
+                    canvas.FillColor = m.Color == "B"
+                   ? VariationBlackColor
+                   : VariationWhiteColor;
+
+                canvas.FillCircle(x, y, radius);
+
+                canvas.StrokeColor = Colors.Black;
+                canvas.StrokeSize = 1;
+                canvas.DrawCircle(x, y, radius);
+
+                if (JosekiEndIndex > 0 && i < JosekiEndIndex)
+                    DrawVariationLetter(canvas, m, i, cellSize, true);
+                else
+                    DrawVariationLetter(canvas, m, i, cellSize, false);
+
+            }
+        }
+
+        private void DrawVariationLetter(ICanvas canvas, SgfMove move, int index, float cellSize, bool joseki)
+        {
+            string letter = GetVariationLabel(index, joseki);
+
+            float cx = BoardRect.Left + Padding + move.X * cellSize;
+            float cy = BoardRect.Top + Padding + move.Y * cellSize;
+
+            var rect = new RectF(
+                cx - cellSize / 2,
+                cy - cellSize / 2,
+                cellSize,
+                cellSize
+            );
+
+            canvas.Font = Font.Default;
+            canvas.FontSize = cellSize * 0.45f;
+            canvas.FontColor = Colors.Black;
+
+            canvas.DrawString(
+                letter.ToString(),
+                rect,
+                HorizontalAlignment.Center,
+                VerticalAlignment.Center
+            );
+        }
+
+        private string GetVariationLabel(int index, bool joseki)
+        {
+            // Joseki stones do NOT get letters
+            if (JosekiEndIndex > 0 && index < JosekiEndIndex)
+                return string.Empty;
+
+            // Convert to local index so variation always starts at A
+            int localIndex = (JosekiEndIndex > 0)
+                ? index - JosekiEndIndex
+                : index;
+
+            localIndex++; // shift to 1‑based
+
+            string label = string.Empty;
+
+            while (localIndex > 0)
+            {
+                localIndex--; // convert to 0‑based
+                label = (char)('A' + (localIndex % 26)) + label;
+                localIndex /= 26;
+            }
+
+            return label;
+        }
+
+        #endregion  Variation Code
+
+        #region Joseki Code
+        public void AddJosekiMove(int x, int y)
+        {
+            ShowVariation = true; // ALWAYS show variations when adding one
+            string color = GetNextJosekiColor();
+
+            if (VariationStartIndex < 0)
+            {
+                if (DefaultStones?.Count > 0)
+                    VariationStartIndex = DefaultStones.Count - 1;
+            }
+            if (VariationStartIndex < 0)
+                VariationStartIndex = CurrentMoveIndex;
+
+            VariationMoves.Add(new SgfMove { X = x, Y = y, Color = color });
+        }
+
+        private string GetNextJosekiColor()
         {
             // --- 1. Determine the "main line" last stone ---
             SgfMove? lastMain = null;
@@ -110,7 +276,6 @@ namespace StoneLedger.Controls
             }
 
             // --- 4. Determine starting colour for the variation branch ---
-            // VariationStartIndex refers to Moves, so guard it
             SgfMove? variationAnchor = null;
 
             if (Moves != null && VariationStartIndex >= 0 && VariationStartIndex < Moves.Count)
@@ -134,79 +299,11 @@ namespace StoneLedger.Controls
         }
 
 
+       
 
-        private void DrawVariation(ICanvas canvas, RectF rect, float padding, float cellSize)
-        {
-            for (int i = 0; i < VariationMoves.Count; i++)
-            {
-                var m = VariationMoves[i];
-
-                float x = rect.Left + padding + m.X * cellSize;
-                float y = rect.Top + padding + m.Y * cellSize;
-
-                float radius = cellSize * 0.45f;
-
-                // Choose palette colour
-                canvas.FillColor = m.Color == "B"
-                    ? VariationBlackColor
-                    : VariationWhiteColor;
-                canvas.FillCircle(x, y, radius);
-
-                canvas.StrokeColor = Colors.Black;
-                canvas.StrokeSize = 1;
-                canvas.DrawCircle(x, y, radius);
-
-                DrawVariationLetter(canvas, m, i, cellSize);
-            }
-        }
-
-        private void DrawVariationLetter(ICanvas canvas, SgfMove move, int index, float cellSize)
-        {
-            string letter = GetVariationLabel(index);
-
-            float cx = (move.X + 1f) * cellSize;
-            float cy = (move.Y + 1f) * cellSize;
-
-            var rect = new RectF(
-                cx - cellSize / 2,
-                cy - cellSize / 2,
-                cellSize,
-                cellSize
-            );
-
-            canvas.Font = Font.Default;
-            canvas.FontSize = cellSize * 0.45f;
-            canvas.FontColor = Colors.Black;
-
-            canvas.DrawString(
-                letter.ToString(),
-                rect,
-                HorizontalAlignment.Center,
-                VerticalAlignment.Center
-            );
-        }
-
-        private string GetVariationLabel(int index)
-        {
-            // index = 0 → A
-            // index = 25 → Z
-            // index = 26 → AA
-            // index = 27 → AB
-            // etc.
-
-            string label = String.Empty;
-            index++; // shift to 1‑based
-
-            while (index > 0)
-            {
-                index--; // convert to 0‑based
-                label = (char)('A' + (index % 26)) + label;
-                index /= 26;
-            }
-
-            return label;
-        }
+       
         #endregion  Variation Code
+
         // -------------------------
         //   BUILD BOARD HISTORY
         // -------------------------
@@ -216,13 +313,13 @@ namespace StoneLedger.Controls
 
             var board = new BoardState();
 
-            // --- NEW: Apply default stones first ---
+            // Apply default stones first
             foreach (var stone in DefaultStones)
                 board.Grid[stone.X, stone.Y] = stone.Color;
 
             if (Moves == null || Moves.Count == 0)
             {
-                BoardHistory.Add(board);   // ← THIS is the missing piece
+                BoardHistory.Add(board);
                 return;
             }
 
@@ -240,7 +337,6 @@ namespace StoneLedger.Controls
             DefaultStones.AddRange(stones);
             BuildBoardHistory();
         }
-
 
         // -------------------------
         //   APPLY MOVE + CAPTURES
@@ -275,7 +371,6 @@ namespace StoneLedger.Controls
 
             VariationMoves.RemoveAt(VariationMoves.Count - 1);
 
-            // If no moves left, reset the branch
             if (VariationMoves.Count == 0)
                 VariationStartIndex = -1;
         }
@@ -310,7 +405,6 @@ namespace StoneLedger.Controls
 
         public (int x, int y) PixelToBoard(double px, double py)
         {
-            // Ensure layout is valid
             if (CellSize <= 0)
                 return (-1, -1);
 
@@ -325,8 +419,6 @@ namespace StoneLedger.Controls
 
             return (ix, iy);
         }
-
-
 
         private void RemoveGroup(BoardState board, int x, int y)
         {
@@ -350,7 +442,6 @@ namespace StoneLedger.Controls
             }
         }
 
-
         private IEnumerable<(int, int)> Neighbours(int x, int y)
         {
             if (x > 0) yield return (x - 1, y);
@@ -358,7 +449,6 @@ namespace StoneLedger.Controls
             if (y > 0) yield return (x, y - 1);
             if (y < 18) yield return (x, y + 1);
         }
-
 
         // -------------------------
         //   DRAWING
@@ -374,15 +464,6 @@ namespace StoneLedger.Controls
             DrawStarPoints(canvas, BoardRect, Padding, CellSize);
             DrawBoardNotation(canvas, BoardRect, Padding, CellSize);
 
-            //if (Moves is null || Moves.Count == 0)
-            //    return;
-
-            //DrawStones(canvas, BoardRect, Padding, CellSize);
-
-            //// Only draw move-dependent layers if moves exist
-            //if (Moves is null || Moves.Count == 0)
-            //    return;
-
             DrawStones(canvas, BoardRect, Padding, CellSize);
             DrawLastMoveHighlight(canvas, BoardRect, Padding, CellSize);
 
@@ -396,14 +477,13 @@ namespace StoneLedger.Controls
                 annotation.Draw(canvas, BoardRect, Padding, CellSize);
         }
 
-       
- 
         private void DrawStones(ICanvas canvas, RectF rect, float padding, float cellSize)
         {
-            if (CurrentMoveIndex < 0 || CurrentMoveIndex >= BoardHistory.Count)
+            if (BoardHistory.Count == 0)
                 return;
 
-            var board = BoardHistory[CurrentMoveIndex];
+            int index = Math.Clamp(CurrentMoveIndex, 0, BoardHistory.Count - 1);
+            var board = BoardHistory[index];
 
             for (int x = 0; x < 19; x++)
             {
@@ -419,58 +499,42 @@ namespace StoneLedger.Controls
             }
         }
 
-
-        //private void DrawLastMoveHighlight(ICanvas canvas, RectF rect, float padding, float cellSize)
-        //{
-        //    if ((Moves == null || Moves?.Count == 0) && DefaultStones.Count == 0)
-        //        return;
-        //    if (CurrentMoveIndex < 0 || CurrentMoveIndex >= Moves?.Count)
-        //        return;
-
-        //    var last =  Moves != null ?  Moves[CurrentMoveIndex] : DefaultStones[DefaultStones.Count  - 1];
-
-        //    float x = rect.Left + padding + last.X * cellSize;
-        //    float y = rect.Top + padding + last.Y * cellSize;
-
-        //    canvas.StrokeColor = Colors.Red;
-        //    canvas.StrokeSize = 2;
-        //    canvas.DrawCircle(x, y, cellSize * 0.55f);
-        //}
-
         private void DrawLastMoveHighlight(ICanvas canvas, RectF rect, float padding, float cellSize)
         {
-            // --- 1. Determine the last stone on the board ---
             SgfMove? last = null;
 
-            // Prefer main-line moves
-            if (Moves != null && Moves.Count > 0 &&
-                CurrentMoveIndex >= 0 && CurrentMoveIndex < Moves.Count)
+            // 1 — If joseki exists, highlight last joseki stone
+            if (JosekiEndIndex > 0 && JosekiEndIndex <= VariationMoves.Count)
             {
-                last = Moves[CurrentMoveIndex];
+                last = VariationMoves[JosekiEndIndex - 1];
             }
-            // Otherwise fall back to default stones
-            else if (DefaultStones != null && DefaultStones.Count > 0)
+            else
             {
-                last = DefaultStones.Last();
+                // 2 — Otherwise highlight last main-line move
+                if (Moves != null && Moves.Count > 0 &&
+                    CurrentMoveIndex >= 0 && CurrentMoveIndex < Moves.Count)
+                {
+                    last = Moves[CurrentMoveIndex];
+                }
+                else if (DefaultStones != null && DefaultStones.Count > 0)
+                {
+                    last = DefaultStones.Last();
+                }
             }
 
-            // Nothing to highlight
             if (last == null)
                 return;
 
-            // --- 2. Compute centre point ---
             float cx = rect.Left + padding + last.X * cellSize;
             float cy = rect.Top + padding + last.Y * cellSize;
 
-            // --- 3. Correct highlight sizing ---
-            float radius = cellSize * 0.45f;      // fits inside stone
-            float stroke = cellSize * 0.08f;      // thin, clean ring
+            float radius = cellSize * 0.45f;
+            float stroke = cellSize * 0.08f;
 
             canvas.StrokeColor = Colors.Red;
             canvas.StrokeSize = stroke;
             canvas.DrawCircle(cx, cy, radius);
         }
-
 
 
         // --- Existing drawing helpers unchanged ---
@@ -523,13 +587,14 @@ namespace StoneLedger.Controls
 
         void DrawMoveNumbers(ICanvas canvas, IList<SgfMove> moves, float cellSize)
         {
-            if (moves == null || moves.Count == 0)
+            if (moves == null || moves.Count == 0 || BoardHistory.Count == 0)
                 return;
 
             canvas.Font = Font.Default;
             canvas.FontSize = cellSize * 0.45f;
 
-            var board = BoardHistory[CurrentMoveIndex];
+            int index = Math.Clamp(CurrentMoveIndex, 0, BoardHistory.Count - 1);
+            var board = BoardHistory[index];
 
             int start = Math.Max(0, Math.Min(MoveNumberStartIndex, CurrentMoveIndex));
 
@@ -539,7 +604,6 @@ namespace StoneLedger.Controls
             {
                 var m = moves[i];
 
-                // Only consider stones that still exist on the board
                 if (board.Grid[m.X, m.Y] != null)
                     latestAtPoint[(m.X, m.Y)] = i;
             }
@@ -553,8 +617,8 @@ namespace StoneLedger.Controls
                     ? (i - start + 1)
                     : (i + 1);
 
-                float cx = (x + 1f) * cellSize;
-                float cy = (y + 1f) * cellSize;
+                float cx = BoardRect.Left + Padding + x * cellSize;
+                float cy = BoardRect.Top + Padding + y * cellSize;
 
                 var rect = new RectF(
                     cx - cellSize / 2,
@@ -574,7 +638,6 @@ namespace StoneLedger.Controls
                 );
             }
         }
-
 
         private void DrawStone(ICanvas canvas, RectF boardRect, float padding, float cellSize, SgfMove move)
         {
