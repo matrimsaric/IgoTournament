@@ -484,13 +484,10 @@ public partial class GameReplayerControl : ContentView
                 break;
 
             case "Variation":
-                replayer.AddVariationMove(x, y, false);
+                replayer.AddVariationMove(x, y, joseki);
 
                 break;
-            case "Joseki":
-                    
-                replayer.AddVariationMove(x, y, true);
-                break;
+
             case "Eraser":
                 // already removed above
                 break;

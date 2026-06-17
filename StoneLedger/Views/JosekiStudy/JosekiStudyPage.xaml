@@ -20,85 +20,7 @@
 
                 <VerticalStackLayout Spacing="12">
 
-                    <Label Text="Annotations"
-                FontAttributes="Bold"
-                HorizontalOptions="Center" />
-
-                    <!-- Tool Selector -->
-                    <Picker x:Name="AnnotationToolPicker"
-                 Title="Tool"
-                 WidthRequest="150"
-                 SelectedIndexChanged="OnAnnotationToolChanged">
-                        <Picker.Items>
-                            <x:String>Ring</x:String>
-                            <x:String>Label</x:String>
-                            <x:String>Symbol</x:String>
-                            <x:String>Territory</x:String>
-                            <x:String>Eraser</x:String>
-                            <x:String>Moves From</x:String>
-                            <x:String>Variation</x:String>
-                            <x:String>Joseki</x:String>
-                        </Picker.Items>
-                    </Picker>
-
-                    <!-- Ring Options -->
-                    <HorizontalStackLayout x:Name="RingOptions" Spacing="6">
-                        <Picker x:Name="RingColorPicker"
-                     WidthRequest="120">
-                            <Picker.Items>
-                                <x:String>Green</x:String>
-                                <x:String>LimeGreen</x:String>
-                                <x:String>Blue</x:String>
-                                <x:String>Purple</x:String>
-                                <x:String>White</x:String>
-                                <x:String>Black</x:String>
-                                <x:String>Yellow</x:String>
-                                <x:String>LightYellow</x:String>
-                                <x:String>Orange</x:String>
-                                <x:String>Red</x:String>
-                            </Picker.Items>
-                        </Picker>
-                    </HorizontalStackLayout>
-
-                    <!-- Label Options -->
-                    <HorizontalStackLayout x:Name="LabelOptions" Spacing="6">
-                        <Entry x:Name="LabelEntry"
-                    WidthRequest="40"
-                    MaxLength="1"
-                    Placeholder="A" />
-                        <Label Text="Label"
-                    VerticalTextAlignment="Center" />
-                    </HorizontalStackLayout>
-
-                    <!-- Symbol Options -->
-                    <HorizontalStackLayout x:Name="SymbolOptions"
-                                Spacing="6"
-                                IsVisible="False">
-                        <Picker x:Name="SymbolPicker" WidthRequest="120">
-                            <Picker.Items>
-                                <x:String>Skull</x:String>
-                                <x:String>Smiley</x:String>
-                                <x:String>Sad</x:String>
-                                <x:String>Scared</x:String>
-                            </Picker.Items>
-                        </Picker>
-                    </HorizontalStackLayout>
-
-                    <!-- Moves From Options -->
-                    <VerticalStackLayout x:Name="MoveFromOptions" Spacing="6">
-
-                        <Slider Minimum="0"
-                     WidthRequest="120"
-                     Maximum="{Binding TotalMoves, Source={x:Reference GameReplayer}}"
-                     Value="{Binding MoveNumberStartIndex, Source={x:Reference GameReplayer}}" />
-
-                        <Switch IsToggled="{Binding RenumberFromOne, Source={x:Reference GameReplayer}}" />
-                    </VerticalStackLayout>
-
-                    <Button Text="Clear"
-                 WidthRequest="120"
-                 Clicked="OnClearAnnotationsClicked" />
-
+              
                 </VerticalStackLayout>
 
             </ScrollView>
@@ -123,7 +45,37 @@
     </Border>
 
         <!-- Player B -->
-        <Border Grid.Column="2">
+        <Border Grid.Column="2"
+        Style="{StaticResource CardBorderStyle}"
+        Padding="20">
+
+            <VerticalStackLayout Spacing="20"
+                         HorizontalOptions="Center"
+                         VerticalOptions="Start">
+
+                <Label Text="Mode"
+               FontAttributes="Bold"
+               HorizontalOptions="Center" />
+
+                <!-- JOSEKI -->
+                <Button x:Name="JosekiButton"
+                Text="Joseki"
+                WidthRequest="140"
+                Clicked="OnJosekiClicked" />
+
+                <!-- VARIATION -->
+                <Button x:Name="VariationButton"
+                Text="Variation"
+                WidthRequest="140"
+                Clicked="OnVariationClicked" />
+
+                <!-- CLEAR -->
+                <Button x:Name="ClearButton"
+                Text="Clear"
+                WidthRequest="140"
+                Clicked="OnClearAnnotationsClicked" />
+
+            </VerticalStackLayout>
 
         </Border>
 
