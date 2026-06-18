@@ -1,7 +1,9 @@
 ﻿using Microsoft.Maui.Graphics;
 using StoneLedger.Models;
+using StoneLedger.Resources.Dictionaries;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using static StoneLedger.Views.JosekiStudy.JosekiStudyPage;
 
 namespace StoneLedger.ViewModels.JosekiStudy;
 
@@ -13,6 +15,74 @@ public class JosekiStudyViewModel : BindableObject
         get => _description;
         set { _description = value; OnPropertyChanged(); }
     }
+
+    public ObservableCollection<VariationType> VariationTypes { get; } =
+    new(Enum.GetValues<VariationType>());
+
+    private VariationType _selectedStudyMode;
+    public VariationType SelectedStudyMode
+    {
+        get => _selectedStudyMode;
+        set
+        {
+            if (_selectedStudyMode != value)
+            {
+                _selectedStudyMode = value;
+                OnPropertyChanged();
+                UpdateAvailableBranches();
+                UpdateBadge();
+            }
+
+        }
+    }
+
+    public ObservableCollection<string> AvailableBranches { get; } = new();
+
+    private string _selectedBranch;
+    public string SelectedBranch
+    {
+        get => _selectedBranch;
+        set
+        {
+            if (_selectedBranch != value)
+            {
+                _selectedBranch = value;
+                OnPropertyChanged();
+                UpdateBadge();
+            }
+        }
+    }
+
+    private Color _badgeColour;
+    public Color BadgeColour
+    {
+        get => _badgeColour;
+        set { _badgeColour = value; OnPropertyChanged(); }
+    }
+
+    private string _badgeKanji;
+    public string BadgeKanji
+    {
+        get => _badgeKanji;
+        set { _badgeKanji = value; OnPropertyChanged(); }
+    }
+
+    private string _title;
+    public string Title
+    {
+        get => _title;
+        set { _title = value; OnPropertyChanged(); }
+    }
+
+    private Color _panelBackgroundColour;
+    public Color PanelBackgroundColour
+    {
+        get => _panelBackgroundColour;
+        set { _panelBackgroundColour = value; OnPropertyChanged(); }
+    }
+
+
+
 
     public object BoardDrawable { get; }
 
@@ -43,6 +113,8 @@ public class JosekiStudyViewModel : BindableObject
         SaveCommand = new Command(() => { /* TODO */ });
         LoadCommand = new Command(() => { /* TODO */ });
         ExportCommand = new Command(() => { /* TODO */ });
+
+        SelectedStudyMode = VariationType.None; // triggers branch load + badge update
     }
 
     public void AddDefaultStone(int x, int y)
@@ -63,6 +135,55 @@ public class JosekiStudyViewModel : BindableObject
 
         OnPropertyChanged(nameof(DefaultStones));
     }
+
+    private void UpdateAvailableBranches()
+    {
+        AvailableBranches.Clear();
+
+        switch (SelectedStudyMode)
+        {
+            case VariationType.Joseki:
+                AvailableBranches.Add("44");
+                AvailableBranches.Add("34");
+                AvailableBranches.Add("33");
+                AvailableBranches.Add("54");
+                break;
+
+            case VariationType.Fuseki:
+                AvailableBranches.Add("nirensei");
+                AvailableBranches.Add("sanrensei");
+                AvailableBranches.Add("shusaku");
+                AvailableBranches.Add("chinese");
+                AvailableBranches.Add("345");
+                break;
+
+            case VariationType.Tesuji:
+                // Add later
+                AvailableBranches.Add("escape");
+                AvailableBranches.Add("kill");
+                AvailableBranches.Add("surround");
+                AvailableBranches.Add("connect");
+                AvailableBranches.Add("disconnect");
+                break;
+        }
+
+        SelectedBranch = AvailableBranches.FirstOrDefault();
+        UpdateBadge();
+    }
+
+    private void UpdateBadge()
+    {
+        if (SelectedBranch == null)
+            return;
+
+        BadgeColour = StudyVisuals.BranchColours[SelectedBranch];
+        BadgeKanji = StudyVisuals.ModeKanji[SelectedStudyMode];
+
+        // High-opacity background (20%)
+        PanelBackgroundColour = BadgeColour.WithAlpha(0.2f);
+    }
+
+
 
     private void SelectTab(string tab)
     {

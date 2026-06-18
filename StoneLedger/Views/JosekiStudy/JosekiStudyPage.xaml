@@ -12,19 +12,55 @@
 
         <!-- Player A -->
         <Border Grid.Column="0"
-          Style="{StaticResource CardBorderStyle}">
-            <!-- LEFT PANEL -->
-            <ScrollView Grid.Column="0"
-             BackgroundColor="#F0F0F0"
-             Padding="10">
+        Style="{StaticResource CardBorderStyle}"
+        Padding="0">
 
-                <VerticalStackLayout Spacing="12">
+            <!-- Inner border that holds the tinted background -->
+            <Border BackgroundColor="{Binding PanelBackgroundColour}"
+            Padding="20">
 
-              
+                <VerticalStackLayout Spacing="20"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Start">
+
+                    <!-- Badge -->
+                    <Border
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 200"
+                WidthRequest="140"
+                HeightRequest="140"
+                BackgroundColor="{Binding BadgeColour}">
+                        <Label
+                    Text="{Binding BadgeKanji}"
+                    FontSize="64"
+                    FontAttributes="Bold"
+                    TextColor="White"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center" />
+                    </Border>
+
+                    <!-- Title -->
+                    <Entry
+                Placeholder="Title"
+                Text="{Binding Title}"
+                FontSize="18"
+                WidthRequest="200" />
+
+                    <!-- Notes -->
+                    <ScrollView HeightRequest="150">
+                        <Editor
+                    Placeholder="Notes or description..."
+                    Text="{Binding Description}"
+                    FontSize="16"
+                    AutoSize="TextChanges"
+                    WidthRequest="200" />
+                    </ScrollView>
+
                 </VerticalStackLayout>
 
-            </ScrollView>
+            </Border>
         </Border>
+
 
         <!-- Match -->
         <Border Grid.Column="1">
@@ -47,6 +83,7 @@
         <!-- Player B -->
         <Border Grid.Column="2"
         Style="{StaticResource CardBorderStyle}"
+
         Padding="20">
 
             <VerticalStackLayout Spacing="20"
@@ -74,6 +111,21 @@
                 Text="Clear"
                 WidthRequest="140"
                 Clicked="OnClearAnnotationsClicked" />
+
+
+
+                <!-- Mode selector -->
+                <Picker
+    Title="Study Type"
+    ItemsSource="{Binding VariationTypes}"
+    SelectedItem="{Binding SelectedStudyMode}" />
+
+
+                <!-- Branch selector -->
+                <Picker
+    Title="Branch"
+    ItemsSource="{Binding AvailableBranches}"
+    SelectedItem="{Binding SelectedBranch}" />
 
             </VerticalStackLayout>
 

@@ -1,4 +1,5 @@
 using StoneLedger.Controls;
+using StoneLedger.Resources.Dictionaries;
 using StoneLedger.ViewModels.JosekiStudy;
 
 namespace StoneLedger.Views.JosekiStudy;
@@ -17,7 +18,18 @@ public partial class JosekiStudyPage : ContentPage
         Variation
     }
 
+    public enum VariationType
+    {
+        None,
+        Joseki,
+        Fuseki,
+        Tesuji,
+        Yose,
+    }
+
     public StudyMode _currentMode = StudyMode.Joseki;
+
+    public VariationType _currentVariationType = VariationType.Joseki;
 
     private EditorMode _mode = EditorMode.DefaultStones;
 
@@ -34,7 +46,10 @@ public partial class JosekiStudyPage : ContentPage
     {
         base.OnAppearing();
         SelectJosekiMode();
+
+
     }
+
 
     private void SelectJosekiMode()
     {
