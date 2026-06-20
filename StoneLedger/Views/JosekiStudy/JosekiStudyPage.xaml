@@ -11,7 +11,7 @@
     ColumnSpacing="20">
 
         <!-- Player A -->
-        <Border Grid.Column="0"
+        <Border Grid.Column="0" x:Name="LeftPanel"
         Style="{StaticResource CardBorderStyle}"
         Padding="0">
 
@@ -23,7 +23,16 @@
                              HorizontalOptions="Center"
                              VerticalOptions="Start">
 
-                    <!-- Badge -->
+                    <!-- Outer ring -->
+                    <Border
+    StrokeThickness="6"
+    Stroke="{Binding ResultRingColour}"
+    StrokeShape="RoundRectangle 200"
+    WidthRequest="160"
+    HeightRequest="160"
+    HorizontalOptions="Center"
+    VerticalOptions="Center">
+                        <!-- Badge -->
                     <Border
                 StrokeThickness="0"
                 StrokeShape="RoundRectangle 200"
@@ -38,22 +47,28 @@
                     HorizontalOptions="Center"
                     VerticalOptions="Center" />
                     </Border>
+                    </Border>
 
                     <!-- Title -->
                     <Entry
-                Placeholder="Title"
-                Text="{Binding Title}"
-                FontSize="18"
-                WidthRequest="200" />
+    Placeholder="Title"
+    Text="{Binding Title}"
+    FontSize="18"
+    BackgroundColor="White"
+    HorizontalOptions="Fill"
+WidthRequest="{Binding Source={x:Reference LeftPanel}, Path=Width, Converter={StaticResource MultiplyConverter}, ConverterParameter=0.75}" />
 
                     <!-- Notes -->
-                    <ScrollView HeightRequest="150">
+                    <ScrollView HeightRequest="250">
                         <Editor
-                    Placeholder="Notes or description..."
-                    Text="{Binding Description}"
-                    FontSize="16"
-                    AutoSize="TextChanges"
-                    WidthRequest="200" />
+        Placeholder="Notes or description..."
+        Text="{Binding Description}"
+        FontSize="16"
+        BackgroundColor="White"
+        VerticalOptions="FillAndExpand"
+        AutoSize="TextChanges"
+        HorizontalOptions="Fill"
+WidthRequest="{Binding Source={x:Reference LeftPanel}, Path=Width, Converter={StaticResource MultiplyConverter}, ConverterParameter=0.75}" />
                     </ScrollView>
 
                 </VerticalStackLayout>
@@ -126,6 +141,14 @@
     Title="Branch"
     ItemsSource="{Binding AvailableBranches}"
     SelectedItem="{Binding SelectedBranch}" />
+                <HorizontalStackLayout HorizontalOptions="Center">
+                    <CheckBox
+        IsChecked="{Binding IsSente}" />
+                    <Label
+        Text="Joseki ends in sente"
+        VerticalTextAlignment="Center" />
+                </HorizontalStackLayout>
+
 
             </VerticalStackLayout>
 

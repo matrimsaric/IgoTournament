@@ -36,6 +36,38 @@ public class JosekiStudyViewModel : BindableObject
         }
     }
 
+    private bool _isSente;
+    public bool IsSente
+    {
+        get => _isSente;
+        set
+        {
+            if (_isSente == value) return;
+            _isSente = value;
+            OnPropertyChanged();
+            UpdateResultRingColour();
+        }
+    }
+
+    private Color _resultRingColour = Colors.Transparent;
+    public Color ResultRingColour
+    {
+        get => _resultRingColour;
+        set
+        {
+            if (_resultRingColour == value) return;
+            _resultRingColour = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private void UpdateResultRingColour()
+    {
+        // Black = sente, Red = gote
+        ResultRingColour = IsSente ? Colors.Black : Colors.Red;
+    }
+
+
     public ObservableCollection<string> AvailableBranches { get; } = new();
 
     private string _selectedBranch;
