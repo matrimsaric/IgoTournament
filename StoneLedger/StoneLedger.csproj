@@ -73,6 +73,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\CompetitionDomain\CompetitionDomain.csproj" />
+	  <ProjectReference Include="..\JosekiDomain\JosekiDomain.csproj" />
 	  <ProjectReference Include="..\PlayerDomain\PlayerDomain.csproj" />
 	</ItemGroup>
 
