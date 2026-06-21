@@ -56,11 +56,20 @@ public class JosekiController : ControllerBase
     }
 
     [HttpPost]
+    [HttpPost]
     public async Task<IActionResult> CreateJoseki([FromBody] JosekiEntry newEntry)
     {
-        var result = await _entryService.CreateJosekiAsync(newEntry);
-        return Ok(newEntry);
+        try
+        {
+            var result = await _entryService.CreateJosekiAsync(newEntry);
+            return Ok(new JsonResult(newEntry));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.ToString());
+        }
     }
+
 
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateJoseki(Guid id, [FromBody] JosekiEntry updatedEntry)

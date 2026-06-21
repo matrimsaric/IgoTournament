@@ -1,4 +1,5 @@
-﻿using ServerCommonModule.Attributes;
+﻿using CommonModule.Enums;
+using ServerCommonModule.Attributes;
 using ServerCommonModule.Model;
 using ServerCommonModule.Model.Interfaces;
 using System;
@@ -22,7 +23,7 @@ namespace JosekiDomain.Model
         public int Category { get; set; }
 
         [FieldName("sub_category"), FieldType(SqlDbType.Int), FieldIsNullable(true)]
-        public int? SubCategory { get; set; }
+        public int SubCategory { get; set; }
 
         [FieldName("is_sente"), FieldType(SqlDbType.Bit)]
         public bool IsSente { get; set; }
@@ -38,7 +39,7 @@ namespace JosekiDomain.Model
         public string Moves { get; set; } = string.Empty;
 
         [FieldName("variation_change_index"), FieldType(SqlDbType.Int), FieldIsNullable(true)]
-        public int? VariationChangeIndex { get; set; }
+        public int VariationChangeIndex { get; set; }
 
         [FieldName("variation_change_coord"), FieldType(SqlDbType.NVarChar), FieldIsNullable(true)]
         public string VariationChangeCoord { get; set; } = string.Empty;
@@ -48,6 +49,9 @@ namespace JosekiDomain.Model
 
         [FieldName("is_even_result"), FieldType(SqlDbType.Bit)]
         public bool IsEvenResult { get; set; }
+
+        [FieldName("joseki_intent"), FieldType(SqlDbType.Int)]
+        public int Intent { get; set; }
 
         public override IModelEntry Clone()
         {
@@ -64,8 +68,10 @@ namespace JosekiDomain.Model
                 VariationChangeIndex = this.VariationChangeIndex,
                 VariationChangeCoord = this.VariationChangeCoord,
                 ParentId = this.ParentId,
-                IsEvenResult = this.IsEvenResult
+                IsEvenResult = this.IsEvenResult,
+                Intent = this.Intent,
             };
         }
+
     }
 }

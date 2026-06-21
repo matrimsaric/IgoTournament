@@ -121,12 +121,23 @@ WidthRequest="{Binding Source={x:Reference LeftPanel}, Path=Width, Converter={St
                 WidthRequest="140"
                 Clicked="OnVariationClicked" />
 
+                <Picker Title="Intent"
+        ItemsSource="{Binding IntentOptions}"
+        SelectedItem="{Binding Intent}" />
+
+
                 <!-- CLEAR -->
                 <Button x:Name="ClearButton"
                 Text="Clear"
                 WidthRequest="140"
                 Clicked="OnClearAnnotationsClicked" />
 
+                <!-- SAVE -->
+                <Button
+    x:Name="SaveButton"
+    Text="Save"
+    WidthRequest="140"
+    Clicked="OnSaveClicked" />
 
 
                 <!-- Mode selector -->

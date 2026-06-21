@@ -69,8 +69,8 @@ namespace StoneLedger
             builder.Services.AddTransient<MatchService>();
 
             // Joseki API Services
-            builder.Services.AddTransient<IJosekiEntryService, JosekiEntryService>();
-            builder.Services.AddTransient<IJosekiBookService, JosekiBookService>();
+            builder.Services.AddTransient<JosekiEntryService, JosekiEntryService>();
+            builder.Services.AddTransient<JosekiBookService, JosekiBookService>();
 
 
             builder.Services.AddTransient<AddRoundPage>();
@@ -87,8 +87,8 @@ namespace StoneLedger
             builder.Services.AddTransient<PlayerDetailViewModel>();
             builder.Services.AddTransient<PlayerDetailPage>();
 
-            builder.Services.AddTransient<JosekiStudyPage>();
             builder.Services.AddTransient<JosekiStudyViewModel>();
+            builder.Services.AddTransient<JosekiStudyPage>();
 
             builder.Services.AddTransient<PlayerContentViewModel>();
             builder.Services.AddTransient<PlayerContentView>();

@@ -5,6 +5,10 @@ using CompetitionDomain.Services;
 using CompetitionDomain.Services.Interfaces;
 using ImageDomain.ControlModule;
 using ImageDomain.ControlModule.Interfaces;
+using JosekiDomain.ControlModule;
+using JosekiDomain.ControlModule.Interfaces;
+using JosekiDomain.Services;
+using JosekiDomain.Services.Interfaces;
 using Npgsql.Internal;
 using PlayerDomain.ControlModule;
 using PlayerDomain.ControlModule.Interfaces;
@@ -47,6 +51,8 @@ builder.Services.AddSingleton<IMatchRepository, MatchRepository>();
 builder.Services.AddSingleton<ISgfRecordRepository, SgfRecordRepository>();
 builder.Services.AddSingleton<IImageRepository, ImageRepository>();
 builder.Services.AddSingleton<ITeamMembershipRepository, TeamMembershipRepository>();
+builder.Services.AddSingleton<IJosekiEntryRepository, JosekiEntryRepository>();
+builder.Services.AddSingleton<IJosekiBookRepository, JosekiBookRepository>();
 
 
 // 5. Register services
@@ -57,6 +63,9 @@ builder.Services.AddSingleton<IMatchService, MatchService>();
 builder.Services.AddSingleton<ISgfRecordService, SgfRecordService>();
 builder.Services.AddSingleton<IImageService , ImageService>();
 builder.Services.AddSingleton<ITeamMembershipService, TeamMembershipService>();
+builder.Services.AddTransient<IJosekiEntryService, JosekiEntryService>();
+builder.Services.AddTransient<IJosekiBookService, JosekiBookService>();
+
 
 // Add services to the container.
 builder.Services.AddScoped<ISgfParser, SgfParser>();

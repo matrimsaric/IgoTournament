@@ -14,7 +14,7 @@ namespace JosekiDomain.ControlModule.Comparers
             int c = x.Category.CompareTo(y.Category);
             if (c != 0) return c;
 
-            c = (x.SubCategory ?? 0).CompareTo(y.SubCategory ?? 0);
+            c = (x.SubCategory).CompareTo(y.SubCategory);
             if (c != 0) return c;
 
             return string.Compare(x.Name, y.Name, true);

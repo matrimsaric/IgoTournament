@@ -60,6 +60,10 @@ namespace StoneLedger.Services.Api
 
         public async Task<JosekiEntry> CreateJosekiAsync(JosekiEntry newEntry)
         {
+            var json = System.Text.Json.JsonSerializer.Serialize(newEntry);
+            Console.WriteLine("JSON SENT: " + json);
+
+
             var response = await _http.PostAsJsonAsync(
                 "api/content/joseki", newEntry);
 

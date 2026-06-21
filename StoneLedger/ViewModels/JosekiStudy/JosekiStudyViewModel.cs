@@ -1,7 +1,12 @@
-﻿using Microsoft.Maui.Graphics;
+﻿using CommonModule.Enums;
+using JosekiDomain.Model;
+using JosekiDomain.Services.Interfaces;
+using Microsoft.Maui.Graphics;
 using StoneLedger.Models;
 using StoneLedger.Resources.Dictionaries;
+using StoneLedger.Services.Api;
 using System.Collections.ObjectModel;
+using System.Text.Json;
 using System.Windows.Input;
 using static StoneLedger.Views.JosekiStudy.JosekiStudyPage;
 
@@ -9,12 +14,38 @@ namespace StoneLedger.ViewModels.JosekiStudy;
 
 public class JosekiStudyViewModel : BindableObject
 {
+    private readonly JosekiEntryService _josekiEntryService;
+    private readonly JosekiBookService _josekiBookService;
+
+    public Guid? ParentId { get; set; }
+    public int? VariationChangeIndex { get; set; }
+    public string VariationChangeCoord { get; set; } = string.Empty;
+    public bool IsEvenResult { get; set; }
+    public Guid? BookId { get; set; }
+
+    public ICommand SaveCommand { get; }
+
     private string _description;
     public string Description
     {
         get => _description;
         set { _description = value; OnPropertyChanged(); }
     }
+
+    private string _movesJson = string.Empty;
+    public string MovesJson
+    {
+        get => _movesJson;
+        set
+        {
+            if (_movesJson != value)
+            {
+                _movesJson = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
 
     public ObservableCollection<VariationType> VariationTypes { get; } =
     new(Enum.GetValues<VariationType>());
@@ -61,6 +92,8 @@ public class JosekiStudyViewModel : BindableObject
         }
     }
 
+
+
     private void UpdateResultRingColour()
     {
         // Black = sente, Red = gote
@@ -100,10 +133,17 @@ public class JosekiStudyViewModel : BindableObject
     }
 
     private string _title;
+    private bool _titleManuallyEdited = false;
+
     public string Title
     {
         get => _title;
-        set { _title = value; OnPropertyChanged(); }
+        set
+        {
+            _title = value;
+            _titleManuallyEdited = true;
+            OnPropertyChanged();
+        }
     }
 
     private Color _panelBackgroundColour;
@@ -129,7 +169,6 @@ public class JosekiStudyViewModel : BindableObject
     public Color SavePrintTabColor => IsSavePrintTab ? Colors.LightGray : Colors.Transparent;
 
     public ICommand SelectTabCommand { get; }
-    public ICommand SaveCommand { get; }
     public ICommand LoadCommand { get; }
     public ICommand ExportCommand { get; }
 
@@ -137,12 +176,14 @@ public class JosekiStudyViewModel : BindableObject
 
     private string _nextColor = "B"; // alternate automatically
 
-    public JosekiStudyViewModel()
+    public JosekiStudyViewModel(JosekiEntryService josekiEntryService, JosekiBookService josekiBookService)
     {
         //BoardDrawable = new JosekiBoardDrawable();
+        _josekiEntryService = josekiEntryService;
+        _josekiBookService = josekiBookService;
 
         SelectTabCommand = new Command<string>(SelectTab);
-        SaveCommand = new Command(() => { /* TODO */ });
+        SaveCommand = new Command(async () => await SaveAsync());
         LoadCommand = new Command(() => { /* TODO */ });
         ExportCommand = new Command(() => { /* TODO */ });
 
@@ -166,6 +207,71 @@ public class JosekiStudyViewModel : BindableObject
         _nextColor = _nextColor == "B" ? "W" : "B";
 
         OnPropertyChanged(nameof(DefaultStones));
+    }
+
+    internal async Task SaveAsync()
+    {
+        var entry = new JosekiEntry
+        {
+            Id = Guid.NewGuid(),
+            Name = this.Title ?? string.Empty,
+            Category = (int)this.SelectedStudyMode,
+            SubCategory = ParseSubCategory(SelectedBranch) ?? 0,
+            IsSente = this.IsSente,
+            BookId = this.BookId ?? DefaultJosekiBookId,
+            Description = this.Description ?? string.Empty,
+            Moves = MovesJson,
+            VariationChangeIndex = this.VariationChangeIndex ?? 0,
+            VariationChangeCoord = this.VariationChangeCoord ?? string.Empty,
+            ParentId = this.ParentId ?? Guid.Empty,
+            IsEvenResult = this.IsEvenResult,
+            Intent = (int)this.Intent,
+        };
+
+        await _josekiEntryService.CreateJosekiAsync(entry);
+    }
+
+    private static readonly Guid DefaultJosekiBookId =
+    Guid.Parse("019ee999-c1d2-733c-816d-ebe3c2f090ae");
+
+    public void AutoGenerateTitle()
+    {
+        if (_titleManuallyEdited)
+            return;
+
+        string modeName = SelectedStudyMode.ToString(); // Joseki, Fuseki, Tesuji
+        string branch = SelectedBranch ?? "";
+
+        // Prefer Kanji if available
+        string kanji = BadgeKanji;
+
+        // Format: "定石 44" or "布石 sanrensei"
+        Title = $"{kanji} {branch}".Trim();
+
+    }
+
+    public List<JosekiIntent> IntentOptions { get; } =
+    Enum.GetValues(typeof(JosekiIntent)).Cast<JosekiIntent>().ToList();
+
+
+    private JosekiIntent _intent = JosekiIntent.Neutral;
+    public JosekiIntent Intent
+    {
+        get => _intent;
+        set
+        {
+            _intent = value;
+            OnPropertyChanged();
+        }
+    }
+
+
+    private int? ParseSubCategory(string branch)
+    {
+        if (int.TryParse(branch, out var value))
+            return value;
+
+        return null;
     }
 
     private void UpdateAvailableBranches()
@@ -211,8 +317,9 @@ public class JosekiStudyViewModel : BindableObject
         BadgeColour = StudyVisuals.BranchColours[SelectedBranch];
         BadgeKanji = StudyVisuals.ModeKanji[SelectedStudyMode];
 
-        // High-opacity background (20%)
-        PanelBackgroundColour = BadgeColour.WithAlpha(0.2f);
+        AutoGenerateTitle();
+    // High-opacity background (20%)
+    PanelBackgroundColour = BadgeColour.WithAlpha(0.2f);
     }
 
 

@@ -9,6 +9,16 @@ public partial class GameReplayerControl : ContentView
     public event EventHandler? RequestExpand;
     public bool IsExpanded { get; private set; }
 
+    public List<SgfMove> GetVariationMoves()
+    => Drawable.VariationMoves.ToList();
+
+    public int GetJosekiEndIndex()
+        => GameReplayerDrawable.JosekiEndIndex;
+
+    public bool GetShowVariation()
+        => Drawable.ShowVariation;
+
+
     public event EventHandler<(int X, int Y)>? BoardTapped;
 
     public static readonly BindableProperty MoveNumberStartIndexProperty =
@@ -71,6 +81,7 @@ public partial class GameReplayerControl : ContentView
         set => SetValue(TotalMovesProperty, value);
     }
 
+
     private int lastJosekiStone = 0;
 
 
@@ -107,7 +118,16 @@ public partial class GameReplayerControl : ContentView
         AnnotationsPanel.IsVisible = !AnnotationsPanel.IsVisible;
     }
 
+    public void SetVariationState(List<SgfMove> moves, int josekiEndIndex, bool showVariation)
+    {
+        Drawable.VariationMoves.Clear();
+        Drawable.VariationMoves.AddRange(moves);
 
+        GameReplayerDrawable.JosekiEndIndex = josekiEndIndex;
+        Drawable.ShowVariation = showVariation;
+
+        BoardView.Invalidate();
+    }
 
     public GameReplayerDrawable Drawable { get; }
 

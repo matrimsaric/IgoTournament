@@ -1,6 +1,8 @@
 using StoneLedger.Controls;
+using StoneLedger.Models;
 using StoneLedger.Resources.Dictionaries;
 using StoneLedger.ViewModels.JosekiStudy;
+using System.Text.Json;
 
 namespace StoneLedger.Views.JosekiStudy;
 
@@ -34,12 +36,12 @@ public partial class JosekiStudyPage : ContentPage
     private EditorMode _mode = EditorMode.DefaultStones;
 
 
-    public JosekiStudyPage()
+    public JosekiStudyPage(JosekiStudyViewModel vm)
 	{
 		InitializeComponent();
         VariationButton.IsVisible = false;
 
-        BindingContext = new JosekiStudyViewModel();
+        BindingContext = vm;
     }
 
     protected override void OnAppearing()
@@ -76,6 +78,27 @@ public partial class JosekiStudyPage : ContentPage
     {
         SelectVariationMode();
     }
+
+    private async void OnSaveClicked(object sender, EventArgs e)
+    {
+        if (BindingContext is not JosekiStudyViewModel vm)
+            return;
+
+        // Extract move state from the replayer
+        var moveData = new JosekiMoveData
+        {
+            Moves = GameReplayer.GetVariationMoves(),
+            JosekiEndIndex = GameReplayer.GetJosekiEndIndex(),
+            ShowVariation = GameReplayer.GetShowVariation()
+        };
+
+        // Serialise to JSON
+        vm.MovesJson = JsonSerializer.Serialize(moveData);
+
+        // Call the ViewModel save
+        await vm.SaveAsync();
+    }
+
 
     private void OnClearAnnotationsClicked(object sender, EventArgs e)
     {
