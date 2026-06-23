@@ -23,6 +23,7 @@ namespace StoneLedger
             Routing.RegisterRoute(nameof(RoundListPage), typeof(RoundListPage));
             Routing.RegisterRoute(nameof(AddRoundPage), typeof(AddRoundPage));
             Routing.RegisterRoute("joseki", typeof(JosekiStudyPage));
+            Routing.RegisterRoute("josekilist", typeof(JosekiListPage));
         }
         #pragma warning restore CA1416
     }

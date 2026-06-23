@@ -14,6 +14,7 @@ namespace StoneLedger.ViewModels.JosekiStudy;
 
 public class JosekiStudyViewModel : BindableObject
 {
+    public event Action? JosekiLoaded;
     private readonly JosekiEntryService _josekiEntryService;
     private readonly JosekiBookService _josekiBookService;
 
@@ -208,6 +209,30 @@ public class JosekiStudyViewModel : BindableObject
 
         OnPropertyChanged(nameof(DefaultStones));
     }
+
+    public async Task LoadJosekiAsync(Guid id)
+    {
+        var entry = await _josekiEntryService.GetJosekiByIdAsync(id);
+        if (entry == null)
+            return;
+
+        Title = entry.Name;
+        Description = entry.Description;
+        MovesJson = entry.Moves;
+
+        SelectedStudyMode = (VariationType)entry.Category;
+        SelectedBranch = entry.SubCategory.ToString() ?? "";
+        Intent = (JosekiIntent)entry.Intent;
+        IsSente = entry.IsSente;
+
+        ParentId = entry.ParentId;
+        VariationChangeIndex = entry.VariationChangeIndex;
+        VariationChangeCoord = entry.VariationChangeCoord;
+
+        UpdateBadge();
+        UpdateResultRingColour();
+    }
+
 
     internal async Task SaveAsync()
     {

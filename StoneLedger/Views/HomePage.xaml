@@ -29,6 +29,9 @@
             <Button Text="Tournaments"
                     Command="{Binding GoToTournamentsCommand}" />
 
+            <Button Text="Joseki List"
+Command="{Binding GoToJosekiListCommand}" />
+            
             <Button Text="Joseki Study"
          Command="{Binding GoToJosekiCommand}" />
 

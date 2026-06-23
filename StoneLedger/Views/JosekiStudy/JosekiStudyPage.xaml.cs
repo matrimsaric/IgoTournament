@@ -1,3 +1,4 @@
+using CommonModule.Enums;
 using StoneLedger.Controls;
 using StoneLedger.Models;
 using StoneLedger.Resources.Dictionaries;
@@ -6,7 +7,7 @@ using System.Text.Json;
 
 namespace StoneLedger.Views.JosekiStudy;
 
-public partial class JosekiStudyPage : ContentPage
+public partial class JosekiStudyPage : ContentPage, IQueryAttributable
 {
     public enum EditorMode
     {
@@ -20,14 +21,7 @@ public partial class JosekiStudyPage : ContentPage
         Variation
     }
 
-    public enum VariationType
-    {
-        None,
-        Joseki,
-        Fuseki,
-        Tesuji,
-        Yose,
-    }
+    
 
     public StudyMode _currentMode = StudyMode.Joseki;
 
@@ -50,6 +44,40 @@ public partial class JosekiStudyPage : ContentPage
         SelectJosekiMode();
 
 
+    }
+
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("id", out var idObj) &&
+            idObj is string idString &&
+            Guid.TryParse(idString, out var id))
+        {
+            _ = LoadAndApplyAsync(id);
+        }
+    }
+
+    private async Task LoadAndApplyAsync(Guid id)
+    {
+        if (BindingContext is not JosekiStudyViewModel vm)
+            return;
+
+        await vm.LoadJosekiAsync(id);
+
+        if (!string.IsNullOrWhiteSpace(vm.MovesJson))
+        {
+            var data = JsonSerializer.Deserialize<JosekiMoveData>(vm.MovesJson);
+            if (data != null)
+            {
+                GameReplayer.SetVariationState(
+                    data.Moves,
+                    data.JosekiEndIndex,
+                    data.ShowVariation);
+            }
+        }
+
+        // Ensure the right mode/buttons
+        SelectJosekiMode();
     }
 
 

@@ -89,6 +89,8 @@ namespace StoneLedger
 
             builder.Services.AddTransient<JosekiStudyViewModel>();
             builder.Services.AddTransient<JosekiStudyPage>();
+            builder.Services.AddTransient<JosekiListViewModel>();
+            builder.Services.AddTransient<JosekiListPage>();
 
             builder.Services.AddTransient<PlayerContentViewModel>();
             builder.Services.AddTransient<PlayerContentView>();

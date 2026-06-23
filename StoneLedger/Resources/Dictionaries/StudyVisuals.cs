@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonModule.Enums;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using static StoneLedger.Views.JosekiStudy.JosekiStudyPage;

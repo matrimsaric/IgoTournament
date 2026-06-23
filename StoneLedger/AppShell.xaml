@@ -45,9 +45,5 @@
 Route="AddMatchPage"
 ContentTemplate="{DataTemplate matches:AddMatchPage}" />
 
-    <ShellContent
-Route="JosekiStudyPage"
-ContentTemplate="{DataTemplate josekistudy:JosekiStudyPage}" />
-
 
 </Shell>

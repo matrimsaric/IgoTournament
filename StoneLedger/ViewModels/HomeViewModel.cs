@@ -10,6 +10,7 @@ namespace StoneLedger.ViewModels
         public ICommand GoToReplayCommand { get; }
 
         public ICommand GoToJosekiCommand { get; }
+        public ICommand GoToJosekiListCommand { get; }
 
         public ICommand GoToTournamentsCommand { get; }
 
@@ -32,6 +33,9 @@ namespace StoneLedger.ViewModels
 
             GoToJosekiCommand = new Command(async () =>
         await Shell.Current.GoToAsync("joseki"));
+
+            GoToJosekiListCommand = new Command(async () =>
+        await Shell.Current.GoToAsync("josekilist"));
         }
     }
 }

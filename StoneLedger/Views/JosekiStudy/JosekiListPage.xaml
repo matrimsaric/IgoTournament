@@ -1,0 +1,54 @@
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="StoneLedger.Views.JosekiStudy.JosekiListPage"
+    BackgroundColor="{StaticResource BackgroundColor}"
+    Title="Joseki Library">
+
+    <Grid ColumnDefinitions="1*, 2*" Padding="20" ColumnSpacing="20">
+
+        <!-- LEFT PANEL: Filter -->
+        <VerticalStackLayout Grid.Column="0" Spacing="16">
+
+            <Label Text="Filter by Category"
+                   Style="{StaticResource ListItemTitleStyle}" />
+
+            <Picker 
+    ItemsSource="{Binding Categories}"
+    SelectedItem="{Binding SelectedCategory, Mode=TwoWay}" />
+
+
+            <Button 
+                Text="Add New Entry"
+                Command="{Binding AddEntryCommand}"
+                IsEnabled="{Binding CanAdd}" />
+
+        </VerticalStackLayout>
+
+        <!-- RIGHT PANEL: List -->
+        <CollectionView 
+            Grid.Column="1"
+            ItemsSource="{Binding JosekiEntries}"
+            SelectionMode="Single"
+            SelectedItem="{Binding SelectedEntry, Mode=TwoWay}">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Style="{StaticResource CardFrameStyle}">
+                        <VerticalStackLayout Spacing="4">
+                            <Label 
+                                Text="{Binding Name}" 
+                                Style="{StaticResource ListItemTitleStyle}" />
+                            <Label 
+                                Text="{Binding Description}" 
+                                Style="{StaticResource ListItemSubtitleStyle}" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+    </Grid>
+
+</ContentPage>
