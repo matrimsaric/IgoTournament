@@ -46,6 +46,9 @@ public partial class JosekiStudyPage : ContentPage, IQueryAttributable
 
     }
 
+  
+
+
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {

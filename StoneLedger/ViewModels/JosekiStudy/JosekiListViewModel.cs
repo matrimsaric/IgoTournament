@@ -56,17 +56,24 @@ namespace StoneLedger.ViewModels.JosekiStudy
             await Shell.Current.GoToAsync($"joseki?id={entry.Id}");
         }
 
+        public ICommand AddEntryCommand => new Command(async () =>
+        {
+            // Navigate to the JosekiStudyPage with no ID → new entry mode
+            await Shell.Current.GoToAsync("joseki");
+        });
+
+
+
 
 
         public ICommand LoadEntriesCommand { get; }
-        public ICommand AddEntryCommand { get; }
 
         public JosekiListViewModel(JosekiEntryService service)
         {
             _josekiEntryService = service;
 
             LoadEntriesCommand = new Command(async () => await LoadEntriesAsync());
-            AddEntryCommand = new Command(OnAddEntry);
+
 
             LoadEntriesCommand.Execute(null);
         }
@@ -95,10 +102,7 @@ namespace StoneLedger.ViewModels.JosekiStudy
                 _ => -1
             };
 
-        private void OnAddEntry()
-        {
-            // Navigate to your Joseki editor page
-        }
+
     }
 
 }

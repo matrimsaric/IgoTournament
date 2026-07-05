@@ -1,5 +1,6 @@
 ﻿using CommonModule.Enums;
 using JosekiDomain.Model;
+using JosekiDomain.Services;
 using JosekiDomain.Services.Interfaces;
 using Microsoft.Maui.Graphics;
 using StoneLedger.Models;
@@ -9,6 +10,8 @@ using System.Collections.ObjectModel;
 using System.Text.Json;
 using System.Windows.Input;
 using static StoneLedger.Views.JosekiStudy.JosekiStudyPage;
+using JosekiBookService = StoneLedger.Services.Api.JosekiBookService;
+using JosekiEntryService = StoneLedger.Services.Api.JosekiEntryService;
 
 namespace StoneLedger.ViewModels.JosekiStudy;
 
@@ -46,6 +49,21 @@ public class JosekiStudyViewModel : BindableObject
             }
         }
     }
+
+    public ObservableCollection<JosekiBook> AvailableBooks { get; } =
+    new ObservableCollection<JosekiBook>();
+
+    private JosekiBook? _selectedBook;
+    public JosekiBook? SelectedBook
+    {
+        get => _selectedBook;
+        set
+        {
+            _selectedBook = value;
+            OnPropertyChanged();
+        }
+    }
+
 
 
     public ObservableCollection<VariationType> VariationTypes { get; } =
@@ -189,6 +207,16 @@ public class JosekiStudyViewModel : BindableObject
         ExportCommand = new Command(() => { /* TODO */ });
 
         SelectedStudyMode = VariationType.None; // triggers branch load + badge update
+        LoadBooksAsync();
+    }
+
+    private async Task LoadBooksAsync()
+    {
+        AvailableBooks.Clear();
+
+        var books = await _josekiBookService.GetAllBooksAsync();
+        foreach (var book in books)
+            AvailableBooks.Add(book);
     }
 
     public void AddDefaultStone(int x, int y)
@@ -228,6 +256,16 @@ public class JosekiStudyViewModel : BindableObject
         ParentId = entry.ParentId;
         VariationChangeIndex = entry.VariationChangeIndex;
         VariationChangeCoord = entry.VariationChangeCoord;
+
+        if (entry.BookId.HasValue)
+        {
+            SelectedBook = AvailableBooks
+                .FirstOrDefault(b => b.Id == entry.BookId.Value);
+        }
+        else
+        {
+            SelectedBook = null;
+        }
 
         UpdateBadge();
         UpdateResultRingColour();
