@@ -55,6 +55,8 @@
                FontSize="14"
                TextColor="{StaticResource SecondaryColor}" />
 
+        
+
         <!-- Team Image -->
         <Border Grid.Column="2"
                 Grid.RowSpan="3"
@@ -80,6 +82,9 @@
        WidthRequest="240"
        HorizontalOptions="Start"
        IsVisible="False">
+            <Image.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding ReloadPortraitCommand}" />
+            </Image.GestureRecognizers>
             <Image.Triggers>
                 <DataTrigger TargetType="Image"
                       Binding="{Binding Source={x:Reference Root}, Path=SideIndicator}"
@@ -99,6 +104,9 @@
        WidthRequest="240"
        HorizontalOptions="Start"
        IsVisible="False">
+            <Image.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding ReloadPortraitCommand}" />
+            </Image.GestureRecognizers>
             <Image.Triggers>
                 <DataTrigger TargetType="Image"
                       Binding="{Binding Source={x:Reference Root}, Path=SideIndicator}"
@@ -107,5 +115,7 @@
                 </DataTrigger>
             </Image.Triggers>
         </Image>
+
+
     </Grid>
 </ContentView>

@@ -15,6 +15,8 @@ namespace StoneLedger.ViewModels.Players
         private readonly ImageService _imageService;
 
         public ICommand OpenPlayerCommand { get; }
+        public ICommand ReloadPortraitCommand { get; }
+
 
         private string _name;
         public string Name
@@ -66,7 +68,21 @@ namespace StoneLedger.ViewModels.Players
             _playerService = playerService;
             _imageService = imageService;
             OpenPlayerCommand = new Command(async () => await OpenPlayer());
+            ReloadPortraitCommand = new Command(async () => await ReloadPortraitAsync());
+
         }
+
+        private async Task ReloadPortraitAsync()
+        {
+            if (string.IsNullOrWhiteSpace(PortraitUrl))
+                return;
+
+            var baseUrl = PortraitUrl.Split('?')[0];
+            PortraitUrl = $"{baseUrl}?t={DateTime.UtcNow.Ticks}";
+
+            OnPropertyChanged(nameof(PortraitUrl));
+        }
+
 
         public async Task LoadAsync(Guid playerId)
         {
