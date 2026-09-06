@@ -104,7 +104,15 @@ namespace StoneLedger.ViewModels.Players
                 (int)CommonModule.Enums.ImageSizeType.Portrait
             );
 
-            await Task.WhenAll(playerTask, imagesTask);
+            await Task.WhenAll(
+                playerTask,
+                imagesTask.ContinueWith(t =>
+                {
+                    if (t.IsFaulted)
+                    {
+                        Debug.WriteLine($"[PlayerVM {vmId}] LoadAsync GetImagesForObjectAsync EXCEPTION playerId={playerId} token={token}: {t.Exception?.GetBaseException().Message}");
+                    }
+                }));
 
             if (token != _loadToken)
             {
@@ -123,7 +131,9 @@ namespace StoneLedger.ViewModels.Players
             Rank = Player.Rank;
             BirthYear = Player.BirthYear;
 
-            var images = imagesTask.Result;
+            var images = imagesTask.IsFaulted
+                ? Enumerable.Empty<ImageDomain.Model.Image>()
+                : imagesTask.Result;
 
             var portrait = images
                 .Where(i => i.SizeType == (int)ImageSizeType.Portrait)

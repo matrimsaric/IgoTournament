@@ -61,7 +61,7 @@ namespace ServerCommonModule.Database
             if (connection.State == ConnectionState.Closed)
             {
                 Console.Write(connection.ConnectionString.ToString());
-                connection.Open();
+                await connection.OpenAsync();
             }
 
 

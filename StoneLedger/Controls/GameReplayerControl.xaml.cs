@@ -106,7 +106,10 @@ public partial class GameReplayerControl : ContentView
         if (newValue is IList<SgfMove> moves)
         {
             System.Diagnostics.Debug.WriteLine($"[Replayer] Moves received: {moves.Count}");
-            System.Diagnostics.Debug.WriteLine($"[Replayer] First move: {moves[0].X},{moves[0].Y} Color={moves[0].Color}");
+            if (moves.Count > 0)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Replayer] First move: {moves[0].X},{moves[0].Y} Color={moves[0].Color}");
+            }
             control.Drawable.Moves = moves;
             control.TotalMoves = moves.Count;
             control.BoardView.Invalidate();

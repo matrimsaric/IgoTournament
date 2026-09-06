@@ -18,7 +18,16 @@ namespace StoneLedger.Services.Api
 
         public async Task<List<Player>> GetAllPlayersAsync()
         {
-            var result = await _http.GetFromJsonAsync<List<Player>>("/api/content/players");
+            var response = await _http.GetAsync("/api/content/players");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                Debug.WriteLine($"[PlayerService] GetAllPlayersAsync() FAILED status={(int)response.StatusCode} {response.StatusCode} body={body}");
+                return new List<Player>();
+            }
+
+            var result = await response.Content.ReadFromJsonAsync<List<Player>>();
             return result ?? new List<Player>();
         }
 

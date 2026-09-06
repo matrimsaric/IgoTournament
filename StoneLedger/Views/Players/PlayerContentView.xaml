@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentView
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -11,111 +11,98 @@
     </ContentView.Resources>
 
     <Grid x:Name="RootLayout"
-          ColumnDefinitions="120, *, 100"
-          RowDefinitions="Auto, Auto, Auto, Auto"
+          RowDefinitions="Auto, Auto, Auto, Auto, Auto, *"
           Padding="12"
-          ColumnSpacing="16"
-          BackgroundColor="{StaticResource CardColor}">
+          RowSpacing="2"
+          BackgroundColor="{StaticResource SecondaryColor}">
 
         <Grid.GestureRecognizers>
             <TapGestureRecognizer Command="{Binding OpenPlayerCommand}" />
         </Grid.GestureRecognizers>
 
         <!-- Portrait -->
-        <Border Grid.RowSpan="3"
-                Grid.Column="0"
-                WidthRequest="120"
-                HeightRequest="120"
+        <Border Grid.Row="0"
+                HeightRequest="200"
                 StrokeThickness="0"
                 BackgroundColor="{StaticResource BackgroundColor}"
                 StrokeShape="RoundRectangle 16"
                 Padding="0"
-                VerticalOptions="Center">
+                HorizontalOptions="Fill">
             <Image Aspect="AspectFill"
                    Source="{Binding PortraitUrl, Converter={StaticResource NullToDefaultImageConverter}}" />
         </Border>
 
         <!-- Name -->
-        <Label Grid.Column="1"
-               Grid.Row="0"
+        <Label Grid.Row="1"
                Text="{Binding Name}"
-               Style="{StaticResource ListItemTitleStyle}" />
+               Style="{StaticResource ListItemTitleStyle}"
+               HorizontalTextAlignment="Center"
+               LineBreakMode="TailTruncation" />
+
+        <!-- Stone indicator -->
+        <Grid Grid.Row="2" HorizontalOptions="Center">
+            <Image x:Name="BlackStone"
+                   Source="blackplayer.png"
+                   HeightRequest="150"
+                   WidthRequest="150"
+                   IsVisible="False">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ReloadPortraitCommand}" />
+                </Image.GestureRecognizers>
+                <Image.Triggers>
+                    <DataTrigger TargetType="Image"
+                          Binding="{Binding Source={x:Reference Root}, Path=SideIndicator}"
+                         Value="1">
+                        <Setter Property="IsVisible" Value="True" />
+                    </DataTrigger>
+                </Image.Triggers>
+            </Image>
+
+            <Image x:Name="WhiteStone"
+                   Source="whiteplayer.png"
+                   HeightRequest="150"
+                   WidthRequest="150"
+                   IsVisible="False">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ReloadPortraitCommand}" />
+                </Image.GestureRecognizers>
+                <Image.Triggers>
+                    <DataTrigger TargetType="Image"
+                          Binding="{Binding Source={x:Reference Root}, Path=SideIndicator}"
+                         Value="2">
+                        <Setter Property="IsVisible" Value="True" />
+                    </DataTrigger>
+                </Image.Triggers>
+            </Image>
+        </Grid>
 
         <!-- Rank -->
-        <Label Grid.Column="1"
-               Grid.Row="1"
+        <Label Grid.Row="3"
                Text="{Binding Rank}"
                FontSize="14"
+               HorizontalTextAlignment="Center"
                TextColor="{StaticResource SecondaryColor}" />
 
         <!-- Birth Year -->
-        <Label Grid.Column="1"
-               Grid.Row="2"
+        <Label Grid.Row="4"
                Text="{Binding BirthYear, StringFormat='Born {0}'}"
                FontSize="14"
+               HorizontalTextAlignment="Center"
                TextColor="{StaticResource SecondaryColor}" />
 
-        
-
-        <!-- Team Image -->
-        <Border Grid.Column="2"
-                Grid.RowSpan="3"
-                WidthRequest="80"
+        <!-- Team logo, anchored to bottom of card -->
+        <Border Grid.Row="5"
                 HeightRequest="80"
                 StrokeThickness="0"
                 BackgroundColor="{StaticResource BackgroundColor}"
-                StrokeShape="RoundRectangle 12"
+                StrokeShape="RoundRectangle 14"
                 Padding="0"
-                VerticalOptions="Center">
+                HorizontalOptions="Center"
+                VerticalOptions="End"
+                WidthRequest="80">
             <Image Aspect="AspectFill"
-       Source="{Binding TeamImageUrl, Converter={StaticResource NullToDefaultImageConverter}}" />
-
+                   Source="{Binding TeamImageUrl, Converter={StaticResource NullToDefaultImageConverter}}" />
         </Border>
-        <!--<BoxView Grid.Row="3" Grid.ColumnSpan="4" HeightRequest="40" Color="Red" />-->
-        <!-- Black stone -->
-        <Image x:Name="BlackStone"
-       Source="blackplayer.png"
-       Grid.Row="3"
-       Grid.Column="0"
-               Grid.ColumnSpan="3"
-       HeightRequest="240"
-       WidthRequest="240"
-       HorizontalOptions="Start"
-       IsVisible="False">
-            <Image.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding ReloadPortraitCommand}" />
-            </Image.GestureRecognizers>
-            <Image.Triggers>
-                <DataTrigger TargetType="Image"
-                      Binding="{Binding Source={x:Reference Root}, Path=SideIndicator}"
-                     Value="1">
-                    <Setter Property="IsVisible" Value="True" />
-                </DataTrigger>
-            </Image.Triggers>
-        </Image>
-
-        <!-- White stone -->
-        <Image x:Name="WhiteStone"
-       Source="whiteplayer.png"
-       Grid.Row="3"
-       Grid.Column="0"
-               Grid.ColumnSpan="3"
-       HeightRequest="240"
-       WidthRequest="240"
-       HorizontalOptions="Start"
-       IsVisible="False">
-            <Image.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding ReloadPortraitCommand}" />
-            </Image.GestureRecognizers>
-            <Image.Triggers>
-                <DataTrigger TargetType="Image"
-                      Binding="{Binding Source={x:Reference Root}, Path=SideIndicator}"
-                     Value="2">
-                    <Setter Property="IsVisible" Value="True" />
-                </DataTrigger>
-            </Image.Triggers>
-        </Image>
-
 
     </Grid>
 </ContentView>

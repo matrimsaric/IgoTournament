@@ -6,7 +6,7 @@
     x:Class="StoneLedger.Views.Matches.MatchDetailPage"
     BackgroundColor="{StaticResource BackgroundColor}">
 
-    <Grid ColumnDefinitions="*, 1.2*, *"
+    <Grid ColumnDefinitions="220, *, 220"
       Padding="20"
       ColumnSpacing="20">
 
