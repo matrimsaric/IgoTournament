@@ -4,6 +4,8 @@ using PlayerDomain.Services.Interfaces;
 using StoneLedger.Services.Api;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Input;
 
@@ -13,6 +15,7 @@ namespace StoneLedger.ViewModels.Players
     {
         private readonly PlayerService _playerService;
         private readonly ImageService _imageService;
+        private int _loadToken;
 
         public ICommand OpenPlayerCommand { get; }
         public ICommand ReloadPortraitCommand { get; }
@@ -86,6 +89,14 @@ namespace StoneLedger.ViewModels.Players
 
         public async Task LoadAsync(Guid playerId)
         {
+            // Each call gets its own token. If PlayerId changes again before this call
+            // finishes, a newer token will be issued and this call's results are discarded
+            // below, preventing stale data (e.g. a previous player's portrait) from
+            // overwriting the currently bound player.
+            var token = ++_loadToken;
+            var vmId = RuntimeHelpers.GetHashCode(this);
+            Debug.WriteLine($"[PlayerVM {vmId}] LoadAsync START playerId={playerId} token={token}");
+
             // Kick off both requests at the same time
             var playerTask = _playerService.GetPlayerByIdAsync(playerId);
             var imagesTask = _imageService.GetImagesForObjectAsync(
@@ -95,9 +106,18 @@ namespace StoneLedger.ViewModels.Players
 
             await Task.WhenAll(playerTask, imagesTask);
 
+            if (token != _loadToken)
+            {
+                Debug.WriteLine($"[PlayerVM {vmId}] LoadAsync STALE after await, playerId={playerId} token={token} currentToken={_loadToken} - discarding");
+                return; // a newer LoadAsync call has superseded this one
+            }
+
             Player = playerTask.Result;
             if (Player is null)
+            {
+                Debug.WriteLine($"[PlayerVM {vmId}] LoadAsync playerId={playerId} token={token} - Player is null, aborting");
                 return;
+            }
 
             Name = Player.Name;
             Rank = Player.Rank;
@@ -111,38 +131,75 @@ namespace StoneLedger.ViewModels.Players
                 .FirstOrDefault()
                 ?? images.FirstOrDefault();
 
+            Debug.WriteLine($"[PlayerVM {vmId}] LoadAsync playerId={playerId} token={token} Name={Name} PortraitUrl={portrait?.ImageUrl ?? "<null>"}");
+
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                PortraitUrl = portrait?.ImageUrl;
-            });
+                if (token != _loadToken)
+                {
+                    Debug.WriteLine($"[PlayerVM {vmId}] LoadAsync STALE on main thread, playerId={playerId} token={token} currentToken={_loadToken} - discarding PortraitUrl assignment");
+                    return;
+                }
 
-            OnPropertyChanged(nameof(PortraitUrl));
-            OnPropertyChanged(nameof(Player));
+                PortraitUrl = portrait?.ImageUrl;
+                OnPropertyChanged(nameof(Player));
+                Debug.WriteLine($"[PlayerVM {vmId}] LoadAsync APPLIED playerId={playerId} token={token} PortraitUrl={PortraitUrl ?? "<null>"}");
+            });
 
             // ------------------------------------------------------------
             // TEAM LOGO: fire-and-forget, cannot break portrait load
             // ------------------------------------------------------------
-            _ = LoadTeamLogoAsync(playerId);
+            _ = LoadTeamLogoAsync(playerId, token);
         }
 
-        private async Task LoadTeamLogoAsync(Guid playerId)
+        private async Task LoadTeamLogoAsync(Guid playerId, int token)
         {
+            var vmId = RuntimeHelpers.GetHashCode(this);
             try
             {
                 var teamImage = await _imageService.GetTeamImagesForObjectAsync(playerId);
 
+                if (token != _loadToken)
+                {
+                    Debug.WriteLine($"[PlayerVM {vmId}] LoadTeamLogoAsync STALE playerId={playerId} token={token} currentToken={_loadToken} - discarding");
+                    return; // a newer LoadAsync call has superseded this one
+                }
+
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    TeamImageUrl = teamImage?.ImageUrl;
-                });
+                    if (token != _loadToken)
+                    {
+                        Debug.WriteLine($"[PlayerVM {vmId}] LoadTeamLogoAsync STALE on main thread, playerId={playerId} token={token} currentToken={_loadToken} - discarding");
+                        return;
+                    }
 
-                OnPropertyChanged(nameof(TeamImageUrl));
+                    TeamImageUrl = teamImage?.ImageUrl;
+                    Debug.WriteLine($"[PlayerVM {vmId}] LoadTeamLogoAsync APPLIED playerId={playerId} token={token} TeamImageUrl={TeamImageUrl ?? "<null>"}");
+                });
             }
-            catch
+            catch (Exception ex)
             {
+                Debug.WriteLine($"[PlayerVM {vmId}] LoadTeamLogoAsync EXCEPTION playerId={playerId} token={token}: {ex.Message}");
                 // swallow silently — team logo is optional
             }
         }
+
+        //private async Task LoadTeamLogoAsync(Guid playerId)
+        //{
+        //    try
+        //    {
+        //        var teamImage = await _imageService.GetTeamImagesForObjectAsync(playerId);
+
+        //        MainThread.BeginInvokeOnMainThread(() =>
+        //        {
+        //            TeamImageUrl = teamImage?.ImageUrl;
+        //        });
+        //    }
+        //    catch
+        //    {
+        //        // swallow silently — team logo is optional
+        //    }
+        //}
 
         private async Task OpenPlayer()
         {

@@ -28,9 +28,19 @@ namespace ImageDomain.ControlModule
         {
             if (reload || images.Count == 0)
             {
-                images = new ImageCollection();
-                imageRepoManager = factory.Get(images);
-                await imageRepoManager.LoadCollection();
+                // NOTE: this repository is registered as a Singleton, so 'images' and
+                // 'imageRepoManager' are shared across concurrent requests. Building the
+                // reloaded collection in local variables (instead of mutating the shared
+                // fields before the load completes) ensures each concurrent caller gets back
+                // its own fully-loaded collection, rather than a partially-loaded or
+                // freshly-reset collection from a different in-flight request.
+                var loaded = new ImageCollection();
+                var manager = factory.Get(loaded);
+                await manager.LoadCollection();
+
+                images = loaded;
+                imageRepoManager = manager;
+                return loaded;
             }
 
             return images;

@@ -38,9 +38,19 @@ namespace PlayerDomain.ControlModule
         {
             if (reload || players.Count == 0)
             {
-                players = new PlayerCollection();
-                playerRepoManager = factory.Get(players);
-                await playerRepoManager.LoadCollection();
+                // NOTE: this repository is registered as a Singleton, so 'players' and
+                // 'playerRepoManager' are shared across concurrent requests. Building the
+                // reloaded collection in local variables (instead of mutating the shared
+                // fields before the load completes) ensures each concurrent caller gets back
+                // its own fully-loaded collection, rather than a partially-loaded or
+                // freshly-reset collection from a different in-flight request.
+                var loaded = new PlayerCollection();
+                var manager = factory.Get(loaded);
+                await manager.LoadCollection();
+
+                players = loaded;
+                playerRepoManager = manager;
+                return loaded;
             }
 
             return players;

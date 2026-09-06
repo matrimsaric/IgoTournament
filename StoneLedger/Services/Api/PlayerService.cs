@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Diagnostics;
+using System.Net.Http.Json;
 using CommonModule.Enums;
 using PlayerDomain.Model;
 using PlayerDomain.Services.Interfaces;
@@ -26,7 +27,11 @@ namespace StoneLedger.Services.Api
             var response = await _http.GetAsync($"api/content/players/{id}");
 
             if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync();
+                Debug.WriteLine($"[PlayerService] GetPlayerByIdAsync({id}) FAILED status={(int)response.StatusCode} {response.StatusCode} body={body}");
                 return default;
+            }
 
             return await response.Content.ReadFromJsonAsync<Player>();
         }
