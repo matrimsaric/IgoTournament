@@ -20,13 +20,71 @@ namespace StoneLedger.ViewModels.Matches
 
         public ObservableCollection<Player> Players { get; } = new();
 
-        public Player SelectedPlayer1 { get; set; }
-        public Player SelectedPlayer2 { get; set; }
+        private Player _selectedPlayer1;
+        public Player SelectedPlayer1
+        {
+            get => _selectedPlayer1;
+            set
+            {
+                if (SetProperty(ref _selectedPlayer1, value))
+                    UpdateAutoMatchName();
+            }
+        }
+
+        private Player _selectedPlayer2;
+        public Player SelectedPlayer2
+        {
+            get => _selectedPlayer2;
+            set
+            {
+                if (SetProperty(ref _selectedPlayer2, value))
+                    UpdateAutoMatchName();
+            }
+        }
+
+        private bool _matchNameManuallySet;
+        private bool _isUpdatingAutoMatchName;
+        private string _matchName;
+        public string MatchName
+        {
+            get => _matchName;
+            set
+            {
+                if (SetProperty(ref _matchName, value) && !_isUpdatingAutoMatchName)
+                    _matchNameManuallySet = true;
+            }
+        }
+
+        private void UpdateAutoMatchName()
+        {
+            if (_matchNameManuallySet)
+                return;
+
+            if (SelectedPlayer1 == null || SelectedPlayer2 == null)
+                return;
+
+            _isUpdatingAutoMatchName = true;
+            MatchName = $"{SelectedPlayer1.Name} (B) vs {SelectedPlayer2.Name} (W)";
+            _isUpdatingAutoMatchName = false;
+        }
 
         public int BoardNumber { get; set; }
         public string BlackPlayerId { get; set; }
         public string WhitePlayerId { get; set; }
-        public string Result { get; set; }
+
+        private bool _resultManuallySet;
+        private bool _isUpdatingAutoResult;
+        private string _result;
+        public string Result
+        {
+            get => _result;
+            set
+            {
+                if (SetProperty(ref _result, value) && !_isUpdatingAutoResult)
+                    _resultManuallySet = true;
+            }
+        }
+
         public string SgfRaw { get; set; }
 
         public string SgfFilePath { get; set; }
@@ -61,7 +119,16 @@ namespace StoneLedger.ViewModels.Matches
         }
 
         public List<string> WinnerOptions { get; } = new() { "Black", "White", "Draw" };
-        public string SelectedWinner { get; set; }
+        private string _selectedWinner;
+        public string SelectedWinner
+        {
+            get => _selectedWinner;
+            set
+            {
+                if (SetProperty(ref _selectedWinner, value))
+                    UpdateAutoResult();
+            }
+        }
 
         public List<string> ResultTypes { get; } = new() { "Resign", "Timeout", "Other", "Points" };
         private string _selectedResultType;
@@ -75,13 +142,39 @@ namespace StoneLedger.ViewModels.Matches
                     _selectedResultType = value;
                     OnPropertyChanged(); // updates SelectedResultType binding
                     OnPropertyChanged(nameof(IsPointsVisible)); // updates visibility
+                    UpdateAutoResult();
                 }
             }
         }
 
-        public string Points { get; set; } // string so binding is easy
+        private string _points;
+        public string Points // string so binding is easy
+        {
+            get => _points;
+            set
+            {
+                if (SetProperty(ref _points, value))
+                    UpdateAutoResult();
+            }
+        }
 
         public bool IsPointsVisible => SelectedResultType == "Points";
+
+        private void UpdateAutoResult()
+        {
+            if (_resultManuallySet)
+                return;
+
+            if (string.IsNullOrEmpty(SelectedWinner) || string.IsNullOrEmpty(SelectedResultType))
+                return;
+
+            if (SelectedResultType == "Points" && string.IsNullOrWhiteSpace(Points))
+                return;
+
+            _isUpdatingAutoResult = true;
+            Result = BuildResult();
+            _isUpdatingAutoResult = false;
+        }
 
 
 
@@ -110,7 +203,9 @@ namespace StoneLedger.ViewModels.Matches
             var match = new Match
             {
                 Id = Guid.NewGuid(),
-                Name = $"{SelectedPlayer1.Name} vs {SelectedPlayer2.Name}",
+                Name = string.IsNullOrWhiteSpace(MatchName)
+                    ? $"{SelectedPlayer1.Name} (B) vs {SelectedPlayer2.Name} (W)"
+                    : MatchName,
                 RoundId = _roundId,
                 BoardNumber = BoardNumber,
                 BlackPlayerId = SelectedPlayer1.Id,

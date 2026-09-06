@@ -34,6 +34,13 @@
                                 SelectedItem="{Binding SelectedPlayer2}" />
                     </VerticalStackLayout>
 
+                    <!-- Match Name -->
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Match Name" Style="{StaticResource FormLabelStyle}" />
+                        <Entry Text="{Binding MatchName}"
+                               Placeholder="Auto-filled once both players are selected" />
+                    </VerticalStackLayout>
+
                     <!-- Winner -->
                     <VerticalStackLayout Spacing="4">
                         <Label Text="Winner" Style="{StaticResource FormLabelStyle}" />
