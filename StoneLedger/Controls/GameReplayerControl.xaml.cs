@@ -445,9 +445,14 @@ public partial class GameReplayerControl : ContentView
 
     private void OnMoveNumberToggleChanged(object sender, CheckedChangedEventArgs e)
     {
+        SetShowMoveNumbers(e.Value);
+    }
+
+    public void SetShowMoveNumbers(bool show)
+    {
         if (BoardView.Drawable is GameReplayerDrawable replayer)
         {
-            replayer.ShowMoveNumbers = e.Value;
+            replayer.ShowMoveNumbers = show;
             BoardView.Invalidate();
         }
     }

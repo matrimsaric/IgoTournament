@@ -42,6 +42,15 @@ public partial class MatchDetailPage : ContentPage
         }
     }
 
+    private void OnMoveNumberToggleChanged(object sender, CheckedChangedEventArgs e) =>
+        MatchContentViewInstance.SetShowMoveNumbers(e.Value);
+
+    private void OnJumpClicked(object sender, EventArgs e) =>
+        MatchContentViewInstance.JumpToMove(JumpEntry.Text);
+
+    private void OnUndoVariationClicked(object sender, EventArgs e) =>
+        MatchContentViewInstance.UndoVariation();
+
     private void OnRingToolClicked(object sender, EventArgs e) =>
         MatchContentViewInstance.SelectAnnotationTool("Ring");
 

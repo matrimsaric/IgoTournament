@@ -10,7 +10,7 @@
           RowSpacing="12"
           Padding="20,20,20,20">
 
-        <!-- Annotation Tools Toolbar -->
+        <!-- Toolbar visibility toggle -->
         <HorizontalStackLayout Grid.Row="0" HorizontalOptions="End">
             <Button x:Name="ToggleToolbarButton"
                     Text="Hide Tools"
@@ -19,6 +19,24 @@
 
         <Border Grid.Row="1" x:Name="AnnotationToolbar" Style="{StaticResource CardBorderStyle}">
             <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                    <CheckBox x:Name="MoveNumberToggle"
+                              IsChecked="True"
+                              CheckedChanged="OnMoveNumberToggleChanged" />
+                    <Label Text="Move #s" VerticalTextAlignment="Center" />
+                </HorizontalStackLayout>
+
+                <Entry x:Name="JumpEntry"
+                       WidthRequest="80"
+                       Keyboard="Numeric"
+                       Placeholder="Move #" />
+
+                <Button Text="Jump" Clicked="OnJumpClicked" />
+
+                <Button Text="Undo variation" Clicked="OnUndoVariationClicked" />
+
+                <BoxView WidthRequest="1" HeightRequest="30" Color="Gray" />
+
                 <Button Text="Ring" Clicked="OnRingToolClicked" />
                 <Button Text="Label" Clicked="OnLabelToolClicked" />
                 <Button Text="Symbol" Clicked="OnSymbolToolClicked" />

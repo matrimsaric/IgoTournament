@@ -41,17 +41,6 @@
                 <Button Text="◀︎" Command="{Binding PreviousMoveCommand}" />
                 <Button Text="▶︎" Command="{Binding NextMoveCommand}" />
                 <Button Text="▶︎|" Command="{Binding LastMoveCommand}" />
-                <Button Text="✎"        WidthRequest="40"        HeightRequest="40"     Clicked="OnToggleAnnotationsPanel" />
-                <Button Text="⤢"    Clicked="OnExpandClicked" />
-                <!-- Move Numbers Toggle -->
-                <HorizontalStackLayout Spacing="6"
-                           VerticalOptions="Center">
-                    <CheckBox x:Name="MoveNumberToggle"
-                              IsChecked="True"
-                  CheckedChanged="OnMoveNumberToggleChanged" />
-                    <Label Text="Move #s"
-               VerticalTextAlignment="Center" />
-                </HorizontalStackLayout>
 
             </HorizontalStackLayout>
  

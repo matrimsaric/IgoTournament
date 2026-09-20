@@ -62,9 +62,9 @@ public partial class MatchContentView : ContentView
         Replayer.ClearAnnotations();
     }
 
-    private void OnJumpClicked(object sender, EventArgs e)
+    public void JumpToMove(string moveText)
     {
-        if (!int.TryParse(JumpEntry.Text, out int moveNumber))
+        if (!int.TryParse(moveText, out int moveNumber))
             return;
 
         // Convert 1-based user input to 0-based index
@@ -79,13 +79,18 @@ public partial class MatchContentView : ContentView
         _vm.CurrentMoveIndex = moveNumber;
     }
 
-    private void OnUndoVariationClicked(object sender, EventArgs e)
+    public void UndoVariation()
     {
         if (Replayer.Drawable is GameReplayerDrawable drawable)
         {
             drawable.RemoveLastVariationMove();
             Replayer.Redraw();
         }
+    }
+
+    public void SetShowMoveNumbers(bool show)
+    {
+        Replayer.SetShowMoveNumbers(show);
     }
 
 

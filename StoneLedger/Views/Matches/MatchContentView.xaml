@@ -26,8 +26,8 @@
             </HorizontalStackLayout>
         </VerticalStackLayout>
 
-        <!-- Bottom: Replayer + Controls -->
-        <Grid Grid.Row="1" RowDefinitions="*,Auto" RowSpacing="12">
+        <!-- Bottom: Replayer -->
+        <Grid Grid.Row="1" RowDefinitions="*" RowSpacing="12">
 
             <!-- Row 0: Replayer fills all available space -->
             <controls:GameReplayerControl
@@ -35,28 +35,6 @@
         Grid.Row="0"
          CurrentMoveIndex="{Binding CurrentMoveIndex}"
         Moves="{Binding ParsedMoves}" />
-
-            <!-- Row 1: Jump controls take only what they need -->
-            <HorizontalStackLayout
-        Grid.Row="1"
-        Spacing="10"
-        HorizontalOptions="Center">
-
-                <Entry
-            x:Name="JumpEntry"
-            WidthRequest="80"
-            Keyboard="Numeric"
-            Placeholder="Move #" />
-
-                <Button
-            Text="Jump"
-            Clicked="OnJumpClicked" />
-
-                <Button
-    Text="Undo variation"
-    Clicked="OnUndoVariationClicked"
-    HorizontalOptions="End" />
-            </HorizontalStackLayout>
 
         </Grid>
 
