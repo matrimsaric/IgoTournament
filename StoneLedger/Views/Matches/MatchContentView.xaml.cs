@@ -52,6 +52,16 @@ public partial class MatchContentView : ContentView
         _vm.ExpandSgfCommand.Execute(null);
     }
 
+    public void SelectAnnotationTool(string tool)
+    {
+        Replayer.SelectAnnotationTool(tool);
+    }
+
+    public void ClearAnnotations()
+    {
+        Replayer.ClearAnnotations();
+    }
+
     private void OnJumpClicked(object sender, EventArgs e)
     {
         if (!int.TryParse(JumpEntry.Text, out int moveNumber))

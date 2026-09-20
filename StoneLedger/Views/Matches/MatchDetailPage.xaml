@@ -6,30 +6,56 @@
     x:Class="StoneLedger.Views.Matches.MatchDetailPage"
     BackgroundColor="{StaticResource BackgroundColor}">
 
-    <Grid ColumnDefinitions="220, *, 220"
-      Padding="20"
-      ColumnSpacing="20">
+    <Grid RowDefinitions="Auto,Auto,*"
+          RowSpacing="12"
+          Padding="20,20,20,20">
 
-        <!-- Player A -->
-        <Border Grid.Column="0"
-            Style="{StaticResource CardBorderStyle}">
-            <playerviews:PlayerContentView 
-            PlayerId="{Binding PlayerAId}" SideIndicator="1" />
+        <!-- Annotation Tools Toolbar -->
+        <HorizontalStackLayout Grid.Row="0" HorizontalOptions="End">
+            <Button x:Name="ToggleToolbarButton"
+                    Text="Hide Tools"
+                    Clicked="OnToggleToolbarClicked" />
+        </HorizontalStackLayout>
+
+        <Border Grid.Row="1" x:Name="AnnotationToolbar" Style="{StaticResource CardBorderStyle}">
+            <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                <Button Text="Ring" Clicked="OnRingToolClicked" />
+                <Button Text="Label" Clicked="OnLabelToolClicked" />
+                <Button Text="Symbol" Clicked="OnSymbolToolClicked" />
+                <Button Text="Territory" Clicked="OnTerritoryToolClicked" />
+                <Button Text="Eraser" Clicked="OnEraserToolClicked" />
+                <Button Text="Moves From" Clicked="OnMovesFromToolClicked" />
+                <Button Text="Variation" Clicked="OnVariationToolClicked" />
+                <Button Text="Clear" Clicked="OnClearAnnotationsClicked" />
+            </HorizontalStackLayout>
         </Border>
 
-        <!-- Match -->
-        <Border Grid.Column="1"
-            Style="{StaticResource CardBorderStyle}">
-            <matchviews:MatchContentView   x:Name="MatchContentViewInstance"
-            MatchId="{Binding MatchId}" />
-        </Border>
+        <Grid Grid.Row="2"
+          ColumnDefinitions="220, *, 220"
+          ColumnSpacing="20">
 
-        <!-- Player B -->
-        <Border Grid.Column="2"
-            Style="{StaticResource CardBorderStyle}">
-            <playerviews:PlayerContentView 
-            PlayerId="{Binding PlayerBId}" SideIndicator="2" />
-        </Border>
+            <!-- Player A -->
+            <Border Grid.Column="0"
+                Style="{StaticResource CardBorderStyle}">
+                <playerviews:PlayerContentView 
+                PlayerId="{Binding PlayerAId}" SideIndicator="1" />
+            </Border>
+
+            <!-- Match -->
+            <Border Grid.Column="1"
+                Style="{StaticResource CardBorderStyle}">
+                <matchviews:MatchContentView   x:Name="MatchContentViewInstance"
+                MatchId="{Binding MatchId}" />
+            </Border>
+
+            <!-- Player B -->
+            <Border Grid.Column="2"
+                Style="{StaticResource CardBorderStyle}">
+                <playerviews:PlayerContentView 
+                PlayerId="{Binding PlayerBId}" SideIndicator="2" />
+            </Border>
+
+        </Grid>
 
     </Grid>
 

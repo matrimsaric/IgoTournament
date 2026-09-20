@@ -41,4 +41,35 @@ public partial class MatchDetailPage : ContentPage
             }
         }
     }
+
+    private void OnRingToolClicked(object sender, EventArgs e) =>
+        MatchContentViewInstance.SelectAnnotationTool("Ring");
+
+    private void OnLabelToolClicked(object sender, EventArgs e) =>
+        MatchContentViewInstance.SelectAnnotationTool("Label");
+
+    private void OnSymbolToolClicked(object sender, EventArgs e) =>
+        MatchContentViewInstance.SelectAnnotationTool("Symbol");
+
+    private void OnTerritoryToolClicked(object sender, EventArgs e) =>
+        MatchContentViewInstance.SelectAnnotationTool("Territory");
+
+    private void OnEraserToolClicked(object sender, EventArgs e) =>
+        MatchContentViewInstance.SelectAnnotationTool("Eraser");
+
+    private void OnMovesFromToolClicked(object sender, EventArgs e) =>
+        MatchContentViewInstance.SelectAnnotationTool("Moves From");
+
+    private void OnVariationToolClicked(object sender, EventArgs e) =>
+        MatchContentViewInstance.SelectAnnotationTool("Variation");
+
+    private void OnClearAnnotationsClicked(object sender, EventArgs e) =>
+        MatchContentViewInstance.ClearAnnotations();
+
+    private void OnToggleToolbarClicked(object sender, EventArgs e)
+    {
+        bool isVisible = !AnnotationToolbar.IsVisible;
+        AnnotationToolbar.IsVisible = isVisible;
+        ToggleToolbarButton.Text = isVisible ? "Hide Tools" : "Show Tools";
+    }
 }

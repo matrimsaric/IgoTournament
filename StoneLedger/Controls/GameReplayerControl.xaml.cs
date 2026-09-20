@@ -242,6 +242,20 @@ public partial class GameReplayerControl : ContentView
         BoardTapped?.Invoke(this, (x, y));
     }
 
+    // Allows external callers (e.g. a toolbar on the host page) to select an
+    // annotation tool and reveal the panel without needing to open the panel
+    // first and pick from the dropdown.
+    public void SelectAnnotationTool(string tool)
+    {
+        AnnotationToolPicker.SelectedItem = tool;
+        AnnotationsPanel.IsVisible = true;
+    }
+
+    public void ClearAnnotations()
+    {
+        OnClearAnnotationsClicked(this, EventArgs.Empty);
+    }
+
     private void OnAnnotationToolChanged(object sender, EventArgs e)
     {
         var tool = AnnotationToolPicker.SelectedItem as string;
